@@ -8,7 +8,7 @@
   padding: var(--padding_M);
   margin-bottom: var(--margin_L);
 
-  @media screen and (max-width: 999px) {
+  @media screen and (max-width: 850px) {
     display: none;
   }
   @media screen and (min-width: 1500px) {
@@ -42,6 +42,8 @@
       align-items: center;
       justify-content: center;
       padding: 0;
+      border: unset;
+      outline: unset;
       &:hover,
       &:active {
         border: 0.05px solid var(--badge-color);

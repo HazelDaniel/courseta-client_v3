@@ -99,10 +99,9 @@
         opacity: 0;
         top: 0;
         left: 0;
-        -webkit-mask: url("/public/icons/notification-bell.svg") center/contain
+        -webkit-mask: url("/icons/notification-bell.svg") center/contain
           no-repeat;
-        mask: url("/public/icons/notification-bell.svg") center/contain
-          no-repeat;
+        mask: url("/icons/notification-bell.svg") center/contain no-repeat;
         mask-size: cover;
         transform-origin: top;
         transition: transform 0.3s ease-out;

@@ -1,4 +1,3 @@
-import Styles from "~/styles/app-main.css?url";
 import { courseData } from "~/data/course-list";
 import { AuthType, CourseListType, UserType } from "~/types";
 import { AnnouncementTab } from "~/components/announcement-tab";
@@ -15,9 +14,11 @@ import {
 } from "@remix-run/react";
 
 import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/app-main.css";
+import wideCourseCardStyles from "~/styles/wide-course-card.css";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: Styles }];
+  return [{ rel: "stylesheet", href: styles }, { rel: "stylesheet", href: wideCourseCardStyles }];
 };
 
 const WelcomeBoard: React.FC<{ user: UserType }> = ({ user }) => {
@@ -91,7 +92,8 @@ const RecommendedCourseSection: React.FC<{ courses: CourseListType }> = ({
 export const AppMain: React.FC = () => {
   const authData: AuthType = useRouteLoaderData("root") as AuthType;
   const { user } = authData;
-  const coursesRes = axios.get(`${BASE_URL}/courses/`);
+  // const coursesRes = axios.get(`${BASE_URL}/courses/`);
+  const coursesRes = courseData[1];
 
   return (
     <main className="app-main-styled">
@@ -114,5 +116,6 @@ export const AppMain: React.FC = () => {
 };
 
 export const Errorboundary: React.FC = () => {
+  console.log("hitting the error boundary instead");
   return <h2>an error occurred in the app main</h2>;
 };

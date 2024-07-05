@@ -1,12 +1,12 @@
-import Styles from "~/styles/side-tab.css?url";
 import { Link, NavLink, useLocation, useNavigate } from "@remix-run/react";
 import { Logo } from "~/components/logo";
 import { AuthDao } from "app/dao/auth";
 
 import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/side-tab.css";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: Styles }];
+  return [{ rel: "stylesheet", href: styles }];
 };
 
 export const SideTab: React.FC = () => {

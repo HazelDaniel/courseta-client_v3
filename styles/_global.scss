@@ -23,6 +23,9 @@ html {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
+button {
+  cursor: pointer;
+}
 body {
   margin: 0;
   line-height: normal;
@@ -45,7 +48,6 @@ body {
     @media screen and (max-width: 800px) {
       gap: unset;
     }
-
     .side-tab-wrapper {
       width: 30rem;
       height: max-content;
@@ -64,6 +66,7 @@ body > script {
   flex-direction: column;
   align-items: flex-end;
   justify-content: flex-start;
+  overflow: hidden !important;
 }
 
 :root {

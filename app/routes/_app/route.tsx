@@ -1,9 +1,22 @@
-import { Navigate, Outlet, useLoaderData, useLocation } from "@remix-run/react";
+import {
+  Navigate,
+  Outlet,
+  useLoaderData,
+  useLocation,
+  useRouteLoaderData,
+} from "@remix-run/react";
 import { Header } from "./header";
 import { SideTab } from "./side-tab";
 import { AuthType } from "~/types";
 
-export const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
+import styles from "~/styles/root-wrapper.css";
+import { LinksFunction } from "@remix-run/node";
+
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: styles }];
+};
+
+const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
   variant,
 }) => {
   const location = useLocation();
@@ -16,7 +29,7 @@ export const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
       ? "no-side-tab"
       : "side-tab");
 
-  const loaderData: AuthType = useLoaderData() as AuthType;
+  const loaderData: AuthType = useRouteLoaderData("root") as AuthType;
   loaderData.token = "kjlfklsjfsdfs";
   loaderData.user = {
     avatarURL: "illustrations/avatar1.jpg",
@@ -51,9 +64,14 @@ export const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
         }
       >
         <Header variant={variant} user={loaderData.user} />
-
         <Outlet />
       </div>
     </div>
   );
 };
+
+export const ErrorBoundary: React.FC = () => {
+  return <div>something fucked up happened!</div>;
+};
+
+export default App;

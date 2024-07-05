@@ -1,17 +1,14 @@
-import Styles from "~/styles/small-course-card.css?url";
-import CountdownCircleStyles from "~/styles/countdown-circle.css?url";
-import SmallCourseCardStyles from "~/styles/small-course-card.css?url";
-
 import { Link, useNavigate } from "@remix-run/react";
 import type { CourseEntryType } from "~/types";
 import { useEffect, useRef } from "react";
 import { LinksFunction } from "@remix-run/node";
+import smallCourseCardStyles from "~/styles/small-course-card.css";
+import countdownCircleStyles from "~/styles/countdown-circle.css";
 
 export const links: LinksFunction = () => {
   return [
-    { rel: "stylesheet", href: Styles },
-    { rel: "stylesheet", href: SmallCourseCardStyles },
-    { rel: "stylesheet", href: CountdownCircleStyles },
+    { rel: "stylesheet", href: smallCourseCardStyles },
+    { rel: "stylesheet", href: countdownCircleStyles },
   ];
 };
 

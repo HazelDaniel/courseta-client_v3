@@ -1,11 +1,11 @@
-import Styles from "~/styles/course-filter-select.css?url";
 import { useState } from "react";
 import { CourseFilterType } from "../types";
 
 import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/course-filter-select.css";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: Styles }];
+  return [{ rel: "stylesheet", href: styles }];
 };
 
 export const CourseFilterSelect: React.FC<{ data: CourseFilterType }> = ({

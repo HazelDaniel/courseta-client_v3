@@ -1,1 +1,13 @@
-.root-wrapper-styled{flex:1 !important;display:flex;flex-direction:column;gap:var(--margin_M);background-color:var(--bright-color);border:1px solid var(--label-color);border-top-left-radius:2rem}.root-wrapper-styled.compact{gap:unset}@media screen and (max-width: 800px){.root-wrapper-styled{width:100%}}
+.root-wrapper-styled {
+  flex: 1 !important;
+  display: flex;
+  flex-direction: column;
+  gap: var(--margin_M);
+  background-color: var(--bright-color);
+  border: 1px solid var(--label-color);
+  border-top-left-radius: 2rem; }
+  .root-wrapper-styled.compact {
+    gap: unset; }
+  @media screen and (max-width: 800px) {
+    .root-wrapper-styled {
+      width: 100%; } }

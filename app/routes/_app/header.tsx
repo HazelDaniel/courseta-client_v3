@@ -1,12 +1,12 @@
-import Styles from "~/styles/header.css?url";
 import { Form, Link, Location, useLocation, useSubmit } from "react-router-dom";
 import { useRef } from "react";
 import { UserType } from "~/types";
 
 import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/header.css";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: Styles }];
+  return [{ rel: "stylesheet", href: styles }];
 };
 
 function calcHeaderVisible(location: Location) {

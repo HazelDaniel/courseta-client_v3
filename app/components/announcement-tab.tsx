@@ -1,13 +1,11 @@
-import Styles from "~/styles/announcement-tab.css?url";
 import { AnnouncementsData } from "~/data/announcement-data";
 import type { AnnouncementGroupType } from "~/types";
 import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/announcement-tab.css";
 
 export const links: LinksFunction = () => {
-  return [
-    {rel: "stylesheet", href: Styles}
-  ]
-}
+  return [{ rel: "stylesheet", href: styles }];
+};
 
 const computeTimeWithMeridian = (dateString: string) => {
   const dateComputed = new Date(dateString);
@@ -70,6 +68,7 @@ export const AnnouncementTabList: React.FC<{ data: AnnouncementGroupType }> = ({
 };
 
 export const AnnouncementTab: React.FC = () => {
+  console.log("rendering .announcement tab..");
   return (
     <div className="announcement-tab-styled">
       <div className="at-top">

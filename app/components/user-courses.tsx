@@ -1,4 +1,3 @@
-import Styles from "~/styles/user-courses.css?url";
 import type { CourseEntryType } from "~/types";
 import { SmallCourseCard } from "./small-course-card";
 import { CourseFilter } from "../components/course-filter";
@@ -6,11 +5,10 @@ import { useLoaderData } from "@remix-run/react";
 import { NoContent } from "./no-content";
 
 import { LinksFunction } from "@remix-run/node";
+import userCoursesStyles from "~/styles/user-courses.css";
 
 export const links: LinksFunction = () => {
-  return [
-    { rel: "stylesheet", href: Styles },
-  ];
+  return [{ rel: "stylesheet", href: userCoursesStyles }];
 };
 
 export const UserCourses: React.FC<{

@@ -74,13 +74,15 @@ main.app-main-styled {
   }
 }
 
-.current-course-section-styled {
+section.current-course-section-styled {
   width: var(--section-width-here);
+  width: 90%;
   height: 30rem;
   display: flex;
   flex-direction: column;
   gap: 4rem;
   margin-bottom: var(--margin_L);
+  overflow: hidden;
   .ccs-top {
     width: 100%;
     height: max-content;
@@ -95,6 +97,9 @@ main.app-main-styled {
       background-color: var(--badge-bg-color);
       color: var(--badge-color);
       font-size: 1.5rem;
+      border-radius: 1rem;
+      outline: unset;
+      border: unset;
       &:hover,
       &:active {
         border: 0.05px solid var(--badge-color);
