@@ -1,6 +1,10 @@
+import Styles from "~/styles/logo.css?url";
 import { Link } from "react-router-dom";
-// import { LogoStyled } from "./logo.styles";
-import "styles/logo.css";
+import { LinksFunction } from "@remix-run/node";
+
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: Styles }];
+};
 
 export const Logo: React.FC = () => {
   return (

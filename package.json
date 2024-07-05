@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node-sass ./styles -o ./app/styles --output-style compressed && remix vite:build",
-		"build:css": "node-sass ./styles -o ./app/styles --output-style compressed",
+    "build:css": "node-sass ./styles -o ./app/styles --output-style compressed",
     "dev": "npm run build:css && node-sass -rw ./styles -o ./app/styles & remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
@@ -15,6 +15,7 @@
     "@remix-run/node": "^2.10.2",
     "@remix-run/react": "^2.10.2",
     "@remix-run/serve": "^2.10.2",
+    "axios": "^1.7.2",
     "isbot": "^4.1.0",
     "js-cookie": "^3.0.5",
     "node-sass": "^9.0.0",
