@@ -1,7 +1,6 @@
 import type { CourseEntryType } from "~/types";
 import { SmallCourseCard } from "./small-course-card";
 import { CourseFilter } from "../components/course-filter";
-import { useLoaderData } from "@remix-run/react";
 import { NoContent } from "./no-content";
 
 import { LinksFunction } from "@remix-run/node";
@@ -13,10 +12,8 @@ export const links: LinksFunction = () => {
 
 export const UserCourses: React.FC<{
   isGeneric: boolean;
-}> = ({ isGeneric }) => {
-  const courses: CourseEntryType[] = useLoaderData() as CourseEntryType[];
-  void isGeneric;
-
+  courses: CourseEntryType[];
+}> = ({ isGeneric, courses }) => {
   return (
     <section className="user-courses-styled">
       <div className="courses-top">
