@@ -101,7 +101,7 @@ export const Header: React.FC<{
           }`}</span>
           <div className="profile-image-div">
             <img
-              src={user.avatarURL || "icons/user-icon.svg"}
+              src={user.avatarURL?.length ? user.avatarURL : "icons/user-icon.svg"}
               alt="avatar image of the user of the courseta platform"
               className="summary-area-image"
             />
