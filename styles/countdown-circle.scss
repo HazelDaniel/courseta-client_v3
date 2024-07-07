@@ -1,4 +1,4 @@
-.countdown-circle-styled {
+.countdown_circle_styled {
   width: 8rem;
   height: 8rem;
 
@@ -54,7 +54,7 @@
       }
     }
 
-    .data-progress {
+    .data_progress {
       font-family: poppins;
       position: absolute;
       content: "";
@@ -67,7 +67,7 @@
     }
   }
 
-  &.course-entry-progress {
+  &.course_entry_progress {
     // --stroke-dasharray: 800;
     --animation-time: 0ms;
     width: 5rem;
@@ -89,7 +89,7 @@
       z-index: 2;
       display: flex;
     }
-    .data-progress {
+    .data_progress {
       font-size: 1.5rem !important;
     }
     .skill {

@@ -1,4 +1,4 @@
-.header-searchbox-styled {
+.header_searchbox_styled {
   width: 30rem;
   height: 5rem;
   border-radius: 0.5rem;
@@ -14,7 +14,7 @@
     padding: var(--padding_S);
     padding: 1rem;
   }
-  .search-icon {
+  .search_icon {
     width: 20%;
     height: 100%;
     display: flex;
@@ -49,7 +49,7 @@
   }
 }
 
-.header-styled {
+.header_styled {
   height: 12rem;
   display: flex;
   justify-content: space-between;
@@ -68,20 +68,20 @@
     margin-left: 0;
   }
 
-  .header-left {
+  .header_left {
     height: 5rem;
     flex: 1;
     &.hidden {
       visibility: hidden;
     }
   }
-  .header-right {
+  .header_right {
     width: 30rem;
     margin-right: var(--margin_XL);
     height: 5rem;
     display: flex;
     justify-content: flex-end;
-    .notif-icon-area {
+    .notif_icon_area {
       width: 5rem;
       height: 100%;
       display: flex;
@@ -89,7 +89,7 @@
       justify-content: center;
       position: relative;
       overflow: visible;
-      .notif-icon-shadow {
+      .notif_icon_shadow {
         width: 100%;
         height: 100%;
         content: "";
@@ -114,14 +114,14 @@
         cursor: pointer;
         z-index: 1;
         &:hover {
-          & + .notif-icon-shadow {
+          & + .notif_icon_shadow {
             transform: rotateZ(-15deg);
             opacity: 0.4;
           }
         }
       }
     }
-    .profile-summary-area {
+    .profile_summary_area {
       flex: 1;
       overflow: hidden;
       display: flex;
@@ -137,7 +137,7 @@
         justify-content: flex-end;
         margin-right: var(--margin_S);
       }
-      .profile-image-div {
+      .profile_image_div {
         width: 5rem;
         height: 100%;
         position: relative;

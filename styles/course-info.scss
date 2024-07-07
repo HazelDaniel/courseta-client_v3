@@ -1,25 +1,25 @@
 @import "_functions";
 
-.course-info-styled {
+.course_info_styled {
   font-family: poppins;
   padding-left: var(--padding_L);
   margin-bottom: 15rem;
   height: max-content;
-  .course-desc-title {
+  .course_desc_title {
     font-size: 4rem;
     font-weight: 500;
     text-transform: capitalize;
     color: var(--primary-color);
     margin-bottom: 2.5rem;
   }
-  .course-desc {
+  .course_desc {
     font-size: 2rem;
     color: var(--primary-color);
     width: 80%;
     margin-bottom: var(--margin_L);
   }
 
-  .course-info-area {
+  .course_info_area {
     width: 97%;
     height: max-content;
     min-height: 50rem;
@@ -34,13 +34,13 @@
     li {
       list-style-type: none;
     }
-    .area-left {
+    .area_left {
       flex: 1;
       height: max-content;
       display: flex;
       flex-direction: column;
       gap: 3rem;
-      .horizontal-file-tab {
+      .horizontal_file_tab {
         width: 100%;
         height: 5rem;
         display: flex;
@@ -89,7 +89,7 @@
           }
         }
       }
-      .course-outline-area {
+      .course_outline_area {
         border-radius: 1rem;
         height: max-content;
         border: 1px solid var(--label-color);
@@ -99,7 +99,7 @@
         align-items: center;
         gap: 3rem;
         --inactive-text-color: #7d7d7d;
-        .coa-top {
+        .coa_top {
           width: 100%;
           height: 8rem;
           overflow: hidden;
@@ -138,7 +138,7 @@
               font-size: 2.5rem;
               font-weight: 500;
             }
-            .course-outline-stat-div {
+            .course_outline_stat_div {
               height: max-content;
               width: 100%;
               display: flex;
@@ -157,7 +157,7 @@
             }
           }
         }
-        .coa-bottom {
+        .coa_bottom {
           width: 100%;
           height: max-content;
           margin-bottom: 7rem;
@@ -165,9 +165,9 @@
           border-radius: 1.5rem;
           border: 1px solid var(--label-color);
 
-          .course-outline-accordion {
+          .course_outline_accordion {
             @include courseAccordionStyle();
-            .no-content {
+            .no_content {
               width: 100%;
               font-size: 4rem;
               display: flex;

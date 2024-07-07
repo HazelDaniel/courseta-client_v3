@@ -1,4 +1,4 @@
-.course-stat-info-styled {
+.course_stat_info_styled {
   width: 35rem;
   height: max-content;
   min-height: 30rem;
@@ -10,17 +10,17 @@
   @media screen and (max-width: 800px) {
     width: 100%;
   }
-  .course-stat-info-area {
+  .course_stat_info_area {
     width: 100%;
     max-width: 35rem;
     height: max-content;
-    .course-stat-info {
+    .course_stat_info {
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 3rem;
-      .stat-info-top {
+      .stat_info_top {
         width: 100%;
         height: max-content;
         display: flex;
@@ -31,7 +31,7 @@
         background-color: var(--bright-color);
         border-radius: 1.5rem;
         border: 1px solid var(--label-color);
-        .stat-info-list {
+        .stat_info_list {
           height: max-content;
           min-height: 15rem;
           width: 100%;
@@ -53,7 +53,7 @@
             }
           }
         }
-        .stat-info-share-area {
+        .stat_info_share_area {
           width: 100%;
           overflow: hidden;
           height: 10rem;
@@ -92,7 +92,7 @@
         }
       }
     }
-    .course-cta-area {
+    .course_cta_area {
       width: 100%;
       height: 5rem;
       display: flex;
@@ -122,7 +122,7 @@
       }
     }
   }
-  .creator-stat-info-area {
+  .creator_stat_info_area {
     width: 100%;
     height: max-content;
     position: relative;
@@ -134,7 +134,7 @@
     justify-content: flex-end;
     align-items: center;
 
-    .creator-stat-info {
+    .creator_stat_info {
       /* height: 20rem; */
       height: max-content;
       overflow: hidden;
@@ -156,7 +156,7 @@
         display: flex;
         align-items: center;
         gap: 1rem;
-        .creator-icon-wrapper {
+        .creator_icon_wrapper {
           width: 4rem;
           height: 4rem;
           border-radius: 0.5rem;
@@ -181,26 +181,26 @@
         align-items: center;
         height: 8rem;
         overflow: hidden;
-        .creator-name-title-area {
+        .creator_name_title_area {
           width: max-content;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 1rem;
           font-size: 1.5rem;
-          .creator-name {
+          .creator_name {
             width: max-content;
             font-weight: 500;
             text-align: start;
             margin-right: auto;
             font-weight: 600;
           }
-          .creator-title {
+          .creator_title {
             width: max-content;
             text-align: start;
           }
         }
-        .creator-avatar-area {
+        .creator_avatar_area {
           width: 8rem;
           height: 100%;
           display: flex;
@@ -234,7 +234,7 @@
         }
       }
     }
-    .author-stat-ratings-area {
+    .author_stat_ratings_area {
       position: absolute;
       content: "";
       display: block;
@@ -253,7 +253,7 @@
       padding-top: 2rem;
       font-size: 1.3rem;
       border: 1px solid var(--label-color);
-      .ratings-area-left {
+      .ratings_area_left {
         width: max-content;
         display: flex;
         gap: 0.5rem;
@@ -271,7 +271,7 @@
           }
         }
       }
-      .ratings-area-right {
+      .ratings_area_right {
         width: max-content;
         display: flex;
         gap: 0.5rem;

@@ -1,4 +1,4 @@
-.announcement-tab-styled {
+.announcement_tab_styled {
   width: 30%;
   height: max-content;
   min-height: 100vh;
@@ -17,7 +17,7 @@
   overflow-x: hidden;
   overflow-y: auto;
 
-  .at-top {
+  .at_top {
     width: 100%;
     height: 5rem;
     display: flex;
@@ -54,14 +54,14 @@
       }
     }
   }
-  .at-bottom {
+  .at_bottom {
     height: max-content;
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 3rem;
     overflow: hidden;
-    .announcement-tab-separator {
+    .announcement_tab_separator {
       width: 100%;
       display: flex;
       justify-content: flex-start;
@@ -81,7 +81,7 @@
         border-radius: 0.25rem;
       }
     }
-    .at-item-list {
+    .at_item_list {
       list-style-type: none;
       display: flex;
       flex-direction: column;
@@ -90,7 +90,7 @@
       height: max-content;
       width: 100%;
       gap: 3rem;
-      .announcement-tab-item {
+      .announcement_tab_item {
         width: 100%;
         height: max-content;
         min-height: 12rem;
@@ -102,7 +102,7 @@
         padding: 5%;
         gap: 2rem;
         background: var(--aside-tab-bg);
-        .ati-badge {
+        .ati_badge {
           align-self: flex-start;
           font-size: 1.3rem;
           width: 8rem;
@@ -121,7 +121,7 @@
             color: #2eff5c;
           }
         }
-        .ati-body {
+        .ati_body {
           width: 100%;
           display: flex;
           align-items: center;
@@ -137,7 +137,7 @@
             text-overflow: ellipsis;
             color: var(--text-color);
           }
-          .ati-expand-cta {
+          .ati_expand_cta {
             width: 3rem;
             height: 3rem;
             span {
@@ -166,7 +166,7 @@
             }
           }
         }
-        .ati-time-area {
+        .ati_time_area {
           width: 100%;
           color: var(--inactive-text-color);
           font-size: 1.2rem;

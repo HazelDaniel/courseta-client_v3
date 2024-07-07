@@ -1,6 +1,6 @@
 @import "./_functions";
 
-.user-courses-styled {
+.user_courses_styled {
   width: 100%;
   height: max-content;
   /* ${debug}; */
@@ -11,7 +11,7 @@
   justify-content: flex-start;
   padding: var(--padding_S) var(--padding_XL);
   font-family: poppins;
-  .courses-top {
+  .courses_top {
     width: 100%;
     height: max-content;
     display: flex;
@@ -25,7 +25,7 @@
       font-weight: 500;
     }
   }
-  .courses-bottom {
+  .courses_bottom {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -33,14 +33,14 @@
     justify-content: flex-start;
     height: max-content;
     gap: 20rem;
-    .courses-list-container {
+    .courses_list_container {
       width: 100%;
       height: max-content;
       list-style-type: none;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(35rem, 1fr));
       @include noContentStyle();
-      .no-content {
+      .no_content {
         color: var(--text-color);
         font-size: 5rem;
         margin: auto;

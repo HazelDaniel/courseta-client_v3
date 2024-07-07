@@ -1,6 +1,6 @@
 @import "_functions";
 
-.course-details-styled {
+.course_details_styled {
   width: 100%;
   margin: 0 auto;
   height: max-content;
@@ -8,7 +8,7 @@
   display: flex;
   margin-top: unset;
   gap: 1px;
-  .quiz-cta-area {
+  .quiz_cta_area {
     width: 100%;
     height: max-content;
     display: flex;
@@ -34,7 +34,7 @@
   }
 }
 
-.course-side-tab-styled {
+.course_side_tab_styled {
   position: fixed;
   top: 0;
   height: 100vh;
@@ -45,7 +45,7 @@
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  .course-side-tab-body {
+  .course_side_tab_body {
     width: 100%;
     flex: 1;
     overflow-y: auto;
@@ -66,18 +66,18 @@
       text-overflow: ellipsis;
     }
 
-    .course-outline-accordion {
+    .course_outline_accordion {
       @include courseAccordionStyle();
       border-top-right-radius: 2rem;
       border-top-left-radius: 2rem;
       border: 1px solid var(--label-color);
-      .accordion-head {
+      .accordion_head {
         background-color: var(--active-text-bg);
-        .head-right {
+        .head_right {
           width: 4rem;
           height: 4rem;
           min-width: unset;
-          .accordion-controller {
+          .accordion_controller {
             --text-color: var(--label-color);
           }
         }
@@ -86,8 +86,8 @@
           flex: 1;
         }
       }
-      .accordion-content-list {
-        .accordion-content {
+      .accordion_content_list {
+        .accordion_content {
           --content-icon-color-here: var(--label-color);
           overflow: hidden;
           text-wrap: nowrap;
@@ -121,7 +121,7 @@
             max-height: 2.5rem !important;
             z-index: 2;
           }
-          .accordion-content-badge {
+          .accordion_content_badge {
             display: none;
           }
         }
@@ -131,7 +131,7 @@
   }
 }
 
-.course-assessment-area-styled {
+.course_assessment_area_styled {
   width: 75vw;
   margin-left: auto;
   height: max-content;
@@ -143,7 +143,7 @@
   padding: var(--padding_L);
   padding-top: 0;
 
-  .accessment-cta-area {
+  .accessment_cta_area {
     height: 5rem;
     overflow: hidden;
     margin-top: 0;
@@ -195,13 +195,13 @@
     }
   }
 
-  .accessment-countdown-area {
+  .accessment_countdown_area {
     width: 90%;
     margin-right: auto;
     display: flex;
     height: max-content;
     align-items: center;
-    .countdown-area-left {
+    .countdown_area_left {
       height: max-content;
       flex: 1;
       & > p {
@@ -212,14 +212,14 @@
         color: var(--text-color);
       }
     }
-    .countdown-area-right {
+    .countdown_area_right {
       width: max-content;
       display: flex;
       flex-direction: column;
       gap: 2rem;
       height: max-content;
       align-items: center;
-      .countdown-elapsed-area {
+      .countdown_elapsed_area {
         width: 40rem;
 
         display: flex;
@@ -246,7 +246,7 @@
     }
   }
 
-  .accessment-description-area {
+  .accessment_description_area {
     height: max-content;
     display: flex;
     flex-direction: column;
@@ -268,7 +268,7 @@
     flex-direction: column;
     gap: 5rem;
   }
-  .accessment-wrapper {
+  .accessment_wrapper {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -276,7 +276,7 @@
     gap: 3rem;
     margin-bottom: var(--padding_L);
     @include noContentStyle();
-    .no-content {
+    .no_content {
       width: 100%;
       font-size: 3rem;
       display: flex;
@@ -291,7 +291,7 @@
       color: var(--primary-color);
       font-size: 2.2rem;
     }
-    .options-area {
+    .options_area {
       margin-bottom: var(--margin_L);
       width: 100%;
       display: flex;
@@ -339,7 +339,7 @@
   }
 }
 
-.lesson-content-body-styled {
+.lesson_content_body_styled {
   width: 100%;
   display: flex;
   height: max-content;
@@ -362,7 +362,7 @@
     font-weight: 500;
     margin-top: var(--margin_L);
   }
-  .resource-header-div {
+  .resource_header_div {
     width: 100%;
     display: flex;
     gap: 2rem;

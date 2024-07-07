@@ -1,4 +1,4 @@
-.side-tab-styled {
+.side_tab_styled {
   position: fixed;
   left: 0;
   top: 1.5vh;
@@ -19,18 +19,18 @@
   gap: 1rem;
   background-color: var(--bright-color);
 
-  .side-tab-body {
+  .side_tab_body {
     width: 100%;
     flex: 1;
     overflow-x: hidden;
     overflow-y: auto;
-    .nav-list {
+    .nav_list {
       /* ${debug}; */
       list-style-type: none;
       width: 100%;
       height: max-content;
       height: 35rem;
-      .nav-item {
+      .nav_item {
         width: 90%;
         height: max-content;
         margin: 1rem auto;
@@ -71,7 +71,7 @@
             }
           }
         }
-        .sub-nav-list {
+        .sub_nav_list {
           min-height: 10rem;
           height: max-content;
           width: 80%;
@@ -82,7 +82,7 @@
           align-items: flex-start;
           margin-left: var(--margin_M);
           /* background-color: red; */
-          .sub-nav-item {
+          .sub_nav_item {
             width: 100%;
             height: 3rem;
             display: flex;
@@ -126,7 +126,7 @@
         }
       }
     }
-    .side-tab-cta-div {
+    .side_tab_cta_div {
       width: 95%;
       height: 5rem;
       margin: 0 auto;
@@ -165,7 +165,7 @@
       }
     }
 
-    .side-tab-notif-box {
+    .side_tab_notif_box {
       width: 95%;
       margin: 0 auto;
       height: 15rem;
@@ -176,14 +176,14 @@
       align-items: center;
       justify-content: center;
       gap: 20%;
-      .notif-text {
+      .notif_text {
         font-size: 1.6rem;
         color: var(--bright-color);
         text-align: center;
         width: 80%;
         margin: 0 auto;
       }
-      .notif-box-cta {
+      .notif_box_cta {
         width: 60%;
         margin: 0 auto;
         border-radius: 0.5rem;

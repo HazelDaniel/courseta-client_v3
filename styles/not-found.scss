@@ -1,11 +1,11 @@
-.not-found-styled {
+.not_found_styled {
   width: 100%;
   height: 100vh;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  ._404-content-area {
+  ._404_content_area {
     width: max-content;
     display: flex;
     gap: 1rem;
@@ -19,14 +19,14 @@
       margin: 0 1rem;
       background-color: var(--text-color);
     }
-    ._404-logo-parent {
+    ._404_logo_parent {
       width: 7rem;
       height: 7rem;
       /* padding: 1rem; */
       display: flex;
       align-items: center;
       justify-content: center;
-      .logo-container {
+      .logo_container {
         border: 0.2rem solid var(--label-color);
         border-radius: 0.5rem;
         width: 100%;
@@ -34,12 +34,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        .logo-div {
+        .logo_div {
           margin: auto 0;
         }
       }
     }
-    ._404-icon-parent {
+    ._404_icon_parent {
       height: 5rem;
       overflow: hidden;
       display: flex;
@@ -49,7 +49,7 @@
         height: 100%;
       }
     }
-    ._404-text-area {
+    ._404_text_area {
       width: max-content;
       height: 5rem;
       display: flex;

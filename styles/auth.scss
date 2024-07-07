@@ -1,4 +1,4 @@
-.auth-styled {
+.auth_styled {
   width: 100%;
   height: max-content;
   min-height: 100vh;
@@ -12,7 +12,7 @@
   font-family: poppins;
   --faded-color-here: #8a8a8a;
   padding: 2rem;
-  .auth-content-wrapper {
+  .auth_content_wrapper {
     width: 90%;
     @media screen and (max-width: 800px) {
       width: 100%;
@@ -33,7 +33,7 @@
       justify-content: flex-start;
       flex-direction: column;
     }
-    .auth-left {
+    .auth_left {
       min-width: 70rem;
       @media screen and (max-width: 1000px) {
         min-width: 100vw;
@@ -41,14 +41,14 @@
       flex: 1;
       gap: 3rem;
       height: 80rem;
-      .auth-logo-area {
+      .auth_logo_area {
         width: 100%;
         --logo-dimension-val: 10rem;
         height: var(--logo-dimension-val);
         display: flex;
         align-items: center;
         justify-content: center;
-        .logo-container {
+        .logo_container {
           margin: 0 auto;
           width: var(--logo-dimension-val);
           height: var(--logo-dimension-val);
@@ -60,7 +60,7 @@
           }
         }
       }
-      .auth-form {
+      .auth_form {
         width: 100%;
         height: max-content;
         min-height: 80rem;
@@ -68,7 +68,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         flex-basis: 20rem;
-        .input-wrapper {
+        .input_wrapper {
           width: 50%;
           @media screen and (max-width: 800px) {
             width: 100%;
@@ -119,7 +119,7 @@
         }
       }
     }
-    .auth-right {
+    .auth_right {
       flex: 1;
       overflow: hidden;
       height: max-content;
@@ -170,7 +170,7 @@
           }
         }
       }
-      .auth-optional-redirect-area {
+      .auth_optional_redirect_area {
         width: 100%;
         display: flex;
         justify-content: center;

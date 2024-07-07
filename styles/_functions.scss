@@ -12,7 +12,7 @@
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
   --uniform-padding-here: 0 var(--padding_M);
-  .accordion-head {
+  .accordion_head {
     height: 8rem;
     width: 100%;
     &.first {
@@ -29,14 +29,14 @@
       color: var(--active-text-color);
       font-weight: 500;
     }
-    .head-right {
+    .head_right {
       width: max-content;
       min-width: 20rem;
       display: flex;
       align-items: center;
       gap: 1rem;
 
-      .duration-details {
+      .duration_details {
         width: max-content;
         display: inherit;
         align-items: inherit;
@@ -56,7 +56,7 @@
           color: var(--text-color);
         }
       }
-      .accordion-controller {
+      .accordion_controller {
         width: max-content;
         height: 3rem;
         display: flex;
@@ -72,14 +72,14 @@
     }
   }
 
-  .accordion-content-list {
+  .accordion_content_list {
     padding: var(--uniform-padding-here);
     width: 100%;
     height: max-content;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    .accordion-content {
+    .accordion_content {
       height: 8rem;
       width: 100%;
       display: flex;
@@ -99,7 +99,7 @@
         background-color: var(--label-color);
         transform: scaleX(2);
       }
-      .content-icon-wrapper {
+      .content_icon_wrapper {
         height: 100%;
         width: 8rem;
         display: flex;
@@ -111,12 +111,12 @@
         }
       }
 
-      .accordion-content-text {
+      .accordion_content_text {
         font-size: 2rem;
         font-weight: 500;
         color: var(--content-icon-color-here);
       }
-      .accordion-content-badge {
+      .accordion_content_badge {
         width: max-content;
         padding: 0 2rem;
         height: 3.5rem;
@@ -142,7 +142,7 @@
 }
 
 @mixin noContentStyle () {
-  .no-content {
+  .no_content {
     width: 100%;
     height: 8rem;
           font-size: 2rem;
