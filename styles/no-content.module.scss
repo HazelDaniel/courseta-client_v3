@@ -1,0 +1,47 @@
+.no_content {
+  width: 100%;
+  height: 8rem;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg-color);
+  span {
+    width: 3rem;
+    height: 3rem;
+    svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--label-color);
+      transform: scale(0.6);
+    }
+  }
+
+  &.course_outline {
+    width: 100%;
+    font-size: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--label-color);
+    height: 8rem;
+    font-family: montserrat;
+    svg {
+      opacity: 0;
+    }
+  }
+  &.courses {
+    color: var(--text-color);
+    font-size: 5rem;
+    margin: auto;
+    span {
+      height: 100%;
+      margin-right: 2rem;
+      svg {
+        transform: unset;
+        fill: var(--text-color);
+        // display: none !important;
+      }
+    }
+  }
+}

@@ -4,16 +4,7 @@
   all: unset;
   &.course_variant {
     @include courseAccordionStyle();
-    .no_content {
-      width: 100%;
-      font-size: 4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--label-color);
-      height: 8rem;
-      font-family: montserrat;
-    }
+
   }
   &.lesson_variant {
     @include courseAccordionStyle();
