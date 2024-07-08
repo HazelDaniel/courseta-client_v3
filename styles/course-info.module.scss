@@ -164,20 +164,6 @@
           padding-bottom: var(--padding_M);
           border-radius: 1.5rem;
           border: 1px solid var(--label-color);
-
-          .course_outline_accordion {
-            @include courseAccordionStyle();
-            .no_content {
-              width: 100%;
-              font-size: 4rem;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: var(--label-color);
-              height: 8rem;
-              font-family: montserrat;
-            }
-          }
         }
       }
     }

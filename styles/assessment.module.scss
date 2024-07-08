@@ -1,0 +1,236 @@
+@import "_functions";
+.options_area {
+  margin-bottom: var(--margin_L);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: max-content;
+  padding: 3rem 2rem;
+  border-top-left-radius: 2rem;
+  border-top-right-radius: 2rem;
+  border: 1px solid var(--label-color);
+  overflow: hidden;
+  .option {
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+    position: relative;
+    overflow: visible;
+    &::before {
+      position: absolute;
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      transform: scaleX(2);
+      transform-origin: center;
+      border-bottom: 0.1rem solid var(--label-color);
+      z-index: 0;
+    }
+    input {
+      position: relative;
+      background-color: var(--label-color);
+      accent-color: var(--primary-color);
+    }
+    label {
+      font-size: 1.8rem;
+      color: var(--text-color);
+      z-index: 1;
+      width: 100%;
+    }
+  }
+}
+
+.course_assessment_area_styled {
+  width: 75vw;
+  margin-left: auto;
+  height: max-content;
+  overflow: hidden;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  padding: var(--padding_L);
+  padding-top: 0;
+
+  .accessment_cta_area {
+    height: 5rem;
+    overflow: hidden;
+    margin-top: 0;
+    top: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 3rem;
+    button {
+      width: 15rem;
+      border-radius: unset;
+      border-bottom-left-radius: 0.5rem;
+      border-bottom-right-radius: 0.5rem;
+      background-color: var(--primary-color);
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: visible;
+      &::before {
+        content: "";
+        position: absolute;
+        display: block;
+        height: 100%;
+        width: 0.5rem;
+        top: 0;
+        right: 0;
+        background-color: var(--badge-color);
+        opacity: 0;
+        transition: opacity 0.2s linear;
+      }
+      &:hover {
+        border: unset;
+        &::before {
+          opacity: 1;
+        }
+      }
+      span {
+        margin-right: var(--margin_S);
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        svg {
+        }
+      }
+      color: var(--label-color);
+    }
+  }
+
+  .accessment_countdown_area {
+    width: 90%;
+    margin-right: auto;
+    display: flex;
+    height: max-content;
+    align-items: center;
+    .countdown_area_left {
+      height: max-content;
+      flex: 1;
+      & > p {
+        font-size: 3rem;
+        font-family: poppins;
+        width: max-content;
+        font-weight: 500;
+        color: var(--text-color);
+      }
+    }
+    .countdown_area_right {
+      width: max-content;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      height: max-content;
+      align-items: center;
+      .countdown_elapsed_area {
+        width: 40rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 5rem;
+        list-style-type: none;
+        gap: 2rem;
+        li {
+          font-size: 1.5rem;
+          transition: width 0.2s linear;
+          &:first-of-type {
+            width: 20rem;
+          }
+          span {
+            font-size: 1.8rem;
+            font-family: poppins;
+            color: var(--primary-color);
+            margin-right: 1rem;
+          }
+        }
+        /* align-self: flex-end; */
+      }
+    }
+  }
+
+  .accessment_description_area {
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5rem;
+    margin-top: var(--margin_L);
+    p {
+      font-size: 2rem;
+      color: var(--text-color);
+      font-weight: 500;
+      text-align: start;
+      text-wrap: balance;
+    }
+  }
+  form {
+    width: 100%;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+  }
+  .accessment_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 3rem;
+    margin-bottom: var(--padding_L);
+    @include noContentStyle();
+    .no_content {
+      width: 100%;
+      font-size: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: montserrat;
+    }
+    & > span {
+      width: 100%;
+      text-align: start;
+      font-weight: 600;
+      color: var(--primary-color);
+      font-size: 2.2rem;
+    }
+  }
+}
+
+.quiz_cta_area {
+  width: 100%;
+  height: max-content;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  button {
+    height: 5rem;
+    width: 18rem;
+    border-radius: 0.5rem;
+    background-color: var(--badge-color);
+    color: var(--bg-color);
+    font-size: 2rem;
+    transition: all 0.2s linear;
+    outline: none;
+    border: none;
+    &:hover {
+      transform: scale(0.97);
+      border: unset;
+    }
+    &:focus {
+      border: 1px solid var(--label-color);
+      outline: unset;
+    }
+  }
+}
