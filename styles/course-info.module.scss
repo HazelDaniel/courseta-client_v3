@@ -106,7 +106,7 @@
           display: flex;
           align-items: center;
           gap: 1.5rem;
-          &-left {
+          &_left {
             width: 8rem;
             height: 100%;
             div {
@@ -128,7 +128,7 @@
               }
             }
           }
-          &-right {
+          &_right {
             flex: 1;
             display: flex;
             flex-direction: column;
