@@ -272,6 +272,36 @@ export const courseDataDetailed: CourseDetailType[] = [
         },
       },
     ],
+    exam: {
+      id: 1,
+      completed: false,
+      startDate: "2024-07-01",
+      endDate: "2024-07-07",
+      duration: 7200,
+      description: "Final exam covering all lessons.",
+      questions: [
+        {
+          id: "ex1",
+          question: "Explain the concept of variables.",
+          points: 20,
+          options: [
+            {
+              correct: true,
+              text: "A storage location paired with an associated symbolic name.",
+              quizID: "ex1",
+              id: "exopt1"
+            },
+            {
+              correct: false,
+              text: "A function",
+              quizID: "ex1",
+              id: "exopt2"
+            }
+          ]
+        }
+      ],
+      availablePoints: 20
+    }
   },
   {
     imageUrl: "/images/programming-1.jpg",
