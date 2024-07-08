@@ -11,14 +11,14 @@ import {
 import { Logo } from "~/components/logo";
 import { AuthDao } from "~/dao/auth";
 
-import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/auth.css";
+// import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/auth.module.css";
 import axios from "axios";
 import { BASE_URL, updateInterceptorWithToken } from "~/config/base";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: styles }];
+// };
 
 export const SignInForm: React.FC = () => {
   const signInSubmit = useSubmit();
@@ -28,7 +28,7 @@ export const SignInForm: React.FC = () => {
   }
   return (
     <Form
-      className="auth-form"
+      className={styles.auth_form}
       method="post"
       onSubmit={(e: React.FormEvent) => {
         e.preventDefault();
@@ -44,12 +44,12 @@ export const SignInForm: React.FC = () => {
         });
       }}
     >
-      <div className="input-wrapper">
+      <div className={styles.input_wrapper}>
         <label htmlFor="auth-email">Email</label>
         <input type="email" name="email" id="auth-email" />
       </div>
 
-      <div className="input-wrapper">
+      <div className={styles.input_wrapper}>
         <label htmlFor="auth-password">Password</label>
         <input type="password" name="password" id="auth-password" />
       </div>
@@ -63,32 +63,32 @@ export const SignUpForm: React.FC = () => {
     return <Navigate to={"/"} replace={true} />;
   }
   return (
-    <Form className="auth-form">
-      <div className="input-wrapper">
+    <Form className={styles.auth_form}>
+      <div className={styles.input_wrapper}>
         <label htmlFor="auth-first-name">First Name</label>
         <input type="text" name="first_name" id="auth-first-name" />
       </div>
 
-      <div className="input-wrapper">
+      <div className={styles.input_wrapper}>
         <label htmlFor="auth-last-name">Last Name</label>
         <input type="text" name="last_name" id="auth-last-name" />
       </div>
 
-      <div className="input-wrapper">
+      <div className={styles.input_wrapper}>
         <label htmlFor="auth-email">Email</label>
         <input type="email" name="email" id="auth-email" />
       </div>
 
-      <div className="input-wrapper breaker">
+      <div className="input_wrapper breaker">
         <label htmlFor="auth-phone">Phone</label>
         <input type="tel" name="phone" id="auth-phone" />
       </div>
 
-      <div className="input-wrapper">
+      <div className={styles.input_wrapper}>
         <label htmlFor="auth-password">Password</label>
         <input type="password" name="password" id="auth-password" />
       </div>
-      <div className="input-wrapper">
+      <div className={styles.input_wrapper}>
         <label htmlFor="auth-confirm-password">Confirm Password</label>
         <input
           type="password"
@@ -110,16 +110,16 @@ export const Auth: React.FC = () => {
   const authType: PossibleAuthTypes = (locationSearch.get("type") ||
     "sign_up") as PossibleAuthTypes;
   return (
-    <div className="auth-styled">
-      <div className="auth-content-wrapper">
-        <div className="auth-left">
-          <div className="auth-logo-area">
+    <div className={styles.auth_styled}>
+      <div className={styles.auth_content_wrapper}>
+        <div className={styles.auth_left}>
+          <div className={styles.auth_logo_area}>
             <Logo />
           </div>
           {authType === "sign_up" ? <SignUpForm /> : <SignInForm />}
         </div>
-        <div className="auth-right">
-          <p className="auth-right-header">
+        <div className={styles.auth_right}>
+          <p className={styles.auth_right_header}>
             <span></span>
             {authType === "sign_up" ? "or sign up using" : "or sign in using"}
             <span></span>
@@ -155,12 +155,12 @@ export const Auth: React.FC = () => {
           </ul>
 
           {authType === "sign_up" ? (
-            <div className="auth-optional-redirect-area">
+            <div className={styles.auth_optional_redirect_area}>
               <span>already have an account?</span>{" "}
               <Link to="/auth?type=login">login</Link>
             </div>
           ) : (
-            <div className="auth-optional-redirect-area">
+            <div className={styles.auth_optional_redirect_area}>
               <span>don't have an account?</span>
               <a
                 href=""

@@ -4,12 +4,13 @@ import { CourseDetailType } from "~/types";
 import { convertSecondsToHms } from "~/utils/conversion";
 import { CourseStatInfo } from "./course-stat-info";
 
-import styles from "~/styles/course-info.css";
-import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/course-info.module.css";
+// import { LinksFunction } from "@remix-run/node";
+import { Link } from "@remix-run/react";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: styles }];
+// };
 
 export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
   course,
@@ -20,30 +21,35 @@ export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
   }, [course.duration]);
 
   return (
-    <section className="course-info-styled">
-      <h2 className="course-desc-title">About this course</h2>
-      <p className="course-desc">
+    <section className={styles.course_info_styled}>
+      <h2 className={styles.course_desc_title}>About this course</h2>
+      <p className={styles.course_desc}>
         {course.description || "No description provided for this course"}
       </p>
 
-      <div className="course-info-area">
-        <div className="area-left">
-          <ul className="horizontal-file-tab">
+      <div className={styles.course_info_area}>
+        <div className={styles.area_left}>
+          <ul className={styles.horizontal_file_tab}>
             <li>
-              <a href="" className="active">
+              <a href="" className={styles.active}>
                 <span>outline</span>
               </a>
             </li>
             <li>
-              <a href="">
+              <Link to="">
                 <span>Reviews (980)</span>
-              </a>
+              </Link>
+            </li>
+            <li>
+              <Link to={`/courses/${course.id}/exams/${course.exam ? course.exam.id : -1}`}>
+                <span>Exam Link</span>
+              </Link>
             </li>
           </ul>
 
-          <div className="course-outline-area">
-            <div className="coa-top">
-              <div className="coa-top-left">
+          <div className={styles.course_outline_area}>
+            <div className={styles.coa_top}>
+              <div className={styles.coa_top_left}>
                 <div>
                   <span>
                     <svg>
@@ -52,16 +58,16 @@ export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
                   </span>
                 </div>
               </div>
-              <div className="coa-top-right">
+              <div className={styles.coa_top_right}>
                 <h2>Course Outline</h2>
-                <div className="course-outline-stat-div">
+                <div className={styles.course_outline_stat_div}>
                   <p>{course.lessonCount} lessons</p> <span></span>
                   <p>{courseDurationString()} Total length</p>
                 </div>
               </div>
             </div>
 
-            <div className="coa-bottom">
+            <div className={styles.coa_bottom}>
               <CourseAccordion variant="outline" course={course} />
             </div>
           </div>

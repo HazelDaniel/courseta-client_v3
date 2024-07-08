@@ -1,17 +1,17 @@
-import styles from "~/styles/course-stat-info.css";
-import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/course-stat-info.module.css";
+// import { LinksFunction } from "@remix-run/node";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: styles }];
+// };
 
 export const CourseStatInfo: React.FC = () => {
   return (
-    <aside className="course-stat-info-styled">
-      <div className="course-stat-info-area">
-        <div className="course-stat-info">
-          <div className="stat-info-top">
-            <ul className="stat-info-list">
+    <aside className={styles.course_stat_info_styled}>
+      <div className={styles.course_stat_info_area}>
+        <div className={styles.course_stat_info}>
+          <div className={styles.stat_info_top}>
+            <ul className={styles.stat_info_list}>
               <li>
                 <p>Last update</p>
                 <span>02/04/23</span>
@@ -26,7 +26,7 @@ export const CourseStatInfo: React.FC = () => {
                 <span>3h 25min 30s</span>
               </li>
             </ul>
-            <div className="stat-info-share-area">
+            <div className={styles.stat_info_share_area}>
               <button>
                 <span>
                   <svg
@@ -44,44 +44,46 @@ export const CourseStatInfo: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="stat-info-bottom"></div>
+          <div className={styles.stat_info_bottom}></div>
         </div>
-        <div className="course-cta-area">
-          <button className="course-cta">Enroll Now</button>
-          <button className="course-cta secondary">Review Course</button>
+        <div className={styles.course_cta_area}>
+          <button className={styles.course_cta}>Enroll Now</button>
+          <button className={`${styles.course_cta} ${styles.secondary}`}>
+            Review Course
+          </button>
         </div>
       </div>
 
-      <div className="creator-stat-info-area">
-        <div className="creator-stat-info">
-          <div className="top">
-            <span className="creator-icon-wrapper">
+      <div className={styles.creator_stat_info_area}>
+        <div className={styles.creator_stat_info}>
+          <div className={styles.top}>
+            <span className={styles.creator_icon_wrapper}>
               <svg>
                 <use xlinkHref="#profile"></use>
               </svg>
             </span>
             <p>Creator</p>
           </div>
-          <div className="middle">
-            <div className="creator-name-title-area">
-              <h2 className="creator-name">Courseta Edtech</h2>
-              <p className="creator-title"> gamified edtech platform</p>
+          <div className={styles.middle}>
+            <div className={styles.creator_name_title_area}>
+              <h2 className={styles.creator_name}>Courseta Edtech</h2>
+              <p className={styles.creator_title}> gamified edtech platform</p>
             </div>
-            <div className="creator-avatar-area">
+            <div className={styles.creator_avatar_area}>
               <img
                 src="/logo.svg"
                 alt="avatar image of a course creator on the courseta platform"
               />
             </div>
           </div>
-          <div className="bottom">
+          <div className={styles.bottom}>
             <p>60 courses</p>
             <span></span>
             <p>500 enrolled</p>
           </div>
         </div>
-        <div className="author-stat-ratings-area">
-          <div className="ratings-area-left">
+        <div className={styles.author_stat_ratings_area}>
+          <div className={styles.ratings_area_left}>
             <p>creator ratings</p>
             <span>
               <svg>
@@ -89,7 +91,7 @@ export const CourseStatInfo: React.FC = () => {
               </svg>
             </span>
           </div>
-          <div className="ratings-area-right">
+          <div className={styles.ratings_area_right}>
             <span>
               <svg>
                 <use xlinkHref="#star-filled"></use>

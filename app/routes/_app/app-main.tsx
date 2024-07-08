@@ -14,24 +14,24 @@ import {
 } from "@remix-run/react";
 
 import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/app-main.css";
-import wideCourseCardStyles from "~/styles/wide-course-card.css";
+import styles from "~/styles/app-main.module.css";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }, { rel: "stylesheet", href: wideCourseCardStyles }];
-};
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: styles }, { rel: "stylesheet", href: wideCourseCardStyles }];
+// };
 
 const WelcomeBoard: React.FC<{ user: UserType }> = ({ user }) => {
   return (
-    <div className="welcome-board-styled">
-      <div className="wp-left">
+    <div className={styles.welcome_board_styled}>
+      <div className={styles.wp_left}>
         <span>welcome,</span>
         <h2>{user?.name}</h2>
       </div>
-      <div className="wp-right">
+      <div className={styles.wp_right}>
         <img
           src="/illustrations/community-learning.png"
           alt="community learning illustration"
+          className={styles.img}
         />
       </div>
     </div>
@@ -44,11 +44,11 @@ const CurrentCourseSection: React.FC = () => {
   console.log("courses are : ", courses);
 
   return (
-    <section className="current-course-section-styled">
-      <div className="ccs-top">
-        <p className="home-section-title">Recent Unfinished</p>
+    <section className={styles.current_course_section_styled}>
+      <div className={styles.ccs_top}>
+        <p className={styles.home_section_title}>Recent Unfinished</p>
         <button
-          className="home-section-cta"
+          className={styles.home_section_cta}
           onClick={() => {
             navigate(`/courses/${courseData[1].id}`);
           }}
@@ -56,7 +56,7 @@ const CurrentCourseSection: React.FC = () => {
           Continue Course
         </button>
       </div>
-      <div className="ccs-bottom">
+      <div className={styles.ccs_bottom}>
         <WideCourseCard entry={courseData[1]} />
       </div>
     </section>
@@ -67,12 +67,12 @@ const RecommendedCourseSection: React.FC<{ courses: CourseListType }> = ({
   courses,
 }) => {
   return (
-    <section className="recommended-course-section-styled">
-      <div className="rcs-top">
-        <p className="home-section-title">Recommended Courses</p>
+    <section className={styles.recommended_course_section_styled}>
+      <div className={styles.rcs_top}>
+        <p className={styles.home_section_title}>Recommended Courses</p>
       </div>
-      <div className="rcs-bottom">
-        <ul className="list-course-cards">
+      <div className={styles.rcs_bottom}>
+        <ul className={styles.list_course_cards}>
           {courses.slice(0, 4).map((entry) => {
             return (
               <SmallCourseCard
@@ -96,8 +96,8 @@ export const AppMain: React.FC = () => {
   const coursesRes = courseData[1];
 
   return (
-    <main className="app-main-styled">
-      <div className="app-main-content">
+    <main className={styles.app_main_styled}>
+      <div className={styles.app_main_content}>
         <WelcomeBoard user={user} />
         <React.Suspense fallback={<div>loading...</div>}>
           <Await

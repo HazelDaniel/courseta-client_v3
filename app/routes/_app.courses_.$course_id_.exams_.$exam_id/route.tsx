@@ -1,23 +1,18 @@
+import styles from "~/styles/assessment.module.css";
+import { LoaderFunction, json } from "@remix-run/node";
 import {
   isRouteErrorResponse,
-  json,
   useLoaderData,
-  useParams,
   useRouteError,
 } from "@remix-run/react";
+import { AssessmentBody } from "~/components/course-details";
 import { NotFound } from "~/components/not-found";
 import { courseDataDetailed } from "~/data/course-list";
-import type { CourseDetailType } from "~/types";
-import { CourseBanner } from "./course-banner";
-import { CourseInfo } from "./course-info";
-import styles from "~/styles/course.module.css";
-import { LinksFunction, LoaderFunction } from "@remix-run/node";
+import { CourseDetailType, CourseExamType } from "~/types";
 
-// export const links: LinksFunction = () => {
-//   return [{ rel: "stylesheet", href: styles }];
-// };
 
 export const loader: LoaderFunction = ({ params }) => {
+  const examID = params["exam_id"];
   const courseID = params["course_id"];
 
   const course = courseDataDetailed.filter(
@@ -28,18 +23,17 @@ export const loader: LoaderFunction = ({ params }) => {
     throw json({ error: "course not found!" }, { status: 404 });
   }
 
-  return json({ course });
+  return json({ course, examID: +(examID as string) });
 };
 
-const Course: React.FC = () => {
-  const { course } = useLoaderData<typeof loader>();
-
-  return (
-    <div className={styles.course_styled}>
-      <CourseBanner course={course} />
-      <CourseInfo course={course} />
-    </div>
-  );
+export const ExamPage: React.FC = () => {
+  const res = useLoaderData<typeof loader>() as {
+    examID: string;
+    course: CourseDetailType;
+  };
+  return <div className={`${styles.course_accessment_area} ${styles.course_assessment_area_styled}`}>
+    <AssessmentBody assessment={res.course?.exam as CourseExamType} />;
+  </div>;
 };
 
 export const ErrorBoundary: React.FC = () => {
@@ -56,4 +50,4 @@ export const ErrorBoundary: React.FC = () => {
   }
 };
 
-export default Course;
+export default ExamPage;

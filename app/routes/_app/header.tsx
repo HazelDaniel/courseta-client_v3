@@ -2,12 +2,7 @@ import { Form, Link, Location, useLocation, useSubmit } from "react-router-dom";
 import { useRef } from "react";
 import { UserType } from "~/types";
 
-import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/header.css";
-
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+import styles from "~/styles/header.module.css";
 
 function calcHeaderVisible(location: Location) {
   let res: boolean = true;
@@ -52,7 +47,7 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
       }}
       ref={formRef}
     >
-      <div className="header-searchbox-styled">
+      <div className={styles.header_searchbox_styled}>
         <input
           type="search"
           name="search"
@@ -61,7 +56,7 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
           defaultValue={existingSearch.get("search") || ""}
         />
 
-        <span className="search-icon">
+        <span className={styles.search_icon}>
           <input type="submit" value="" />
           <svg>
             <use xlinkHref="#search"></use>
@@ -82,28 +77,36 @@ export const Header: React.FC<{
   return (
     <header
       className={`${
-        variant === "no-side-tab" ? "header-styled shrink" : "header-styled"
+        variant === "no-side-tab"
+          ? `${styles.header_styled} ${styles.shrink}`
+          : styles.header_styled
       }`}
     >
-      <div className={isVisible ? "header-left" : "header-left hidden"}>
+      <div
+        className={
+          isVisible ? styles.header_left : `${styles.header_left} hidden`
+        }
+      >
         <HeaderSearchBox dest={`${location.pathname}${location.search}`} />
       </div>
-      <div className="header-right">
-        <span className="notif-icon-area">
+      <div className={styles.header_right}>
+        <span className={styles.notif_icon_area}>
           <svg>
             <use xlinkHref="#bell"></use>
           </svg>
-          <span className="notif-icon-shadow"></span>
+          <span className={styles.notif_icon_shadow}></span>
         </span>
-        <div className="profile-summary-area">
-          <span className="summary-area-text">{`${
+        <div className={styles.profile_summary_area}>
+          <span className={styles.summary_area_text}>{`${
             user.email.split("@")[0]
           }`}</span>
-          <div className="profile-image-div">
+          <div className={styles.profile_image_div}>
             <img
-              src={user.avatarURL?.length ? user.avatarURL : "icons/user-icon.svg"}
+              src={
+                user.avatarURL?.length ? user.avatarURL : "icons/user-icon.svg"
+              }
               alt="avatar image of the user of the courseta platform"
-              className="summary-area-image"
+              className={styles.summary_area_image}
             />
             <Link to={"/dashboard"}></Link>
           </div>

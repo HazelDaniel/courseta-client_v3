@@ -3,23 +3,23 @@ import { Logo } from "~/components/logo";
 import { AuthDao } from "app/dao/auth";
 
 import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/side-tab.css";
+import styles from "~/styles/side-tab.module.css";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: styles }];
+// };
 
 export const SideTab: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   return (
-    <nav className="side-tab-styled">
+    <nav className={styles.side_tab_styled}>
       <Logo />
 
-      <div className="side-tab-body">
-        <ul className="nav-list">
-          <li className="nav-item nested">
+      <div className={styles.side_tab_body}>
+        <ul className={styles.nav_list}>
+          <li className={`${styles.nav_item} ${styles.nested}`}>
             <div>
               <span>
                 <svg>
@@ -36,8 +36,8 @@ export const SideTab: React.FC = () => {
               </NavLink>
             </div>
 
-            <div className="sub-nav-list">
-              <span className="sub-nav-item">
+            <div className={styles.sub_nav_list}>
+              <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
                   to="/dashboard/courses"
@@ -48,7 +48,7 @@ export const SideTab: React.FC = () => {
                   my courses
                 </Link>
               </span>
-              <span className="sub-nav-item">
+              <span className={styles.sub_nav_item}>
                 <span></span>{" "}
                 <Link
                   to="dashboard/assessments"
@@ -61,22 +61,24 @@ export const SideTab: React.FC = () => {
                   assessments
                 </Link>
               </span>
-              <span className="sub-nav-item">
+              <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
                   to="/dashboard"
-                  className={location.pathname === "/dashboard" ? "active" : ""}
+                  className={
+                    location.pathname === "/dashboard" ? styles.active : ""
+                  }
                 >
                   profile
                 </Link>
               </span>
-              {/* <span className="sub-nav-item">
+              {/* <span className={styles.sub_nav_item}>
                 <span></span> <a href="">some other item</a>
               </span> */}
             </div>
           </li>
 
-          <li className="nav-item">
+          <li className={styles.nav_item}>
             <div>
               <span>
                 <svg>
@@ -85,14 +87,16 @@ export const SideTab: React.FC = () => {
               </span>
               <Link
                 to="/courses"
-                className={location.pathname === "/courses" ? "active" : ""}
+                className={
+                  location.pathname === "/courses" ? styles.active : ""
+                }
               >
                 All Courses
               </Link>
             </div>
           </li>
 
-          <li className="nav-item">
+          <li className={styles.nav_item}>
             <div>
               <span>
                 <svg>
@@ -101,7 +105,7 @@ export const SideTab: React.FC = () => {
               </span>
               <Link
                 to="/activities"
-                className={location.pathname === "/activities" ? "active" : ""}
+                className={location.pathname === "/activities" ? styles.active : ""}
               >
                 Activities
               </Link>
@@ -109,7 +113,7 @@ export const SideTab: React.FC = () => {
           </li>
         </ul>
 
-        <div className="side-tab-cta-div">
+        <div className={styles.side_tab_cta_div}>
           <button
             onMouseDown={() => {
               if (AuthDao.isAuthenticated) {
@@ -131,12 +135,12 @@ export const SideTab: React.FC = () => {
           </button>
         </div>
 
-        <div className="side-tab-notif-box">
-          <p className="notif-text">
+        <div className={styles.side_tab_notif_box}>
+          <p className={styles.notif_text}>
             Explore Other Courses to expand on your knowlege
           </p>
 
-          <button className="notif-box-cta">explore</button>
+          <button className={styles.notif_box_cta}>explore</button>
         </div>
       </div>
     </nav>

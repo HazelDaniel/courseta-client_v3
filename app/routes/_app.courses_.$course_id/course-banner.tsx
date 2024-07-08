@@ -2,12 +2,12 @@ import { useCallback } from "react";
 import { CourseEntryType } from "~/types";
 import { convertSecondsToHms } from "~/utils/conversion";
 
-import styles from "~/styles/course-banner.css";
-import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/course-banner.module.css";
+// import { LinksFunction } from "@remix-run/node";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: styles }];
+// };
 
 export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
   course,
@@ -18,16 +18,16 @@ export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
   }, [course.duration]);
 
   return (
-    <div className="course-banner-styled">
+    <div className={styles.course_banner_styled}>
       <img
         src={course.imageUrl}
         alt="the course banner image"
-        className="banner-image"
+        className={styles.banner_image}
       />
-      <h3 className="course-creator-name-text">Courseta Edtech's</h3>
-      <h2 className="course-banner-title">{course.title}</h2>
-      <div className="course-banner-stat-div">
-        <div className="stat-part">
+      <h3 className={styles.course_creator_name_text}>Courseta Edtech's</h3>
+      <h2 className={styles.course_banner_title}>{course.title}</h2>
+      <div className={styles.course_banner_stat_div}>
+        <div className={styles.stat_part}>
           <span>
             <svg>
               <use xlinkHref="#levels"></use>
@@ -36,7 +36,7 @@ export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
           <p>Beginners</p>
         </div>
 
-        <div className="stat-part">
+        <div className={styles.stat_part}>
           <span>
             <svg>
               <use xlinkHref="#clock"></use>
@@ -45,7 +45,7 @@ export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
           <p>{courseDurationString()}</p>
         </div>
 
-        <div className="stat-part">
+        <div className={styles.stat_part}>
           <span>
             <svg>
               <use xlinkHref="#star-filled"></use>
@@ -56,7 +56,7 @@ export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
           </p>
         </div>
       </div>
-      <button className="course-banner-cta">enroll</button>
+      <button className={styles.course_banner_cta}>enroll</button>
     </div>
   );
 };
