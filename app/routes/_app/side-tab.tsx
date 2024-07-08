@@ -29,7 +29,9 @@ export const SideTab: React.FC = () => {
               <NavLink
                 to="/dashboard"
                 className={
-                  location.pathname.startsWith("/dashboard") ? "active" : ""
+                  location.pathname.startsWith("/dashboard")
+                    ? styles.active
+                    : ""
                 }
               >
                 Dashboard
@@ -42,7 +44,9 @@ export const SideTab: React.FC = () => {
                 <Link
                   to="/dashboard/courses"
                   className={
-                    location.pathname === "/dashboard/courses" ? "active" : ""
+                    location.pathname === "/dashboard/courses"
+                      ? styles.active
+                      : ""
                   }
                 >
                   my courses
@@ -51,10 +55,10 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>{" "}
                 <Link
-                  to="dashboard/assessments"
+                  to="dashboard/assessment-results"
                   className={
-                    location.pathname === "/dashboard/assessments"
-                      ? "active"
+                    location.pathname === "/dashboard/assessment-results"
+                      ? styles.active
                       : ""
                   }
                 >
@@ -105,7 +109,9 @@ export const SideTab: React.FC = () => {
               </span>
               <Link
                 to="/activities"
-                className={location.pathname === "/activities" ? styles.active : ""}
+                className={
+                  location.pathname === "/activities" ? styles.active : ""
+                }
               >
                 Activities
               </Link>
