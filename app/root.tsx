@@ -4,6 +4,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  isRouteErrorResponse,
   json,
   useRouteError,
 } from "@remix-run/react";
@@ -19,7 +20,7 @@ import axios from "axios";
 import { BASE_URL } from "./config/base";
 import { transformUserProfile } from "./transformers/users";
 import "~/styles/root.css";
-
+import { NotFound } from "./components/not-found";
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   try {
@@ -525,12 +526,13 @@ export function ErrorBoundary() {
   return (
     <html>
       <head>
-        <title>Oh no!</title>
+        <title>Oops!</title>
         <Meta />
         <Links />
       </head>
       <body>
-        {/* add the UI you want your users to see */}
+        {/* <NotFound /> */}
+        <center>something went wrong! {(error as Error).message}</center>
         <Scripts />
       </body>
     </html>
