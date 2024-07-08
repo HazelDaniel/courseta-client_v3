@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { Logo } from "~/components/logo";
 import { AuthDao } from "~/dao/auth";
+import { useSearchParams } from "@remix-run/react";
 
 // import { LinksFunction } from "@remix-run/node";
 import styles from "~/styles/auth.module.css";
@@ -79,7 +80,7 @@ export const SignUpForm: React.FC = () => {
         <input type="email" name="email" id="auth-email" />
       </div>
 
-      <div className="input_wrapper breaker">
+      <div className={`${styles.input_wrapper} ${styles.breaker}`}>
         <label htmlFor="auth-phone">Phone</label>
         <input type="tel" name="phone" id="auth-phone" />
       </div>
@@ -102,13 +103,38 @@ export const SignUpForm: React.FC = () => {
   );
 };
 
+export const AuthLink: React.FC<{
+  to: string;
+  text: string;
+  param?: PossibleAuthTypes;
+}> = ({ to, text, param }) => {
+  const [_1, setSearchParams] = useSearchParams();
+  const paramsUrl = new URLSearchParams();
+  return (
+    <Link
+      to={to}
+      onClick={(e) => {
+        e.preventDefault();
+        if (param) {
+          paramsUrl.set("type", param);
+          setSearchParams(paramsUrl, { replace: true });
+        }
+      }}
+    >
+      {text}
+    </Link>
+  );
+};
+
 type PossibleAuthTypes = "sign_in" | "sign_up";
 
 export const Auth: React.FC = () => {
   const location = useLocation();
-  const locationSearch = new URLSearchParams(location.search);
-  const authType: PossibleAuthTypes = (locationSearch.get("type") ||
-    "sign_up") as PossibleAuthTypes;
+  const [searchParams] = useSearchParams();
+  const authType: PossibleAuthTypes = searchParams.get(
+    "type"
+  ) as PossibleAuthTypes;
+
   return (
     <div className={styles.auth_styled}>
       <div className={styles.auth_content_wrapper}>
@@ -129,47 +155,56 @@ export const Auth: React.FC = () => {
               <svg>
                 <use xlinkHref="#google"></use>
               </svg>
-              <Link to={`${location.pathname}${location.search}`}></Link>
+              <AuthLink
+                to={`${location.pathname}${location.search}`}
+                text=""
+              ></AuthLink>
             </li>
 
             <li>
               <svg>
                 <use xlinkHref="#meta"></use>
               </svg>
-              <Link to={`${location.pathname}${location.search}`}></Link>
+              <AuthLink
+                to={`${location.pathname}${location.search}`}
+                text=""
+              ></AuthLink>
             </li>
 
             <li>
               <svg>
                 <use xlinkHref="#linkedin"></use>
               </svg>
-              <Link to={`${location.pathname}${location.search}`}></Link>
+              <AuthLink
+                to={`${location.pathname}${location.search}`}
+                text=""
+              ></AuthLink>
             </li>
 
             <li>
               <svg>
                 <use xlinkHref="#github"></use>
               </svg>
-              <Link to={`${location.pathname}${location.search}`}></Link>
+              <AuthLink
+                to={`${location.pathname}${location.search}`}
+                text=""
+              ></AuthLink>
             </li>
           </ul>
 
           {authType === "sign_up" ? (
             <div className={styles.auth_optional_redirect_area}>
               <span>already have an account?</span>{" "}
-              <Link to="/auth?type=login">login</Link>
+              <AuthLink to="/auth?type=sign_in" text="login" param="sign_in" />
             </div>
           ) : (
             <div className={styles.auth_optional_redirect_area}>
               <span>don't have an account?</span>
-              <a
-                href=""
-                onClick={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                }}
-              >
-                sign up
-              </a>
+              <AuthLink
+                to="/auth?type=sign_up"
+                text="sign up"
+                param="sign_up"
+              />
             </div>
           )}
         </div>
@@ -183,7 +218,7 @@ type AuthResolveType = {
   access: string;
 };
 
-// TODO: don't forget to add form validation logic 
+// TODO: don't forget to add form validation logic
 export const action: ActionFunction = async (args) => {
   const { request } = args;
   const requestBody = await request.json();
@@ -228,6 +263,5 @@ export const action: ActionFunction = async (args) => {
   console.log(" request  body is ", requestBody);
   return json({});
 };
-
 
 export default Auth;
