@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
 import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/logo.css";
+import styles from "~/styles/logo.module.css";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+// return [{ rel: "stylesheet", href: styles }];
+//   return [{ rel: "stylesheet", href: "/styles/logo.css" }];
+// };
 
 export const Logo: React.FC = () => {
   return (
-    <div className="logo-container logo-root-parent">
-      <span className="logo-div">
+    <div className={`${styles.logo_container} ${styles.logo_root_parent}`}>
+      <span className={styles.logo_div}>
         <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_218_1780)">
             <circle cx="18.4722" cy="16.7213" r="9.47541" fill="#3C4442" />

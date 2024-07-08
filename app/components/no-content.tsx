@@ -1,6 +1,6 @@
 export const NoContent: React.FC<{ text: string }> = ({ text }) => {
   return (
-    <div className="no-content">
+    <div className="no_content">
       <span>
         <svg
           version="1.1"

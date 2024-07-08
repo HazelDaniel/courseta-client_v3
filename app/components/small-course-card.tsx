@@ -2,15 +2,8 @@ import { Link, useNavigate } from "@remix-run/react";
 import type { CourseEntryType } from "~/types";
 import { useEffect, useRef } from "react";
 import { LinksFunction } from "@remix-run/node";
-import smallCourseCardStyles from "~/styles/small-course-card.css";
-import countdownCircleStyles from "~/styles/countdown-circle.css";
-
-export const links: LinksFunction = () => {
-  return [
-    { rel: "stylesheet", href: smallCourseCardStyles },
-    { rel: "stylesheet", href: countdownCircleStyles },
-  ];
-};
+import smallCourseCardStyles from "~/styles/small-course-card.module.css";
+import countdownCircleStyles from "~/styles/countdown-circle.module.css";
 
 export const StaticProgress: React.FC<{ entry: CourseEntryType }> = ({
   entry,
@@ -37,12 +30,14 @@ export const StaticProgress: React.FC<{ entry: CourseEntryType }> = ({
   }, [progressRef]);
 
   return (
-    <div className="countdown-circle-styled course-entry-progress">
-      <div className="skill">
+    <div
+      className={`${countdownCircleStyles.countdown_circle_styled} ${countdownCircleStyles.course_entry_progress}`}
+    >
+      <div className={countdownCircleStyles.skill}>
         <svg>
           <circle cx="15" cy="15" r="50%"></circle>
           <circle
-            className="progress"
+            className={countdownCircleStyles.progress}
             cx="15"
             cy="15"
             r="50%"
@@ -52,7 +47,7 @@ export const StaticProgress: React.FC<{ entry: CourseEntryType }> = ({
           ></circle>
         </svg>
         <span
-          className="data-progress"
+          className={countdownCircleStyles.data_progress}
           data-value={entry.progress}
           ref={textRef}
         >
@@ -70,27 +65,34 @@ export const SmallCourseCard: React.FC<{
 }> = ({ entry, withCTA, variant }) => {
   const navigate = useNavigate();
   return (
-    <li className={`small-course-card-styled course-card-wrapper ${variant}`}>
-      <div className="course-card-small">
-        <div className="top">
+    <li
+      className={`${smallCourseCardStyles.small_course_card_styled} ${smallCourseCardStyles.course_card_wrapper} ${smallCourseCardStyles[variant]}`}
+    >
+      <div className={smallCourseCardStyles.course_card_small}>
+        <div className={smallCourseCardStyles.top}>
           <img
             src={entry.imageUrl}
             alt="image representing a course card in a list of courses"
           />
           {!withCTA ? <Link to={`/courses/${entry.id}`}></Link> : null}
         </div>
-        <div className="bottom">
-          <p className="card-bottom-text">{entry.title}</p>
+        <div className={smallCourseCardStyles.bottom}>
+          <p className={smallCourseCardStyles.card_bottom_text}>
+            {entry.title}
+          </p>
           {!withCTA ? (
-            <div className="course-circle-progress-wrapper">
+            <div
+              className={smallCourseCardStyles.course_circle_progress_wrapper}
+            >
               <StaticProgress entry={entry} />
             </div>
           ) : null}
-          <div className="course-info-cta-area">
+          <div className={smallCourseCardStyles.course_info_cta_area}>
             <p>{entry.lessonCount} lessons</p>
             {withCTA ? (
               <button
                 onClick={() => {
+                  console.log("some button is clicked");
                   navigate(`/courses/${entry.id}`);
                 }}
               >

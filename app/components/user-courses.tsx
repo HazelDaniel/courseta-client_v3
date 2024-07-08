@@ -3,25 +3,20 @@ import { SmallCourseCard } from "./small-course-card";
 import { CourseFilter } from "../components/course-filter";
 import { NoContent } from "./no-content";
 
-import { LinksFunction } from "@remix-run/node";
-import userCoursesStyles from "~/styles/user-courses.css";
-
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: userCoursesStyles }];
-};
+import userCoursesStyles from "~/styles/user-courses.module.css";
 
 export const UserCourses: React.FC<{
   isGeneric: boolean;
   courses: CourseEntryType[];
 }> = ({ isGeneric, courses }) => {
   return (
-    <section className="user-courses-styled">
-      <div className="courses-top">
+    <section className={userCoursesStyles.user_courses_styled}>
+      <div className={userCoursesStyles.courses_top}>
         <h2>{isGeneric ? "All Courses" : "My Courses"}</h2>
         {isGeneric ? <CourseFilter /> : null}
       </div>
-      <div className="courses-bottom">
-        <ul className="courses-list-container">
+      <div className={userCoursesStyles.courses_bottom}>
+        <ul className={userCoursesStyles.courses_list_container}>
           {courses.length ? (
             courses.map((entry) => {
               return (
@@ -38,7 +33,7 @@ export const UserCourses: React.FC<{
           )}
         </ul>
 
-        {/* <div className="courses-pagination-area">
+        {/* <div className="courses_pagination_area">
           <Pagination itemsPerPage={5} key={1}/>
         </div> */}
       </div>

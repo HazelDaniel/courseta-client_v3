@@ -2,11 +2,12 @@ import { useState } from "react";
 import { CourseFilterType } from "../types";
 
 import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/course-filter-select.css";
+import styles from "~/styles/course-filter-select.module.css";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+// return [{ rel: "stylesheet", href: styles }];
+//   return [{ rel: "stylesheet", href: "/styles/course-filter-select.css" }];
+// };
 
 export const CourseFilterSelect: React.FC<{ data: CourseFilterType }> = ({
   data,
@@ -17,12 +18,12 @@ export const CourseFilterSelect: React.FC<{ data: CourseFilterType }> = ({
   );
 
   return (
-    <li className="course-filter-select-styled">
-      <h2 className="filter-title">{data.filterTitle}</h2>
+    <li className={styles.course_filter_select_styled}>
+      <h2>{data.filterTitle}</h2>
 
-      <div className="filter-select">
+      <div className={styles.filter_select}>
         <div
-          className="filter-select-display"
+          className={styles.filter_select_display}
           onMouseDown={() => {
             if (toggleState === "collapsed") {
               setToggleState("expanded");
@@ -32,7 +33,7 @@ export const CourseFilterSelect: React.FC<{ data: CourseFilterType }> = ({
           }}
         >
           <p>{filterState.options[filterState.selected].text}</p>
-          <span className={toggleState === "collapsed" ? "flipped" : ""}>
+          <span className={toggleState === "collapsed" ? styles.flipped : ""}>
             <svg
               viewBox="0 0 16 9"
               fill="none"
@@ -48,10 +49,13 @@ export const CourseFilterSelect: React.FC<{ data: CourseFilterType }> = ({
           </span>
         </div>
 
-        <form action="" className={toggleState}>
+        <form action="" className={styles[toggleState]}>
           {filterState.options.map((entry) => {
             return (
-              <div className="courses-filter-input-wrapper" key={entry.id}>
+              <div
+                className={styles.courses_filter_input_wrapper}
+                key={entry.id}
+              >
                 <label htmlFor={`${filterState.filterName}${entry.id}`}>
                   {entry.text}
                 </label>
@@ -59,7 +63,9 @@ export const CourseFilterSelect: React.FC<{ data: CourseFilterType }> = ({
                   type="radio"
                   name={filterState.filterName}
                   id={`${filterState.filterName}${entry.id}`}
-                  className={entry.id === filterState.selected ? "active" : ""}
+                  className={
+                    entry.id === filterState.selected ? styles.active : ""
+                  }
                   onChange={(event: React.FormEvent<HTMLInputElement>) => {
                     if (!event.currentTarget.checked) return;
                     setFilterState({ ...filterState, selected: entry.id });

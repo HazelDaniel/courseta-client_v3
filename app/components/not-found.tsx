@@ -1,14 +1,20 @@
 import { Link } from "@remix-run/react";
 import { Logo } from "./logo";
 
+// import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/not-found.module.css";
+// export const links: LinksFunction = () => {
+//   return [{ rel: "stylesheet", href: styles }];
+// };
+
 export const NotFound: React.FC = () => {
   return (
-    <div className="not-found-styled">
-      <div className="_404-content-area">
-        <div className="_404-logo-parent">
+    <div className={styles.not_found_styled}>
+      <div className={styles._404_content_area}>
+        <div className={styles._404_logo_parent}>
           <Logo />
         </div>
-        <div className="_404-icon-parent">
+        <div className={styles._404_icon_parent}>
           <svg
             viewBox="0 0 124 46"
             fill="none"
@@ -29,7 +35,7 @@ export const NotFound: React.FC = () => {
           </svg>
         </div>
         <span></span>
-        <div className="_404-text-area">
+        <div className={styles._404_text_area}>
           <p>was this a mistake?</p>
           <Link to={".."}>return home</Link>
         </div>

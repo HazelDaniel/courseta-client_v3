@@ -1,11 +1,12 @@
 import { AnnouncementsData } from "~/data/announcement-data";
 import type { AnnouncementGroupType } from "~/types";
-import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/announcement-tab.css";
+// import { LinksFunction } from "@remix-run/node";
+import styles from "~/styles/announcement-tab.module.css";
 
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+// export const links: LinksFunction = () => {
+// return [{ rel: "stylesheet", href: styles }];
+//   return [{ rel: "stylesheet", href: "/styles/announcement-tab.css" }];
+// };
 
 const computeTimeWithMeridian = (dateString: string) => {
   const dateComputed = new Date(dateString);
@@ -27,7 +28,7 @@ export const AnnouncementTabList: React.FC<{ data: AnnouncementGroupType }> = ({
 
   return (
     <>
-      <div className="announcement-tab-separator">
+      <div className={styles.announcement_tab_separator}>
         <h3>
           {timeDeltaHours <= 24
             ? "TODAY"
@@ -38,17 +39,17 @@ export const AnnouncementTabList: React.FC<{ data: AnnouncementGroupType }> = ({
         <span></span>
       </div>
 
-      <ul className="at-item-list">
+      <ul className={styles.at_item_list}>
         {data.announcements.map((entry, i) => {
           return (
-            <li className="announcement-tab-item" key={i}>
-              <span className={`ati-badge ${entry.target}`}>
+            <li className={styles.announcement_tab_item} key={i}>
+              <span className={`${styles.ati_badge} ${styles[entry.target]}`}>
                 {" "}
                 {entry.target}{" "}
               </span>
-              <div className="ati-body">
+              <div className={styles.ati_body}>
                 <p>{entry.title}</p>
-                <div className="ati-expand-cta" tabIndex={0}>
+                <div className={styles.ati_expand_cta} tabIndex={0}>
                   <span>
                     <svg>
                       <use xlinkHref="#caret-right"></use>
@@ -56,7 +57,7 @@ export const AnnouncementTabList: React.FC<{ data: AnnouncementGroupType }> = ({
                   </span>
                 </div>
               </div>
-              <div className="ati-time-area">
+              <div className={styles.ati_time_area}>
                 {computeTimeWithMeridian(entry.dateDelivered)}
               </div>
             </li>
@@ -70,12 +71,12 @@ export const AnnouncementTabList: React.FC<{ data: AnnouncementGroupType }> = ({
 export const AnnouncementTab: React.FC = () => {
   console.log("rendering .announcement tab..");
   return (
-    <div className="announcement-tab-styled">
-      <div className="at-top">
+    <div className={styles.announcement_tab_styled}>
+      <div className={styles.at_top}>
         <h2>Announcements</h2>
         <button>view all</button>
       </div>
-      <div className="at-bottom">
+      <div className={styles.at_bottom}>
         {AnnouncementsData.map((entry, i) => {
           return <AnnouncementTabList data={entry} key={i} />;
         })}

@@ -2,23 +2,18 @@ import { useState } from "react";
 import { filterData } from "~/data/course-filter";
 import { CourseFilterSelect } from "./course-filter-select";
 
-import { LinksFunction } from "@remix-run/node";
-import styles from "~/styles/course-filter.css";
-
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+import styles from "~/styles/course-filter.module.css";
 
 export const CourseFilter: React.FC = () => {
   const [filterVisible, setFilterVisible] = useState<boolean>(false);
 
   return (
-    <div className="course-filter-styled">
-      <div className="filter-controller-area">
+    <div className={styles.course_filter_styled}>
+      <div className={styles.filter_controller_area}>
         <h2>filter results</h2>
-        <div className="filter-controller-parent">
+        <div className={styles.filter_controller_parent}>
           <span
-            className="filter-icon"
+            className={styles.filter_icon}
             tabIndex={0}
             onMouseDown={() => {
               setFilterVisible(!filterVisible);
@@ -29,7 +24,11 @@ export const CourseFilter: React.FC = () => {
             </svg>
           </span>
           <span
-            className={filterVisible ? "chevron-icon" : "chevron-icon flipped"}
+            className={
+              filterVisible
+                ? styles.chevron_icon
+                : `${styles.chevron_icon} ${styles.flipped}`
+            }
           >
             <svg>
               <use xlinkHref="#caret-up"></use>
@@ -39,14 +38,14 @@ export const CourseFilter: React.FC = () => {
       </div>
 
       {filterVisible ? (
-        <div className="filter-select-area">
-          <ul className="filter-select-parent">
+        <div className={styles.filter_select_area}>
+          <ul className={styles.filter_select_parent}>
             {filterData.map((entry, idx) => {
               return <CourseFilterSelect data={entry} key={idx} />;
             })}
           </ul>
           <button
-            className="filter-select-cta"
+            className={styles.filter_select_cta}
             onClick={() => {
               setFilterVisible(false);
             }}
