@@ -122,8 +122,15 @@ export interface LessonAssessmentType {
   id: number;
   completed: boolean;
   questions: QuizType[];
-  lostPoints: number;
+  lostPoints?: number;
   availablePoints: number;
+}
+
+export interface CourseExamType extends LessonAssessmentType {
+  startDate: string;
+  endDate: string;
+  duration: number;
+  description: string;
 }
 export interface CourseLessonType {
   id: number;
@@ -137,6 +144,7 @@ export interface CourseLessonType {
 
 export interface CourseDetailType extends CourseEntryType {
   lessons: Partial<CourseLessonType>[];
+  exam?: CourseExamType;
 }
 
 export interface AuthType {
