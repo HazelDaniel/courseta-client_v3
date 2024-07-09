@@ -1,0 +1,75 @@
+@import "_functions";
+
+.input_form {
+  // @include debug;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: max-content;
+  min-height: 25rem;
+  gap: 3rem;
+  margin-right: auto;
+  margin-bottom: 5rem;
+  &.two-uni-button,
+  &.one-dual-button {
+    width: 85%;
+  }
+  button {
+    font-size: 1.8rem;
+  }
+  .input_form_top {
+    width: max-content;
+    display: flex;
+    gap: 5rem;
+    height: 5rem;
+    align-items: center;
+    p {
+      font-size: 1.8rem;
+      color: var(--text-color);
+    }
+    .input_button_primary {
+      width: 15rem;
+      height: 100%;
+      border-radius: 0.8rem;
+      border: unset;
+      background-color: var(--primary-color);
+      color: var(--bg-color);
+    }
+  }
+  .input_form_bottom {
+    width: 100%;
+    flex: 1;
+    height: max-content;
+    display: flex;
+    gap: 20%;
+    .input_wrapper {
+      width: 50rem;
+      border-radius: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      justify-content: center;
+      gap: 3rem;
+      background-color: var(--active-text-bg);
+      box-shadow: inset 0.1rem 0.1rem 0.5rem var(--bg-color);
+      label {
+        font-size: 2rem;
+        color: #5e5f6063;
+        font-weight: 500;
+      }
+      input {
+        width: 100%;
+        height: 5rem;
+        border-radius: inherit;
+        border: unset;
+        padding: 0.5rem;
+        background-color: var(--bright-color);
+        font-size: 2rem;
+        caret-shape: underscore;
+        &:focus {
+          outline: 1px solid var(--label-color);
+        }
+      }
+    }
+  }
+}

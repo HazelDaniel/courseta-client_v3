@@ -17,6 +17,7 @@
 
 .profile_user_display_area {
   width: 85%;
+  min-width: 40rem;
   margin: 0 auto;
   height: max-content;
   min-height: 15rem;
@@ -40,7 +41,6 @@
       gap: 2rem;
       align-items: flex-end;
       overflow: hidden;
-      // @include debug;
       img {
         height: 15rem;
         width: 13rem;
@@ -136,7 +136,6 @@
     flex: 1;
     height: 100%;
     margin-left: 2rem;
-    // @include debug();
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -155,4 +154,240 @@
       }
     }
   }
+}
+
+.profile_user_stat_area {
+  width: 75%;
+  min-width: 40rem;
+  margin: 0 auto;
+  margin-top: var(--margin_XL);
+  display: none;
+  .profile_user_stats {
+    list-style-type: none;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    li {
+      width: max-content;
+      min-width: 15rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+      font-family: poppins;
+      color: var(--text-color);
+      h2 {
+        font-size: 4rem;
+        font-weight: 500;
+      }
+      p {
+        font-size: 2.5rem;
+        // color: var(--logo-color);
+      }
+      // justify-content: center;
+    }
+  }
+}
+
+.completed_ranks_area {
+  width: 85%;
+  margin: 20rem auto;
+  font-family: Poppins;
+  & > h2 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 10rem;
+    margin-left: -3%;
+  }
+  .completed_ranks_wrapper {
+    margin: 8rem auto;
+    height: 5rem;
+    overflow: visible;
+    .completed_ranks {
+      list-style-type: none;
+      display: flex;
+      justify-content: flex-start;
+      overflow: inherit;
+      width: max-content;
+      position: relative;
+      // overflow: hidden;
+      &::before {
+        width: 100%;
+        height: 0.8rem;
+        border-radius: 2rem;
+        position: absolute;
+        content: "";
+        background-color: var(--bg-color);
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      li {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 50%;
+        display: block;
+        margin-right: 8rem;
+        overflow: visible;
+        transform: scale(0.9);
+        transform-origin: center;
+        border: 2px solid var(--label-color);
+        background-color: var(--bg-color);
+        position: relative;
+        z-index: 2;
+
+        .xp_badge {
+          position: absolute;
+          content: "";
+          display: block;
+          bottom: 0;
+          height: 3.5rem;
+          width: 12rem;
+          border-radius: 4rem;
+          top: -5rem;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: var(--aside-tab-bg) !important;
+          color: #2d6b10;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          p {
+            font-size: 1.8rem;
+            font-weight: 400;
+          }
+        }
+        .rank_badge_icon {
+          position: absolute;
+          content: "";
+          left: 50%;
+          transform: translateX(-50%);
+          height: 5rem;
+          bottom: -8rem;
+        }
+
+        &:last-of-type {
+          margin-right: unset;
+        }
+        div {
+          width: 100%;
+          height: 100%;
+          border-radius: inherit;
+          transform: scale(0.85);
+          transform-origin: inherit;
+          cursor: pointer;
+        }
+        &.filled {
+          border: 2px solid var(--primary-color);
+          background-color: var(--bg-color);
+          position: relative;
+          z-index: 2;
+          &::before {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleX(3.2);
+            transform-origin: left;
+            height: 1rem;
+            width: 100%;
+            background-color: var(--logo-color);
+            border-radius: 0.2rem;
+            content: "";
+            z-index: -1;
+          }
+          div {
+            background-color: var(--logo-color);
+            outline: 0.5rem solid var(--bg-color);
+          }
+        }
+        &.stop {
+          &::before {
+            visibility: hidden;
+          }
+        }
+      }
+    }
+  }
+}
+
+.student_profile_middle_area {
+  width: 100%;
+  margin-top: var(--margin_XL);
+  height: max-content;
+  width: 85%;
+  margin-right: auto;
+  padding-bottom: var(--padding_XL);
+  margin: 0 auto;
+  .profile_bottom_title_div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 8rem;
+    font-family: poppins;
+    margin-bottom: 8rem;
+    width: 70%;
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: var(--text-color);
+      // margin-bottom: 10rem;
+      margin-left: -3%;
+    }
+    button {
+      min-width: 15rem;
+      width: max-content;
+      height: 4rem;
+      color: var(--badge-color);
+      background-color: rgba(231, 233, 124, 0.42);
+      border-radius: 0.5rem;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: unset;
+      &:focus {
+        border: 0.1rem dashed var(--badge-color);
+        outline: unset;
+      }
+      &:hover {
+        border: 0.1rem solid var(--badge-color);
+      }
+    }
+  }
+  .attempted_courses_area {
+    width: 100%;
+    height: max-content;
+    ul {
+      height: inherit;
+      width: inherit;
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5rem;
+      li {
+        width: 100%;
+
+        .course_card {
+          width: 100%;
+          max-width: unset;
+        }
+      }
+    }
+  }
+}
+
+.dashboard_form_input_area {
+  width: 85%;
+  margin: 0 auto;
+  margin-bottom: 30rem;
+  margin-top: 10rem;
+  height: max-content;
+  min-height: 80rem;
+  display: flex;
+  // @include debug;
+  flex-wrap: wrap;
+  flex-basis: 50%;
+  justify-content: space-evenly;
 }
