@@ -20,12 +20,11 @@
   margin: 0 auto;
   height: max-content;
   min-height: 15rem;
-  margin-top: -9rem;
+  margin-top: -12rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 2;
-  @include debug();
 
   .display_area_left {
     height: max-content;
@@ -33,16 +32,15 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    @include debug();
 
     .da_left_top {
       width: max-content;
       height: 20rem;
       display: flex;
       gap: 2rem;
-      align-items: center;
-      @include debug();
+      align-items: flex-end;
       overflow: hidden;
+      // @include debug;
       img {
         height: 15rem;
         width: 13rem;
@@ -54,6 +52,7 @@
         font-size: 2.5rem;
         font-family: Montserrat;
         font-weight: 500;
+        margin-bottom: 8%;
         span {
           font-weight: 400;
           font-size: 2rem;
@@ -63,23 +62,41 @@
       }
     }
     .da_left_bottom {
-      @include debug;
       width: max-content;
       height: 5rem;
       ul {
         width: inherit;
         height: 100%;
         display: flex;
-        gap: 3rem;
+        gap: 15rem;
         list-style-type: disc;
         li {
           height: 100%;
+          width: max-content;
           overflow: hidden;
           display: flex;
           align-items: center;
-          gap: 2rem;
+          gap: 3rem;
           padding-left: 4rem;
-
+          position: relative;
+          p {
+            font-size: 2rem;
+            color: var(--logo-color);
+          }
+          &::before {
+            width: 2rem;
+            height: 2rem;
+            border: 1px solid var(--text-color);
+            content: "";
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 25%;
+            border-radius: 50%;
+            z-index: 2;
+            transform: scale(0.8);
+            transform-origin: center;
+          }
           .user_type_badge {
             width: max-content;
             height: max-content;
@@ -96,8 +113,6 @@
             background-color: var(--aside-tab-bg);
           }
           .user_rank_badge_area {
-            @include debug;
-            // max-width: 8rem;
             display: flex;
             align-items: center;
             font-size: 2rem;
@@ -118,5 +133,26 @@
     }
   }
   .display_area_right {
+    flex: 1;
+    height: 100%;
+    margin-left: 2rem;
+    // @include debug();
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    button {
+      width: max-content;
+      padding: 1rem 3rem;
+      border-radius: 0.8rem;
+      min-width: fit-content;
+      outline: none;
+      border: none;
+      border: 1px solid var(--text-color);
+      background-color: transparent;
+      transition: all 0.2s linear;
+      &:hover {
+        border: 1px dashed var(--text-color);
+      }
+    }
   }
 }
