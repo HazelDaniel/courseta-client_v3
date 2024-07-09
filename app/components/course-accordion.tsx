@@ -181,7 +181,10 @@ export const CourseAccordion: React.FC<{
           );
         })
       ) : (
-        <NoContent text="No Lessons For This Course" />
+        <NoContent
+          text="No Lessons For This Course"
+          variant={"course_outline"}
+        />
       )}
     </div>
   );
