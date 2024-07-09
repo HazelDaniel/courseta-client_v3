@@ -1,7 +1,19 @@
 @import "_functions";
 
+.button_base {
+  height: 100%;
+  border-radius: 0.8rem;
+}
+
+.button_primary {
+  @extend .button_base;
+  width: 15rem;
+  border: unset;
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+}
+
 .input_form {
-  // @include debug;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -23,19 +35,19 @@
     gap: 5rem;
     height: 5rem;
     align-items: center;
+    justify-content: space-between;
+    order: 0;
+    min-width: 40rem;
     p {
       font-size: 1.8rem;
       color: var(--text-color);
+      text-transform: capitalize;
     }
     .input_button_primary {
-      width: 15rem;
-      height: 100%;
-      border-radius: 0.8rem;
-      border: unset;
-      background-color: var(--primary-color);
-      color: var(--bg-color);
+      @extend .button_primary;
     }
   }
+
   .input_form_bottom {
     width: 100%;
     flex: 1;
@@ -56,6 +68,7 @@
         font-size: 2rem;
         color: #5e5f6063;
         font-weight: 500;
+        text-transform: capitalize;
       }
       input {
         width: 100%;
@@ -68,6 +81,47 @@
         caret-shape: underscore;
         &:focus {
           outline: 1px solid var(--label-color);
+        }
+      }
+    }
+  }
+
+  &.one-dual-button {
+    gap: unset;
+    .input_form_bottom {
+      gap: unset;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      .input_wrapper {
+        width: 60%;
+        margin-right: 5rem;
+      }
+    }
+    .dual_buttons {
+      flex: 1;
+      display: flex;
+      gap: 5rem;
+      height: 5rem;
+      align-items: center;
+      justify-content: flex-end;
+      order: 0;
+      p {
+        font-size: 1.8rem;
+        color: var(--text-color);
+      }
+      .input_button_primary {
+        @extend .button_primary;
+      }
+      .input_button_secondary {
+        width: max-content;
+        padding: 1rem 2rem;
+        @extend .button_base;
+        color: var(--text-color);
+        background-color: transparent;
+        border: 1px solid var(--primary-color);
+        &:hover {
+          border: 1px dashed var(--primary-color);
         }
       }
     }
