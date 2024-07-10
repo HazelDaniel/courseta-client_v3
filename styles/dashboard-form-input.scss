@@ -1,13 +1,10 @@
 @import "_functions";
-
-.button_base {
-  height: 100%;
-  border-radius: 0.8rem;
-}
+@import "_components";
 
 .button_primary {
   @extend .button_base;
-  width: 15rem;
+  width: max-content;
+  min-width: 15rem;
   border: unset;
   background-color: var(--primary-color);
   color: var(--bg-color);
@@ -84,6 +81,22 @@
         }
       }
     }
+    .graphic_wrapper {
+      display: flex;
+      justify-content: space-between;
+      width: 50rem;
+      height: 25rem;
+      align-items: center;
+      img {
+        height: 100%;
+        width: 25rem;
+        border-radius: 0.3rem;
+        border: 1px solid var(--text-color);
+        object-fit: cover;
+        aspect-ratio: 1 / 1;
+        position: relative;
+      }
+    }
   }
 
   &.one-dual-button {
@@ -123,6 +136,169 @@
         &:hover {
           border: 1px dashed var(--primary-color);
         }
+      }
+    }
+  }
+}
+
+.graphic_input_form {
+  position: relative;
+}
+
+.input_form_modal {
+  width: 90vw;
+  @media screen and (min-width: 990px) {
+    width: 180vw;
+    max-width: 90rem;
+  }
+  height: 90vh;
+  border-radius: 0.8rem;
+  background-color: var(--bright-color);
+  position: fixed;
+  box-shadow: 0.2rem 0.2rem 1rem var(--active-text-bg);
+  background-color: var(--bright-color);
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  padding: 7rem 3rem;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+  // transform: scale(0);
+  transform-origin: center;
+  transition: all 0.3s linear;
+  &.visible {
+    transform: translate(-50%, -50%);
+  }
+  &_top {
+    display: flex;
+    justify-content: space-between;
+    height: 5rem;
+    align-items: center;
+    margin-bottom: 3rem;
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 500;
+      font-family: Poppins;
+    }
+    span {
+      font-size: 5rem;
+      color: var(--label-color);
+      width: 5rem;
+      height: 5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      --icon-fill-here: var(--label-color);
+      svg {
+        width: 100%;
+        height: 100%;
+        transform: scale(0.6);
+      }
+    }
+  }
+  &_middle {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: max-content;
+    flex-direction: column;
+    &.active {
+      .modal_upload_area {
+        border: 2px solid var(--label-color);
+      }
+    }
+    .modal_upload_area {
+      display: inherit;
+      justify-content: center;
+      flex-direction: column;
+      position: relative;
+      border-radius: 1.2rem;
+      border: 2px dashed var(--label-color);
+      height: 40rem;
+      width: 100%;
+      margin-bottom: 5rem;
+      --icon-fill-here: var(--label-color);
+      // transform: scale(0.9);
+
+      .modal_upload_icon {
+        margin: 0 auto;
+        width: 15rem;
+      }
+      .modal_input_parent {
+        width: 35rem;
+        height: 8rem;
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        position: relative;
+        // align-items: center;
+        div {
+          font-size: 2rem;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: max-content;
+          z-index: 1;
+        }
+        span {
+          width: max-content;
+          position: absolute;
+          right: 5%;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 12rem;
+          z-index: 1;
+          font-size: 2rem;
+          text-decoration: underline;
+        }
+        input {
+          width: 100%;
+          display: block;
+          margin-left: auto;
+          margin-right: 5%;
+          // width: 12rem;
+          width: 100%;
+          z-index: 2;
+          position: relative;
+          align-self: center;
+          opacity: 0;
+        }
+      }
+    }
+    .modal_info_area {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: "Inter", sans-serif;
+      color: var(--label-color);
+      p,
+      span {
+        font-size: 2rem;
+      }
+      span {
+        font-weight: 500;
+      }
+    }
+  }
+  &_bottom {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+    width: 100%;
+    margin-top: 3rem;
+    button {
+      min-height: 5rem;
+      &:first-of-type {
+        @extend .button_base;
+        border: unset;
+      }
+      &:last-of-type {
+        @extend .button_primary;
       }
     }
   }
