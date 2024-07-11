@@ -1,6 +1,10 @@
-export const NoContent: React.FC<{ text: string }> = ({ text }) => {
+import styles from "~/styles/no-content.module.css";
+export const NoContent: React.FC<{
+  text: string;
+  variant: "course_outline" | "courses" | "others";
+}> = ({ text, variant }) => {
   return (
-    <div className="no_content">
+    <div className={`${styles.no_content} ${styles[variant]}`}>
       <span>
         <svg
           version="1.1"
