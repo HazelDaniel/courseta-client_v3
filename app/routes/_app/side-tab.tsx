@@ -27,9 +27,10 @@ export const SideTab: React.FC = () => {
                 </svg>
               </span>
               <NavLink
-                to="/dashboard"
+                to="/students/dashboard"
                 className={
-                  location.pathname.startsWith("/dashboard")
+                  location.pathname.startsWith("/students/dashboard") ||
+                  location.pathname.startsWith("/creators/dashboard")
                     ? styles.active
                     : ""
                 }
@@ -42,9 +43,12 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
-                  to="/dashboard/courses"
+                  to="/students/dashboard/courses"
                   className={
-                    location.pathname === "/dashboard/courses"
+                    location.pathname.startsWith(
+                      "/students/dashboard/courses"
+                    ) ||
+                    location.pathname.startsWith("/creators/dashboard/courses")
                       ? styles.active
                       : ""
                   }
@@ -55,9 +59,12 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>{" "}
                 <Link
-                  to="dashboard/assessment-results"
+                  to="students/dashboard/assessment-results"
                   className={
-                    location.pathname === "/dashboard/assessment-results"
+                    location.pathname ===
+                      "/students/dashboard/assessment-results" ||
+                    location.pathname ===
+                      "/creators/dashboard/assessment-results"
                       ? styles.active
                       : ""
                   }
@@ -68,9 +75,12 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
-                  to="/dashboard"
+                  to="/students/dashboard/profile"
                   className={
-                    location.pathname === "/dashboard" ? styles.active : ""
+                    location.pathname === "/students/dashboard" ||
+                    location.pathname === "/students/dashboard/profile"
+                      ? styles.active
+                      : ""
                   }
                 >
                   profile
