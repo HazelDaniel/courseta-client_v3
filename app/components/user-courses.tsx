@@ -29,7 +29,7 @@ export const UserCourses: React.FC<{
               );
             })
           ) : (
-            <NoContent text="No courses to show" />
+            <NoContent text="No courses to show" variant="courses"/>
           )}
         </ul>
 
