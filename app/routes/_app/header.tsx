@@ -8,9 +8,10 @@ function calcHeaderVisible(location: Location) {
   let res: boolean = true;
   const pathString = location.pathname;
   res =
-    pathString === "/dashboard/courses" ||
-    pathString === "/dashboard/courses/" ||
-    pathString.startsWith("/dashboard/courses?");
+    pathString === "/students/dashboard/courses" ||
+    pathString === "/creators/dashboard/courses" ||
+    pathString.startsWith("/students/dashboard/courses?") ||
+    pathString.startsWith("/creators/dashboard/courses?");
 
   res =
     res ||
@@ -84,7 +85,9 @@ export const Header: React.FC<{
     >
       <div
         className={
-          isVisible ? styles.header_left : `${styles.header_left} hidden`
+          isVisible
+            ? styles.header_left
+            : `${styles.header_left} ${styles.hidden}`
         }
       >
         <HeaderSearchBox dest={`${location.pathname}${location.search}`} />
@@ -108,7 +111,7 @@ export const Header: React.FC<{
               alt="avatar image of the user of the courseta platform"
               className={styles.summary_area_image}
             />
-            <Link to={"/dashboard"}></Link>
+            <Link to={"/students/dashboard"}></Link>
           </div>
         </div>
       </div>
