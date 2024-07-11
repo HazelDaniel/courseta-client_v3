@@ -23,6 +23,7 @@ import styles from "~/styles/course-details.module.css";
 
 import assessmentStyles from "~/styles/assessment.module.css";
 import assessmentFormStyles from "~styles/assessment-form.module.css";
+import courseAccordionStyles from "~/styles/course-accordion.module.css";
 import CountdownCircle from "./countdown-circle";
 import { useGetLinkedResourceKeys } from "~/hooks/use-get-linked-resource-keys";
 
