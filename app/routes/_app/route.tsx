@@ -1,8 +1,10 @@
 import {
   Navigate,
   Outlet,
+  isRouteErrorResponse,
   useLoaderData,
   useLocation,
+  useRouteError,
   useRouteLoaderData,
 } from "@remix-run/react";
 import { Header } from "./header";
@@ -10,6 +12,7 @@ import { SideTab } from "./side-tab";
 import { AuthType } from "~/types";
 
 import styles from "~/styles/root-wrapper.module.css";
+import { NotFound } from "~/components/not-found";
 // import { LinksFunction } from "@remix-run/node";
 
 // export const links: LinksFunction = () => {
@@ -70,7 +73,15 @@ export const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
 };
 
 export const ErrorBoundary: React.FC = () => {
-  return <div>something fucked up happened!</div>;
+  const error = useRouteError();
+  if (isRouteErrorResponse(error)) {
+    switch (error.status) {
+      case 404:
+        return <NotFound />;
+    }
+  } else {
+    return <h2>something went wrong! {(error as Error)?.message}</h2>;
+  }
 };
 
 export default App;
