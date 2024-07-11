@@ -27,25 +27,38 @@ export interface CourseAttemptType {
 }
 
 export interface UserType {
-  avatarURL: string;
-  name: string;
+  avatar: { url: string; updatedAt: string; createdAt: string };
+  firstName: string;
+  lastName: string;
   email: string;
-  isLoggedIn: boolean;
-  role: "creator" | "student";
+  role: "student";
+  createdAt: string;
+  id: string;
 }
 
-export interface ProfileType {
-  user: UserType;
+export interface CreatorUserType extends UserType {
+  role: "creator";
+  creatorPass: string;
+  averageCourseRating: number;
+  courseReviewCount: number;
+  courseCount: number;
+}
+
+export interface CreatorProfileType {
+  user: CreatorUserType;
 }
 
 export interface StudentProfileType extends ProfileType {
+  user: UserType;
   currentRank: RankRange;
   ranks: {
     value: RankRange;
     dateAttained: string;
   }[];
+  points:  number;
   attemptedCourses: CourseAttemptType[] | null;
 }
+export interface CreatorProfileType<T extends UserType> extends ProfileType {}
 
 export interface QuizOptionType {
   correct: boolean;
@@ -157,3 +170,25 @@ export interface DBUserType extends Pick<UserType, "email" | "name"> {
   rank: string;
   avatar: "string";
 }
+
+export interface DashboardCustomInputType {
+  heading: string;
+  namespace: string;
+  form: {
+    intent: string;
+    actions: string[];
+    variant:
+      | "one-uni-button"
+      | "two-uni-button"
+      | "one-dual-button"
+      | "one-graphic-button";
+  };
+  inputs: { name: string; title: string; type: string }[];
+  buttons: { text: string }[];
+  images: {
+    url: string;
+    ref: Partial<React.Ref<HTMLImageElement>>;
+  }[];
+}
+
+export interface DBCreatorType extends DBUserType {}
