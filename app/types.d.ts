@@ -44,11 +44,8 @@ export interface CreatorUserType extends UserType {
   courseCount: number;
 }
 
-export interface CreatorProfileType {
-  user: CreatorUserType;
-}
 
-export interface StudentProfileType extends ProfileType {
+export interface StudentProfileType {
   user: UserType;
   currentRank: RankRange;
   ranks: {
@@ -58,7 +55,16 @@ export interface StudentProfileType extends ProfileType {
   points:  number;
   attemptedCourses: CourseAttemptType[] | null;
 }
-export interface CreatorProfileType<T extends UserType> extends ProfileType {}
+
+export interface CreatorProfileType {
+  user: CreatorUserType;
+}
+
+export interface AuthType {
+  token: string | null;
+  user: Pick<StudentProfileType, "user">["user"] | CreatorProfileType["user"];
+}
+
 
 export interface QuizOptionType {
   correct: boolean;
@@ -73,7 +79,6 @@ export interface QuizType {
   options: QuizOptionType[];
 }
 
-export interface CreatorProfileType extends ProfileType {}
 
 export interface CourseEntryType {
   imageUrl: string;
@@ -160,10 +165,6 @@ export interface CourseDetailType extends CourseEntryType {
   exam?: CourseExamType;
 }
 
-export interface AuthType {
-  token: string | null;
-  user: UserType;
-}
 
 export interface DBUserType extends Pick<UserType, "email" | "name"> {
   points: number;
@@ -171,6 +172,15 @@ export interface DBUserType extends Pick<UserType, "email" | "name"> {
   avatar: "string";
 }
 
+export interface DefaultDashboardFormDataType {
+	first_name?: string;
+	last_name?: string;
+	avatar?: string;
+	email?: string;
+	creator_pass?: string;
+  new_password?: string;
+  old_password?: string;
+}
 export interface DashboardCustomInputType {
   heading: string;
   namespace: string;
@@ -183,7 +193,7 @@ export interface DashboardCustomInputType {
       | "one-dual-button"
       | "one-graphic-button";
   };
-  inputs: { name: string; title: string; type: string }[];
+  inputs: { name: keyof DefaultDashboardFormDataType; title: string; type: string }[];
   buttons: { text: string }[];
   images: {
     url: string;
@@ -192,3 +202,4 @@ export interface DashboardCustomInputType {
 }
 
 export interface DBCreatorType extends DBUserType {}
+
