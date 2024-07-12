@@ -1,0 +1,66 @@
+.student_profile_middle_area {
+  width: 100%;
+  margin-top: var(--margin_XL);
+  height: max-content;
+  width: 85%;
+  margin-right: auto;
+  padding-bottom: var(--padding_XL);
+  margin: 0 auto;
+  .profile_bottom_title_div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 8rem;
+    font-family: poppins;
+    margin-bottom: 8rem;
+    width: 70%;
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: var(--text-color);
+      // margin-bottom: 10rem;
+      margin-left: -3%;
+    }
+    button {
+      min-width: 15rem;
+      width: max-content;
+      height: 4rem;
+      color: var(--badge-color);
+      background-color: rgba(231, 233, 124, 0.42);
+      border-radius: 0.5rem;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: unset;
+      &:focus {
+        border: 0.1rem dashed var(--badge-color);
+        outline: unset;
+      }
+      &:hover {
+        border: 0.1rem solid var(--badge-color);
+      }
+    }
+  }
+  .attempted_courses_area {
+    width: 100%;
+    height: max-content;
+    ul {
+      height: inherit;
+      width: inherit;
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5rem;
+      li {
+        width: 100%;
+
+        .course_card {
+          width: 100%;
+          max-width: unset;
+        }
+      }
+    }
+  }
+}
