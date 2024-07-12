@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   json,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 
@@ -21,21 +22,26 @@ import { BASE_URL } from "./config/base";
 import { transformUserProfile } from "./transformers/users";
 import "~/styles/root.css";
 import { NotFound } from "./components/not-found";
+import { creatorsData, studentsData } from "./data/users";
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   try {
     const { request } = args;
     void request;
     const res: Partial<AuthType> = {};
-    const authToken = AuthDao.getAccessToken;
-    res.token = authToken || null;
-    if (authToken) {
-      const response = await axios.get(`${BASE_URL}/auth/me`);
-      if (response.status === 200) {
-        const user: DBUserType = response.data;
-        res.user = transformUserProfile(user);
-      }
-    }
+    // const authToken = AuthDao.getAccessToken;
+    // res.token = authToken || null;
+    // if (authToken) {
+    //   const response = await axios.get(`${BASE_URL}/auth/me`);
+    //   if (response.status === 200) {
+    //     const user: DBUserType = response.data;
+    //     res.user = transformUserProfile(user);
+    //   }
+    // }
+    res.token = "kjlfklsjfsdfs";
+    res.user = creatorsData[0].user;
+    // res.user = studentsData[1].user;
+    // console.log("response from root is ", res);
     return json(res as AuthType);
   } catch (err) {
     throw new Response("internal server error", { status: 500 });
@@ -64,6 +70,131 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 d="M14.2222 0H1.77778C0.8 0 0 0.8 0 1.77778V14.2222C0 15.2 0.8 16 1.77778 16H14.2222C15.2 16 16 15.2 16 14.2222V1.77778C16 0.8 15.2 0 14.2222 0ZM14.2222 14.2222H1.77778V1.77778H14.2222V14.2222ZM3.55556 6.22222H5.33333V12.4444H3.55556V6.22222ZM7.11111 3.55556H8.88889V12.4444H7.11111V3.55556ZM10.6667 8.88889H12.4444V12.4444H10.6667V8.88889Z"
                 fill="#624C40"
                 fill-opacity="0.67"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="edit">
+            <svg
+              viewBox="0 0 35 35"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.5 5.50888H5C4.20435 5.50888 3.44129 5.82496 2.87868 6.38756C2.31607 6.95017 2 7.71324 2 8.50888V29.5089C2 30.3045 2.31607 31.0676 2.87868 31.6302C3.44129 32.1928 4.20435 32.5089 5 32.5089H26C26.7956 32.5089 27.5587 32.1928 28.1213 31.6302C28.6839 31.0676 29 30.3045 29 29.5089V19.0089M26.75 3.25888C27.3467 2.66215 28.1561 2.3269 29 2.3269C29.8439 2.3269 30.6533 2.66215 31.25 3.25888C31.8467 3.85562 32.182 4.66497 32.182 5.50888C32.182 6.3528 31.8467 7.16215 31.25 7.75888L17 22.0089L11 23.5089L12.5 17.5089L26.75 3.25888Z"
+                stroke="#5E5F60"
+                stroke-opacity="0.62"
+                stroke-width="4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="archive">
+            <svg
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13.6821 23.0088L19.6821 17.0088L17.5821 14.9088L15.1821 17.3088V11.0088H12.1821V17.3088L9.78213 14.9088L7.68213 17.0088L13.6821 23.0088ZM3.18213 8.00879V24.5088H24.1821V8.00879H3.18213ZM3.18213 27.5088C2.35713 27.5088 1.64463 27.2213 1.04463 26.6463C0.469629 26.0463 0.182129 25.3338 0.182129 24.5088V5.79629C0.182129 5.44629 0.232129 5.10879 0.332129 4.78379C0.457129 4.45879 0.632129 4.15879 0.857129 3.88379L2.73213 1.59629C3.00713 1.24629 3.34463 0.983789 3.74463 0.808789C4.16963 0.608789 4.60713 0.508789 5.05713 0.508789H22.3071C22.7571 0.508789 23.1821 0.608789 23.5821 0.808789C24.0071 0.983789 24.3571 1.24629 24.6321 1.59629L26.5071 3.88379C26.7321 4.15879 26.8946 4.45879 26.9946 4.78379C27.1196 5.10879 27.1821 5.44629 27.1821 5.79629V24.5088C27.1821 25.3338 26.8821 26.0463 26.2821 26.6463C25.7071 27.2213 25.0071 27.5088 24.1821 27.5088H3.18213ZM3.78213 5.00879H23.5821L22.3071 3.50879H5.05713L3.78213 5.00879Z"
+                fill="#5E5F60"
+                fill-opacity="0.62"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="trash">
+            <svg
+              viewBox="0 0 22 23"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.18213 5.50879H4.18213M4.18213 5.50879H20.1821M4.18213 5.50879V19.5088C4.18213 20.0392 4.39284 20.5479 4.76792 20.923C5.14299 21.2981 5.6517 21.5088 6.18213 21.5088H16.1821C16.7126 21.5088 17.2213 21.2981 17.5963 20.923C17.9714 20.5479 18.1821 20.0392 18.1821 19.5088V5.50879M7.18213 5.50879V3.50879C7.18213 2.97836 7.39284 2.46965 7.76792 2.09458C8.14299 1.7195 8.6517 1.50879 9.18213 1.50879H13.1821C13.7126 1.50879 14.2213 1.7195 14.5963 2.09458C14.9714 2.46965 15.1821 2.97836 15.1821 3.50879V5.50879"
+                stroke="#5E5F60"
+                stroke-opacity="0.62"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="send">
+            <svg
+              viewBox="0 0 22 26"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16.0746 25.5089L0.182129 14.1646L21.8084 0.672252L16.0746 25.5089ZM14.5348 21.3646L18.1004 5.86684L4.60198 14.2743L8.07846 16.7559L13.8884 11.7675L11.0583 18.883L14.5348 21.3646ZM14.5348 21.3646L9.56839 17.8194L4.60198 14.2743L8.07846 16.7559L11.0583 18.883L14.5348 21.3646Z"
+                fill="#CAC8C8"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="link">
+            <svg
+              viewBox="0 0 13 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5.39376 6.56247C5.6313 6.88035 5.93435 7.14338 6.28237 7.33371C6.63039 7.52404 7.01524 7.63722 7.4108 7.66558C7.80636 7.69394 8.20339 7.63681 8.57495 7.49806C8.94652 7.35932 9.28393 7.14221 9.5643 6.86145L11.2237 5.20042C11.7274 4.67829 12.0062 3.97899 11.9999 3.25313C11.9936 2.52726 11.7027 1.83292 11.19 1.31963C10.6772 0.80635 9.98356 0.515201 9.25842 0.508894C8.53329 0.502586 7.83469 0.781625 7.31309 1.28591L6.36172 2.2327M7.60624 5.45511C7.3687 5.13723 7.06565 4.8742 6.71763 4.68387C6.36961 4.49354 5.98476 4.38036 5.5892 4.352C5.19364 4.32364 4.79661 4.38077 4.42505 4.51951C4.05348 4.65826 3.71607 4.87537 3.4357 5.15612L1.77634 6.81716C1.27256 7.33929 0.993803 8.03859 1.0001 8.76445C1.00641 9.49032 1.29726 10.1847 1.81003 10.6979C2.32279 11.2112 3.01644 11.5024 3.74158 11.5087C4.46671 11.515 5.16531 11.236 5.68691 10.7317L6.63275 9.78488"
+                stroke="#5E5F60"
+                stroke-opacity="0.64"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="delete">
+            <svg
+              viewBox="0 0 20 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.9091 5.57129L10 10.4463M10 5.57129L14.9091 10.4463M17.3636 1.50879H6.72727L1 8.00879L6.72727 14.5088H17.3636C17.7976 14.5088 18.2138 14.3376 18.5207 14.0328C18.8276 13.7281 19 13.3148 19 12.8838V3.13379C19 2.70281 18.8276 2.28949 18.5207 1.98474C18.2138 1.67999 17.7976 1.50879 17.3636 1.50879Z"
+                stroke="#CAC8C8"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="add">
+            <svg
+              viewBox="0 0 23 23"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.625 2.25879V21.5088M2 11.8838H21.25"
+                stroke="var(--icon-color-here)"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </symbol>
+
+          <symbol id="arrow-left">
+            <svg
+              viewBox="0 0 25 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M23.25 12.5088H1.25M1.25 12.5088L12.25 1.50879M1.25 12.5088L12.25 23.5088"
+                stroke="#272727"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               />
             </svg>
           </symbol>
@@ -517,7 +648,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const data = useLoaderData<typeof loader>() as AuthType;
+  return (
+    <Outlet context={{ userID: data?.user?.id, role: data?.user?.role }} />
+  );
 }
 
 export function ErrorBoundary() {
