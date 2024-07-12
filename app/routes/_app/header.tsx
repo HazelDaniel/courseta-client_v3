@@ -1,23 +1,26 @@
 import { Form, Link, Location, useLocation, useSubmit } from "react-router-dom";
 import { useRef } from "react";
-import { UserType } from "~/types";
+import { CreatorUserType, UserType } from "~/types";
+import {useOutletContext} from "@remix-run/react";
 
 import styles from "~/styles/header.module.css";
 
 function calcHeaderVisible(location: Location) {
   let res: boolean = true;
+  const studentsCoursesRegex = /^\/students\/.*\/dashboard\/courses/i;
+  const creatorsCoursesRegex = /^\/creators\/.*\/dashboard\/courses/i;
+  const CoursesRegex = /^\/courses((\/|\?)[^\d]*)?$/i;
+
+  console.log(
+    "courses regex did match ?",
+    CoursesRegex.test(location.pathname)
+  );
   const pathString = location.pathname;
-  res =
-    pathString === "/students/dashboard/courses" ||
-    pathString === "/creators/dashboard/courses" ||
-    pathString.startsWith("/students/dashboard/courses?") ||
-    pathString.startsWith("/creators/dashboard/courses?");
 
   res =
-    res ||
-    pathString === "/courses" ||
-    pathString === "/courses/" ||
-    pathString.startsWith("/courses?");
+    studentsCoursesRegex.test(pathString) ||
+    creatorsCoursesRegex.test(pathString) ||
+    CoursesRegex.test(pathString);
 
   return res;
 }
@@ -43,6 +46,7 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
           {
             action: location.pathname,
             encType: "application/x-www-form-urlencoded",
+            replace: !!existingSearch,
           }
         );
       }}
@@ -70,10 +74,21 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
 
 export const Header: React.FC<{
   variant: "side-tab" | "no-side-tab";
-  user: UserType;
+  user: UserType | CreatorUserType;
 }> = ({ variant, user }) => {
   const location = useLocation();
   const isVisible = calcHeaderVisible(location);
+  const rootContext = useOutletContext() as {
+    userID: string;
+    role: "student" | "creator";
+  };
+
+  const userEntity =
+    rootContext.role === "creator"
+      ? "creators"
+      : rootContext.role === "student"
+      ? "students"
+      : "others";
 
   return (
     <header
@@ -106,12 +121,14 @@ export const Header: React.FC<{
           <div className={styles.profile_image_div}>
             <img
               src={
-                user.avatarURL?.length ? user.avatarURL : "icons/user-icon.svg"
+                user.avatar?.url?.length
+                  ? user.avatar?.url
+                  : "icons/user-icon.svg"
               }
               alt="avatar image of the user of the courseta platform"
               className={styles.summary_area_image}
             />
-            <Link to={"/students/dashboard"}></Link>
+            <Link to={`/${userEntity}/${user.id}/dashboard`}></Link>
           </div>
         </div>
       </div>
