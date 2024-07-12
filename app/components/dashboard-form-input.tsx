@@ -1,4 +1,7 @@
-import { DashboardCustomInputType } from "~/types";
+import {
+  DashboardCustomInputType,
+  DefaultDashboardFormDataType,
+} from "~/types";
 import "~/styles/dashboard-form-input.css";
 import { Form, useParams, useSearchParams } from "@remix-run/react";
 
@@ -154,7 +157,6 @@ export const GraphicInputForm: React.FC<{
             disabled={willDisable}
             onClick={(e) => {
               e.preventDefault();
-              console.log("the states are :");
               console.log(imageState);
             }}
           >
@@ -183,12 +185,15 @@ export const GraphicInputForm: React.FC<{
 
 export const DashboardFormInput: React.FC<{
   data: DashboardCustomInputType;
+  defaultData: DefaultDashboardFormDataType;
   checkMode?: boolean;
-}> = ({ data, checkMode = false }) => {
+}> = ({ data, defaultData, checkMode = false }) => {
   const [action] = data.form.actions;
   const { variant } = data.form;
   const [params] = useSearchParams();
   const mode = params.get("mode");
+  if (data.images[0])
+  data.images[0].url = defaultData.avatar as string;
 
   const willDisable = checkMode ? (mode === "edit" ? false : true) : false;
 
@@ -223,6 +228,7 @@ export const DashboardFormInput: React.FC<{
                 id={`${data.namespace}.${name}`}
                 name={`${data.namespace}.${name}`}
                 disabled={willDisable}
+                defaultValue={`${name === "old_password" || name === "new_password" ? "" : defaultData[name]}`}
               />
             </div>
           );
