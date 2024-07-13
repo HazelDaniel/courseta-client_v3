@@ -1,5 +1,20 @@
+import { LoaderFunction } from "@remix-run/node";
+import { json, useLoaderData, useNavigate } from "@remix-run/react";
+import { courseData } from "~/data/course-list";
 import "~/styles/creators-courses.css";
+import { CourseEntryType } from "~/types";
+
+export const loader: LoaderFunction = () => {
+  const courses: CourseEntryType[] = courseData;
+  return json({ courses });
+};
+
 export const CreatorsCourses: React.FC = () => {
+  const { courses: loadedCourses } = useLoaderData<typeof loader>() as {
+    courses: CourseEntryType[];
+  };
+  const navigate = useNavigate();
+
   return (
     <section className="creator_courses_section">
       <h2 className="section_title">My courses</h2>
@@ -11,7 +26,11 @@ export const CreatorsCourses: React.FC = () => {
           <h3>Tags</h3>
         </div>
         <div className="table_head_right">
-          <button>
+          <button
+            onMouseDown={() => {
+              navigate(`./new`);
+            }}
+          >
             <span>
               <svg>
                 <use xlinkHref="#add"></use>
@@ -23,71 +42,54 @@ export const CreatorsCourses: React.FC = () => {
       </div>
       <ul className="course_table_body">
         {/* has state */}
-        <li className="course_table_entry">
-          <div className="entry_left">
-            <div className="course_avatar">
-              <img
-                src="/images/blockchain.jpg"
-                alt="image of a course entry in a list of courses created by a course creator"
-              />
-              <p>introductory course to blockchain</p>
-            </div>
+        {loadedCourses.map((course) => {
+          return (
+            <li
+              className={`course_table_entry${
+                course.archived ? ` archived` : ""
+              }`}
+            >
+              <div className="entry_left">
+                <div className="course_avatar">
+                  <img
+                    src={course.imageUrl}
+                    alt="image of a course entry in a list of courses created by a course creator"
+                  />
+                  <p>{course.title}</p>
+                </div>
 
-            <p className="date_text">12/20/2024</p>
-            <p className="date_text">15/08/2024</p>
-            <p className="tags">computer, networks, operating systems</p>
-          </div>
-          <div className="entry_right">
-            <button>
-              <svg>
-                <use xlinkHref="#edit"></use>
-              </svg>
-            </button>
-            <button className="archive_button">
-              <svg>
-                <use xlinkHref="#archive"></use>
-              </svg>
-            </button>
-            <button>
-              <svg>
-                <use xlinkHref="#trash"></use>
-              </svg>
-            </button>
-          </div>
-        </li>
-
-        <li className="course_table_entry archived">
-          <div className="entry_left">
-            <div className="course_avatar">
-              <img
-                src="/images/blockchain.jpg"
-                alt="image of a course entry in a list of courses created by a course creator"
-              />
-              <p>introductory course to blockchain</p>
-            </div>
-
-            <p className="date_text">12/20/2024</p>
-            <p className="date_text">15/08/2024</p>
-            <p className="tags">computer, networks, operating systems</p>
-          </div>
-          <div className="entry_right">
-            <button>
-              <svg>
-                <use xlinkHref="#edit"></use>
-              </svg>
-            </button>
-            <button className="archive_button">
-              <svg>
-                <use xlinkHref="#archive"></use>
-              </svg>
-            </button>
-            <button>
-              <svg>
-                <use xlinkHref="#trash"></use>
-              </svg>
-            </button>
-          </div>
-        </li>
+                <p className="date_text">
+                  {new Date(course.createdAt).toDateString()}
+                </p>
+                <p className="date_text">
+                  {new Date(course.updatedAt).toDateString()}
+                </p>
+                <p className="tags">{course.tags.join(", ")}</p>
+              </div>
+              <div className="entry_right">
+                <span
+                  onMouseDown={() => {
+                    navigate(`./${course.id}/edit`);
+                  }}
+                  >
+                  <svg>
+                    <use xlinkHref="#edit"></use>
+                  </svg>
+                </span>
+                <span className="archive_button">
+                  <svg>
+                    <use xlinkHref="#archive"></use>
+                  </svg>
+                </span>
+                <span>
+                  <svg>
+                    <use xlinkHref="#trash"></use>
+                  </svg>
+                </span>
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       <div className="course_table_navigation">
