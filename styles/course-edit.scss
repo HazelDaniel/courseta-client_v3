@@ -1,0 +1,176 @@
+@import "_functions";
+.course_interaction_area {
+  width: 95%;
+  margin: 0 auto;
+  max-width: 200rem;
+  .section_header {
+    font-size: 2.2rem;
+    margin-bottom: var(--margin_L);
+    font-weight: 500;
+  }
+  .interaction_accordion {
+    width: 100%;
+    height: max-content;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 80rem;
+    display: flex;
+    flex-direction: column;
+    .accordion_section {
+      width: 100%;
+      height: max-content;
+      min-height: 12rem;
+      .accordion_head {
+        height: 12rem;
+        width: 100%;
+        display: flex;
+        --icon-color-here: var(--logo-color);
+        justify-content: flex-start;
+        align-items: center;
+        & > * {
+          display: flex;
+          width: 25%;
+          align-items: center;
+          justify-content: center;
+          margin-right: 10%;
+        }
+        h3 {
+          width: 30%;
+          display: block;
+          max-height: 3.2rem;
+          font-size: 2.2rem;
+          text-wrap: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-weight: 500;
+          font-family: Poppins;
+          margin-right: 2%;
+          margin-left: 5rem;
+        }
+        p {
+          font-size: 1.8rem;
+        }
+        span {
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s linear;
+          cursor: pointer;
+          &:first-of-type {
+            margin-right: 20%;
+            transition: all 0.2s linear;
+            position: relative;
+            &::before {
+              position: absolute;
+              display: block;
+              content: "";
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              background-color: var(--active-text-bg);
+              opacity: 0.6;
+              transform: scale(1.5);
+              transform-origin: center;
+              top: 0;
+              opacity: 0;
+            }
+            &:hover {
+              &::before {
+                opacity: 1;
+              }
+            }
+          }
+          &:hover {
+            transform: scale(0.9);
+          }
+          svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            transform: scaleY(-1);
+            position: relative;
+          }
+        }
+      }
+      .accordion_details {
+        width: 100%;
+        height: max-content;
+        overflow: hidden;
+        li {
+          width: 100%;
+          height: 8rem;
+          overflow: hidden;
+          display: flex;
+          padding: 0 var(--padding_L);
+          align-items: center;
+          position: relative;
+          --content-icon-color-here: var(--label-color);
+          &::before {
+            position: absolute;
+            width: 92%;
+            height: 2px;
+            background-color: var(--label-color);
+            content: "";
+            display: block;
+            bottom: 0;
+            left: 2rem;
+          }
+
+          .accordion_content_badge {
+            width: max-content;
+            padding: 0 2rem;
+            height: 3.5rem;
+            justify-self: flex-end;
+            margin-left: auto;
+            margin-right: 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4rem;
+            gap: 0.5rem;
+            background-color: var(--aside-tab-bg);
+            // margin: 0 auto;
+            p {
+              font-weight: 500;
+              text-transform: uppercase;
+            }
+            svg {
+              height: 1.5rem;
+            }
+          }
+          & > svg {
+            margin-right: var(--margin_L);
+          }
+          & > p {
+            font-size: 2rem;
+            flex: 1;
+            font-weight: 500;
+          }
+          svg {
+            width: 2rem;
+            height: 2rem;
+          }
+          & > a {
+            font-size: 2rem;
+            display: flex;
+            width: 12rem;
+            text-decoration: underline;
+            color: var(--label-color);
+            margin-right: 5%;
+            span {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-left: 1rem;
+            }
+          }
+          &>button {
+            border: unset;
+          }
+        }
+      }
+    }
+  }
+}
