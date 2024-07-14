@@ -1,5 +1,11 @@
 import { LoaderFunction } from "@remix-run/node";
-import { Link, json, useLoaderData, useOutletContext } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  json,
+  useLoaderData,
+  useOutletContext,
+} from "@remix-run/react";
 import { CourseContentIcon } from "~/components/course-accordion";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
 import { courseData } from "~/data/course-list";
@@ -69,11 +75,170 @@ export const courseTagsUpdateFormData: DashboardCustomInputType = {
   images: [],
 };
 
+export const courseLessonTitleCreateForm: DashboardCustomInputType = {
+  heading: "",
+  namespace: "add_lesson_title",
+  form: {
+    intent: "add_lesson_title",
+    actions: ["/save"],
+    variant: "one-dual-button",
+  },
+  inputs: [
+    {
+      name: "lessons_title",
+      title: "Lesson Title",
+      type: "text",
+    },
+  ],
+  buttons: [],
+  images: [],
+};
+
 export const loader: LoaderFunction = ({ params }) => {
   const courseID = params["course_id"];
   return json({
     course: courseData.find((el) => el.id === +(courseID as string)),
   });
+};
+
+export const LessonContentAdditionArea: React.FC = () => {
+  return (
+    <section className="lesson_content_addition_area">
+      <div className="lesson_addition_top">
+        <DashboardFormInput
+          data={courseLessonTitleCreateForm}
+          defaultData={{}}
+          asInput
+        />
+        <div className="lesson_addition_cta_area">
+          <button>
+            <span>
+              <svg>
+                <use xlinkHref="#add"></use>
+              </svg>
+            </span>{" "}
+            add content
+          </button>
+
+          <button>
+            <span>
+              <svg>
+                <use xlinkHref="#add"></use>
+              </svg>
+            </span>{" "}
+            add quiz
+          </button>
+        </div>
+      </div>
+      <ul className="content_addition_area">
+        <li className="content_addition_box">
+          <Form>
+            <div className="input_wrapper">
+              <label htmlFor="contenttitle">content title</label>
+              <input
+                type="text"
+                name="content_title"
+                id="contenttitle"
+                defaultValue={"this is the input title"}
+              />
+            </div>
+            <div className="input_wrapper">
+              <label htmlFor="contenturl">content url</label>
+              <input
+                type="url"
+                name="content_url"
+                id="contenturl"
+                defaultValue={"this is the input url"}
+              />
+            </div>
+
+            <div className="radio_options">
+              <p>content type</p>
+              <div className="input_wrapper radio">
+                <div>
+                  <input
+                    type="radio"
+                    name="contenttype"
+                    id="contenttype1"
+                    checked
+                  />
+                  <label htmlFor="contenttype1">text</label>
+                </div>
+
+                <div>
+                  <input
+                    type="radio"
+                    name="contenttype"
+                    id="contenttype2"
+                    checked
+                  />
+                  <label htmlFor="contenttype2">video</label>
+                </div>
+              </div>
+            </div>
+
+            <div className="input_wrapper number">
+              <label htmlFor="contentduration">
+                content duration (seconds)
+              </label>
+              <input
+                type="number"
+                name="content_duration"
+                id="contentduration"
+                defaultValue={0}
+              />
+            </div>
+          </Form>
+        </li>
+      </ul>
+
+      <div className="course_creation_cta_area">
+        <button>cancel</button>
+        <button className="primary">save changes</button>
+      </div>
+    </section>
+  );
+};
+
+export const ExamEditArea: React.FC = () => {
+  return (
+    <>
+      <div className="exam_edit_area">
+        <h2 className="section_header">course exam</h2>
+        <div className="empty_exam_area" style={{ display: "none" }}>
+          <p>no exams for this course yet!</p>{" "}
+          <span>
+            <button>add exam</button>
+          </span>
+        </div>
+        <ul>
+          <li>
+            <span>Started At</span> 15/02/2022
+          </li>
+          <li>
+            <span>Ended At</span> 10/03/2024
+          </li>
+          <li>
+            <span>Pass Score</span> 70%
+          </li>
+          <li>
+            <span>Duration</span> 120s
+          </li>
+        </ul>
+        <div className="exam_edit_cta_area">
+          <Link to={""} className="edit_link">
+            edit exam{" "}
+            <span>
+              <svg>
+                <use xlinkHref="#link"></use>
+              </svg>
+            </span>
+          </Link>
+        </div>
+
+      </div>
+    </>
+  );
 };
 
 export const CourseEditPage: React.FC = () => {
@@ -144,6 +309,20 @@ export const CourseEditPage: React.FC = () => {
                 <svg>
                   <use xlinkHref="#add"></use>
                 </svg>
+                <div className="item_addition_prompt_box prompt_box">
+                  <div className="prompt_box_top">
+                    <span>
+                      <svg>
+                        <use xlinkHref="#cancel"></use>
+                      </svg>
+                    </span>
+                  </div>
+                  <p>Choose an item to add</p>
+                  <div className="prompt_box_ctas">
+                    <button>Content</button>
+                    <button>Quiz</button>
+                  </div>
+                </div>
               </span>
               <span>
                 <svg>
@@ -189,7 +368,7 @@ export const CourseEditPage: React.FC = () => {
                   </svg>
                 </div>
 
-                <Link to={""}>
+                <Link to={""} className="edit_link">
                   edit quiz{" "}
                   <span>
                     <svg>
@@ -204,11 +383,24 @@ export const CourseEditPage: React.FC = () => {
                   </svg>
                 </button>
               </li>
-
             </ul>
           </div>
         </div>
       </section>
+
+      <div className="lesson_add_cta_area">
+        <button>
+          <span>
+            <svg>
+              <use xlinkHref="#add"></use>
+            </svg>
+          </span>{" "}
+          add lesson
+        </button>
+      </div>
+
+      <LessonContentAdditionArea />
+      <ExamEditArea />
     </>
   );
 };
