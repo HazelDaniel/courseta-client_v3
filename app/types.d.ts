@@ -220,6 +220,7 @@ export interface DashboardCustomInputType {
       | "two-uni-button"
       | "one-dual-button"
       | "one-graphic-button"
+      | "one-uni-checkbox"
       | "none";
   };
   inputs: {
