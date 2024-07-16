@@ -1,0 +1,95 @@
+@import "_functions";
+@import "_components";
+
+.quiz_addition_area {
+  width: 95%;
+  margin: 0 auto;
+  .section_header {
+    text-decoration: dashed;
+    outline: 1px solid var(--label-color);
+    font-size: 2.2rem;
+    font-weight: 500;
+  }
+  .quiz_addition_body {
+    width: 100%;
+    height: max-content;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 110rem;
+    margin-top: var(--margin_XL);
+    .input_form_top {
+      display: none !important;
+    }
+    .input_form.none {
+      height: max-content !important;
+      --input-wrapper-width-here: 50rem;
+      --input-child-height-here: 5rem;
+      width: max-content;
+      // min-height: 80vh;
+      &:nth-of-type(2n + 1) {
+        justify-self: flex-end;
+        margin-left: auto;
+        margin-right: 0;
+      }
+      &:has(input[type="date"]) {
+        .input_wrapper {
+          background-color: unset;
+          border: 1px solid var(--text-color);
+          input {
+            border: 1px solid var(--label-color);
+          }
+        }
+      }
+      &:has(input[type="number"]) {
+        .input_wrapper {
+          background-color: unset;
+          border: 1px solid var(--text-color);
+          input {
+            border: 1px solid var(--label-color);
+            width: 12rem;
+          }
+        }
+      }
+      .input_wrapper {
+        @extend ._input_wrapper;
+        height: 100%;
+        // input {
+        // }
+        &.title {
+          --input-wrapper-width-here: 55vw;
+          --input-child-height-here: 5rem;
+          margin-right: auto;
+        }
+        &.description {
+          // width: 30% !important;
+          --input-wrapper-width-here: 35vw;
+          --input-child-height-here: 12rem;
+        }
+        &.tags {
+          --input-wrapper-width-here: 35vw;
+          margin-left: auto;
+        }
+      }
+    }
+    &.quiz {
+      .input_form.none:last-of-type {
+        margin-left: 0 !important;
+      }
+    }
+  }
+  .assessment_creation_cta_area {
+    width: 85%;
+    height: 10rem;
+    margin: var(--margin_L) 0 calc(2 * var(--margin_XL)) var(--margin_L);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    button {
+      height: 5rem !important;
+      &.primary {
+        @extend .button_primary;
+      }
+    }
+  }
+}

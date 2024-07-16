@@ -48,13 +48,10 @@
 
 .course_creation_cta_area {
   width: 85%;
-  height: 10rem;
-  margin: var(--margin_L) 0 calc(2 * var(--margin_XL)) var(--margin_L);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @extend .update_cta_area;
   button {
     height: 5rem !important;
+    @extend .button_base;
     &.primary {
       @extend .button_primary;
     }

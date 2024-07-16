@@ -1,0 +1,178 @@
+@import "_functions";
+@import "_components";
+
+p,h2,h3 {
+  color: var(--text-color);
+}
+.assessment_edit_body {
+  width: 95%;
+  margin: 0 auto;
+  .section_header {
+    @extend ._section_header;
+    text-transform: capitalize;
+    margin-bottom: var(--margin_L);
+  }
+  .edit_area {
+    width: 100%;
+    height: max-content;
+    min-height: 70rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    .assessment_edit_cta_area {
+      @extend .update_cta_area;
+      margin-bottom: unset;
+      margin-left: unset;
+      width: 100%;
+      button {
+        height: 5rem !important;
+        @extend .button_base;
+        width: max-content;
+        padding: 0 1rem;
+        background-color: unset;
+        border: 1px solid var(--primary-color);
+        &.primary {
+          @extend .button_primary;
+        }
+      }
+    }
+    .assessment_table_head {
+      @extend .dashboard_table_head;
+      h3:first-of-type {
+        margin-right: 40%;
+      }
+      margin-top: unset;
+    }
+    .assessment_table_body {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3rem;
+      width: 100%;
+      overflow: hidden;
+      height: max-content;
+      min-height: 20rem;
+      margin-bottom: var(--margin_XL);
+      .assessment_table_entry {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: max-content;
+        border-radius: 1rem;
+        padding: 2rem var(--padding_M);
+        &.current {
+          border: 1px solid var(--label-color);
+          box-shadow: 0.1rem 0.2rem 2rem #00000011;
+          .entry_right span svg {
+            transform: unset !important;
+          }
+          .entry_detail {
+            transform: scaleY(1);
+            height: max-content;
+          }
+        }
+        .entry_main {
+          width: 100%;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          height: 15rem;
+          overflow: hidden;
+          align-items: center;
+          .entry_left {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8%;
+            p {
+              width: fit-content;
+              font-size: 2rem;
+              font-weight: 500;
+              &:first-of-type {
+                width: 60%;
+                font-size: 1.8rem;
+                font-weight: initial;
+              }
+              text-wrap: balance;
+              max-width: 40%;
+              margin-right: 3%;
+            }
+          }
+          .entry_right {
+            width: 30%;
+            max-width: 15rem;
+            display: flex;
+            height: 5rem;
+            overflow: hidden;
+            align-self: center;
+            align-items: center;
+            justify-content: flex-end;
+            --icon-color-here: var(--label-color);
+            span {
+              width: 5rem;
+              height: 5rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              margin-left: var(--margin_L);
+
+              &:last-of-type {
+                svg {
+                  transform: scaleY(-1);
+                  transition: all 0.2s linear;
+                }
+              }
+              svg {
+                width: 3rem;
+                height: 3rem;
+              }
+            }
+          }
+        }
+        .entry_detail {
+          width: 100%;
+          padding-top: var(--padding_L);
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+          transform: scaleY(0);
+          height: 0;
+          & > p {
+            font-size: 2rem;
+            color: var(--label-color);
+            margin-bottom: 2rem;
+          }
+          .answer_detail {
+            width: 80%;
+            min-width: 60rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            --icon-color-here: #fb442b;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            font-family: Inter, "sans-serif";
+            span {
+              width: 3rem;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 2rem;
+              svg {
+                width: 2rem;
+                height: 2rem;
+              }
+            }
+          }
+        }
+      }
+    }
+    .assessment_table_navigation {
+      @extend .table_navigation;
+    }
+  }
+}

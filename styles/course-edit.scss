@@ -1,7 +1,32 @@
 @import "_functions";
-.course_interaction_area {
+@import "_components";
+
+.edit_link {
+  font-size: 2rem;
+  display: flex;
+  width: 12rem;
+  text-decoration: underline;
+  color: var(--label-color);
+  margin-right: 5%;
+  --icon-color-here: var(--label-color);
+  span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 1rem;
+  }
+}
+
+.section_container {
   width: 95%;
   margin: 0 auto;
+}
+.section_header {
+  text-decoration: dashed;
+  outline: 1px solid var(--label-color);
+}
+.course_interaction_area {
+  @extend .section_container;
   max-width: 200rem;
   .section_header {
     font-size: 2.2rem;
@@ -13,7 +38,7 @@
     height: max-content;
     justify-content: flex-start;
     align-items: center;
-    min-height: 80rem;
+    min-height: 50rem;
     display: flex;
     flex-direction: column;
     .accordion_section {
@@ -58,10 +83,18 @@
           justify-content: center;
           transition: all 0.2s linear;
           cursor: pointer;
-          &:first-of-type {
+          &.course_item_add_cta {
             margin-right: 20%;
             transition: all 0.2s linear;
             position: relative;
+            z-index: 2;
+            .item_addition_prompt_box {
+              @extend .prompt_box;
+              transition: all 0.1s linear;
+              &.hidden {
+                transform: translateY(-50%) scale(0);
+              }
+            }
             &::before {
               position: absolute;
               display: block;
@@ -81,9 +114,6 @@
                 opacity: 1;
               }
             }
-          }
-          &:hover {
-            transform: scale(0.9);
           }
           svg {
             width: 100%;
@@ -152,23 +182,198 @@
             width: 2rem;
             height: 2rem;
           }
-          & > a {
-            font-size: 2rem;
-            display: flex;
-            width: 12rem;
-            text-decoration: underline;
-            color: var(--label-color);
-            margin-right: 5%;
-            span {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-left: 1rem;
-            }
-          }
-          &>button {
+
+          & > button {
             border: unset;
           }
+        }
+      }
+    }
+  }
+}
+.lesson_add_cta_area {
+  @extend .section_container;
+  margin-bottom: 10rem;
+  button {
+    width: 20rem;
+    height: 5rem;
+    min-width: 20rem;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    text-transform: capitalize;
+    --icon-color-here: var(--logo-color);
+    span {
+      margin-right: 2rem;
+      height: 3rem;
+      width: 3rem;
+      overflow: hidden;
+      svg {
+        width: 100%;
+        height: 100%;
+        transform: scale(0.8);
+        transform-origin: center;
+      }
+    }
+  }
+}
+
+.lesson_content_addition_area {
+  @extend .section_container;
+  display: flex;
+  flex-direction: column;
+
+  .lesson_addition_top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    .input_form {
+      min-width: 80rem;
+      width: 60% !important;
+      margin-right: unset;
+      .input_form_top {
+        display: none !important;
+      }
+      .input_wrapper {
+        width: 100%;
+      }
+    }
+    .lesson_addition_cta_area {
+      min-width: 40rem;
+      @media screen and (max-width: 800px) {
+        min-width: max-content;
+      }
+      width: 30%;
+      overflow: hidden;
+      height: 8rem;
+      display: flex;
+      gap: 3rem;
+      button {
+        width: 20rem;
+        height: 70%;
+        color: var(--icon-color-here);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: fit-content;
+        &:first-of-type {
+          --icon-color-here: var(--progress-color);
+          border: 1px solid var(--icon-color-here);
+        }
+        &:last-of-type {
+          --icon-color-here: var(--badge-color);
+          border: 1px solid var(--icon-color-here);
+        }
+        span {
+          width: 3rem;
+          height: 3rem;
+          margin-right: var(--margin_M);
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  .content_addition_area {
+    width: 100%;
+    height: max-content;
+    min-height: 30rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8rem;
+    list-style-type: none;
+    margin-bottom: calc(1.5 * var(--margin_XL));
+  }
+}
+
+.exam_edit_area {
+  @extend .section_container;
+  .section_header {
+    font-size: 2.2rem;
+    margin-bottom: var(--margin_L);
+    font-weight: 500;
+  }
+  .empty_exam_area {
+    margin-left: var(--margin_L);
+    height: 20rem;
+    align-items: center;
+    display: flex;
+    gap: 5rem;
+    width: max-content;
+    margin: 0 auto;
+    p {
+      color: var(--label-color);
+      font-size: 2.5rem;
+      font-family: Inter, "sans-serif";
+      &::first-letter {
+        text-transform: uppercase;
+      }
+    }
+  }
+  ul {
+    margin-left: 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    outline: 1px solid var(--label-color);
+    margin-bottom: var(--margin_L);
+    list-style-type: square;
+    width: max-content;
+    padding: 1rem;
+    border-radius: 0.8rem;
+    // list-style-image: ;
+    li {
+      font-size: 2rem;
+      span {
+        margin-right: 10%;
+        font-size: 1.8rem;
+        font-weight: 600;
+      }
+    }
+  }
+  .exam_update_cta_area {
+    height: 5rem;
+    overflow: hidden;
+    margin-bottom: var(--margin_XL);
+    display: flex;
+    justify-content: space-evenly;
+    .edit_link {
+      height: 100%;
+      min-width: fit-content;
+      display: flex;
+      align-items: center;
+      font-size: 2.5rem;
+      // margin: 0 auto;
+      color: var(--text-color);
+      --icon-color-here: var(--text-color);
+      svg {
+        width: 3rem;
+        height: 3rem;
+      }
+    }
+    button {
+      width: max-content;
+      height: 5rem;
+      font-size: 3rem;
+      display: flex;
+      align-items: center;
+      --icon-color-here: #ff472f;
+      color: var(--icon-color-here);
+      // border: 1px solid var(--icon-color-here);
+      border: unset;
+      span {
+        width: 3rem;
+        height: 100%;
+        margin-left: 1rem;
+        svg {
+          width: 100%;
+          height: 100%;
         }
       }
     }
