@@ -16,6 +16,39 @@
   &.one-dual-button {
     width: 85%;
   }
+  &.one-uni-checkbox {
+    all: unset;
+    .input_form_bottom {
+      gap: 3rem;
+    }
+    .input_wrapper:has(input[type="text"]) {
+      min-width: 80%;
+    }
+    .input_wrapper:has(input[type="checkbox"]) {
+      background-color: unset;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: unset;
+      border: unset !important;
+      outline: unset;
+      flex: 1;
+      box-shadow: unset;
+      label {
+        order: 2;
+        width: max-content !important;
+        min-width: fit-content;
+        color: var(--text-color);
+      }
+      input {
+        @include debug;
+        width: 3rem;
+        height: 3rem;
+        margin-right: 3rem;
+        accent-color: var(--primary-color);
+      }
+    }
+  }
   button {
     font-size: 1.8rem;
   }

@@ -7,7 +7,7 @@
     min-width: 80%;
     width: 80%;
   }
-  height: clamp(80vh, 40rem, 100rem);
+  height: clamp(85vh, 40rem, 100rem);
   border-radius: 0.8rem;
   background-color: var(--bright-color);
   position: fixed;
@@ -16,6 +16,7 @@
   z-index: 2;
   top: 50%;
   left: 50%;
+  // transform: translate(-40%, -50%);
   transform: translate(-40%, -50%) scale(0);
   padding: var(--padding_L);
   @media screen and (max-width: 800px) {
@@ -53,7 +54,50 @@
   &_middle {
     width: 100%;
     min-height: 70%;
+    height: 80%;
     overflow-y: auto;
+    h2 {
+      width: 100%;
+      height: 5rem;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      display: flex;
+      font-size: 2rem;
+      font-family: Inter, "sans-serif";
+      font-weight: 500;
+      align-items: center;
+      gap: 30%;
+      button {
+        width: 5rem;
+        height: 5rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        --icon-color-here: var(--text-color);
+        padding: unset;
+        border: unset;
+        svg {
+          width: 3rem;
+          height: 3rem;
+        }
+      }
+    }
+    .content_addition_area {
+      list-style-type: none;
+      height: 40%;
+      min-height: 30rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3rem;
+      background-color: #00000002;
+      border-bottom: 1px solid var(--label-color);
+      padding-bottom: var(--padding_M);
+      // @include debug;
+    }
   }
   &_bottom {
     display: flex;
@@ -66,6 +110,9 @@
       &:first-of-type {
         @extend .button_base;
         border: unset;
+        width: max-content;
+        padding: 1rem 2rem;
+        background-color: unset;
       }
       &:last-of-type {
         @extend .button_primary;
