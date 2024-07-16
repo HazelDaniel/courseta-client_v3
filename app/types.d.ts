@@ -44,7 +44,6 @@ export interface CreatorUserType extends UserType {
   courseCount: number;
 }
 
-
 export interface StudentProfileType {
   user: UserType;
   currentRank: RankRange;
@@ -52,7 +51,7 @@ export interface StudentProfileType {
     value: RankRange;
     dateAttained: string;
   }[];
-  points:  number;
+  points: number;
   attemptedCourses: CourseAttemptType[] | null;
 }
 
@@ -64,7 +63,6 @@ export interface AuthType {
   token: string | null;
   user: Pick<StudentProfileType, "user">["user"] | CreatorProfileType["user"];
 }
-
 
 export interface QuizOptionType {
   correct: boolean;
@@ -79,7 +77,6 @@ export interface QuizType {
   options: QuizOptionType[];
 }
 
-
 export interface CourseEntryType {
   imageUrl: string;
   title: string;
@@ -88,6 +85,10 @@ export interface CourseEntryType {
   id: number;
   description: string;
   duration: number; // in seconds
+  createdAt: string;
+  updatedAt: string;
+  tags: string[];
+  archived?: boolean;
 }
 
 export type CourseListType = CourseEntryType[];
@@ -129,7 +130,7 @@ export interface AssessmentDataType {
   courses: CourseAssessmentType[];
 }
 
-export interface CourseContentType {
+export interface LessonContentType {
   id: number;
   title: string;
   href: string;
@@ -154,10 +155,28 @@ export interface CourseLessonType {
   id: number;
   title: string;
   completed: boolean;
-  contents: CourseContentType[];
+  contents: LessonContentType[];
   assessment: LessonAssessmentType;
   courseTitle: string;
   duration: number;
+}
+
+export interface LessonContentFormType extends Omit<LessonContentType, "id"> {
+  lessonPositionID: number;
+}
+
+export interface QuizFormType {
+  lessonPositionID: number;
+  title: string;
+  passScore: number;
+  description: string;
+}
+
+export interface LessonCreationFormStateType {
+  lessonCount: number;
+  lessons: { title: string; positionID: number; quizCount: number }[];
+  contents: LessonContentFormType[];
+  quizzes: QuizFormType[];
 }
 
 export interface CourseDetailType extends CourseEntryType {
@@ -165,21 +184,30 @@ export interface CourseDetailType extends CourseEntryType {
   exam?: CourseExamType;
 }
 
-
 export interface DBUserType extends Pick<UserType, "email" | "name"> {
   points: number;
   rank: string;
   avatar: "string";
 }
 
-export interface DefaultDashboardFormDataType {
-	first_name?: string;
-	last_name?: string;
-	avatar?: string;
-	email?: string;
-	creator_pass?: string;
+export interface DefaultFormDataType {
+  [props: string]: string | undefined;
+}
+export interface DefaultDashboardFormDataType extends DefaultFormDataType {
+  first_name?: string;
+  last_name?: string;
+  avatar?: string;
+  email?: string;
+  creator_pass?: string;
   new_password?: string;
   old_password?: string;
+}
+
+export interface DefaultCourseFormDataType extends DefaultFormDataType {
+  title?: string;
+  description?: string;
+  tags?: string;
+  avatar_url?: string;
 }
 export interface DashboardCustomInputType {
   heading: string;
@@ -191,9 +219,16 @@ export interface DashboardCustomInputType {
       | "one-uni-button"
       | "two-uni-button"
       | "one-dual-button"
-      | "one-graphic-button";
+      | "one-graphic-button"
+      | "none";
   };
-  inputs: { name: keyof DefaultDashboardFormDataType; title: string; type: string }[];
+  inputs: {
+    name: keyof DefaultDashboardFormDataType;
+    title: string;
+    type: HTMLInputElement["type"] | "textarea";
+    min?: number;
+    max?: number;
+  }[];
   buttons: { text: string }[];
   images: {
     url: string;
@@ -202,4 +237,3 @@ export interface DashboardCustomInputType {
 }
 
 export interface DBCreatorType extends DBUserType {}
-
