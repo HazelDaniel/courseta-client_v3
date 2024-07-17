@@ -1,15 +1,15 @@
 import { Form, Link, Location, useLocation, useSubmit } from "react-router-dom";
 import { useRef } from "react";
 import { CreatorUserType, UserType } from "~/types";
-import {useOutletContext} from "@remix-run/react";
+import { useOutletContext } from "@remix-run/react";
 
 import styles from "~/styles/header.module.css";
 
 function calcHeaderVisible(location: Location) {
   let res: boolean = true;
-  const studentsCoursesRegex = /^\/students\/.*\/dashboard\/courses/i;
-  const creatorsCoursesRegex = /^\/creators\/.*\/dashboard\/courses/i;
-  const CoursesRegex = /^\/courses((\/|\?)[^\d]*)?$/i;
+  const studentsCoursesRegex = /^\/students\/.*\/dashboard\/courses$/i;
+  const creatorsCoursesRegex = /^\/creators\/.*\/dashboard\/courses$/i;
+  const CoursesRegex = /^\/courses((\/|\?)[^\d\/]*)?$/i;
 
   console.log(
     "courses regex did match ?",
