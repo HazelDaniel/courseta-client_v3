@@ -1,4 +1,10 @@
-import { Link, NavLink, useLocation, useNavigate } from "@remix-run/react";
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useOutletContext,
+} from "@remix-run/react";
 import { Logo } from "~/components/logo";
 import { AuthDao } from "app/dao/auth";
 
@@ -12,6 +18,18 @@ import styles from "~/styles/side-tab.module.css";
 export const SideTab: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const rootContext = useOutletContext() as {
+    userID: string;
+    role: "student" | "creator";
+  };
+
+  const userEntity =
+    rootContext.role === "creator"
+      ? "creators"
+      : rootContext.role === "student"
+      ? "students"
+      : "others";
 
   return (
     <nav className={styles.side_tab_styled}>
@@ -27,10 +45,11 @@ export const SideTab: React.FC = () => {
                 </svg>
               </span>
               <NavLink
-                to="/students/dashboard"
+                to={`/${userEntity}/${rootContext.userID}/dashboard`}
                 className={
-                  location.pathname.startsWith("/students/dashboard") ||
-                  location.pathname.startsWith("/creators/dashboard")
+                  /^\/(students|creators)\/.*\/dashboard(\/)?/i.test(
+                    location.pathname
+                  )
                     ? styles.active
                     : ""
                 }
@@ -43,12 +62,11 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
-                  to="/students/dashboard/courses"
+                  to={`/${userEntity}/${rootContext.userID}/dashboard/courses`}
                   className={
-                    location.pathname.startsWith(
-                      "/students/dashboard/courses"
-                    ) ||
-                    location.pathname.startsWith("/creators/dashboard/courses")
+                    /^\/(students|creators)\/.*\/dashboard\/courses$/i.test(
+                      location.pathname
+                    )
                       ? styles.active
                       : ""
                   }
@@ -56,29 +74,33 @@ export const SideTab: React.FC = () => {
                   my courses
                 </Link>
               </span>
-              <span className={styles.sub_nav_item}>
-                <span></span>{" "}
-                <Link
-                  to="students/dashboard/assessment-results"
-                  className={
-                    location.pathname ===
-                      "/students/dashboard/assessment-results" ||
-                    location.pathname ===
-                      "/creators/dashboard/assessment-results"
-                      ? styles.active
-                      : ""
-                  }
-                >
-                  assessments
-                </Link>
-              </span>
+
+              {userEntity === "students" ? (
+                <span className={styles.sub_nav_item}>
+                  <span></span>{" "}
+                  <Link
+                    to={`/${userEntity}/${rootContext.userID}/dashboard/assessment-results`}
+                    className={
+                      /^\/(students|creators)\/.*\/dashboard\/assessment-results/i.test(
+                        location.pathname
+                      )
+                        ? styles.active
+                        : ""
+                    }
+                  >
+                    assessments
+                  </Link>
+                </span>
+              ) : null}
+
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
-                  to="/students/dashboard/profile"
+                  to={`/${userEntity}/${rootContext.userID}/dashboard/profile`}
                   className={
-                    location.pathname === "/students/dashboard" ||
-                    location.pathname === "/students/dashboard/profile"
+                    /^\/(students|creators)\/.*\/dashboard(\/)?$/i.test(
+                      location.pathname
+                    )
                       ? styles.active
                       : ""
                   }
