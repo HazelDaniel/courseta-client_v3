@@ -1,0 +1,154 @@
+@import "_functions";
+.course_reviews_area {
+  // @include debug;
+  border-radius: inherit;
+  min-height: 40rem;
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  .course_reviews_top {
+    height: 50rem;
+    width: 100%;
+    padding: 0 var(--padding_M);
+    padding-top: 8rem;
+    margin-bottom: var(--margin_M);
+    ul {
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5rem;
+      .review_entry {
+        width: 100%;
+        height: 20rem;
+        min-height: 20rem;
+        display: flex;
+        padding: 1rem;
+        gap: 3rem;
+        align-items: flex-start;
+        // @include debug;
+        img {
+          width: 5rem;
+          height: 5rem;
+          overflow: hidden;
+          border-radius: 50%;
+          outline: 2px solid var(--bright-color);
+          outline-offset: 0.5rem;
+        }
+        &_right {
+          // @include debug;
+          flex: 1;
+          height: 100%;
+          .entry_message_top {
+            width: 100%;
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+            margin-bottom: var(--margin_M);
+            h2 {
+              font-size: 2rem;
+              font-weight: 500;
+              font-family: Montserrat;
+            }
+            span {
+              font-size: 1.3rem;
+              color: var(--inactive-text-color);
+            }
+          }
+          .entry_rating_area {
+            // @include debug;
+            height: 2rem;
+            margin-bottom: 1rem;
+            .rating_container {
+              width: max-content;
+              height: 100%;
+              display: flex;
+              gap: 1rem;
+              span {
+                width: 3rem;
+                height: 100%;
+                font-size: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2rem;
+                svg {
+                  height: 100%;
+                  width: 2rem;
+                }
+              }
+            }
+          }
+          p {
+            color: var(--text-color);
+            font-size: 2rem;
+          }
+        }
+      }
+    }
+    // @include debug;
+  }
+  .course_review_create_area {
+    width: 100%;
+    padding: var(--padding_M);
+    height: max-content;
+    min-height: 15rem;
+    display: flex;
+    align-items: flex-start;
+    background-color: var(--bright-color);
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    gap: 5%;
+    img {
+      width: 5rem;
+      height: 5rem;
+      border-radius: 50%;
+      outline: 2px solid var(--badge-color);
+      outline-offset: 1rem;
+    }
+    form {
+      width: 80%;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 5rem;
+        height: 5rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: unset;
+        border: unset;
+        --icon-color-here: var(--badge-color);
+        opacity: 0.8;
+      }
+      textarea {
+        border: unset;
+        outline: unset;
+        max-height: 25rem;
+        max-width: 80rem;
+        width: 100%;
+        min-height: 5rem;
+        min-width: 100%;
+        padding: 0 5rem;
+        padding-top: 2rem;
+        font-family: Montserrat;
+        font-size: 2rem;
+        &::placeholder {
+          font-weight: 600;
+          color: var(--label-color);
+        }
+      }
+    }
+  }
+}

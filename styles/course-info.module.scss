@@ -61,6 +61,9 @@
             position: relative;
             font-size: 1.8rem;
             z-index: 2;
+            &::before {
+              transition: all 0.3s ease-out;
+            }
             span {
               color: var(--primary-color);
               position: relative;
@@ -134,6 +137,54 @@
             flex-direction: column;
             justify-content: center;
             gap: 1rem;
+            position: relative;
+            .reviews_pagination_area {
+              position: absolute;
+              right: 0;
+              top: 0;
+              height: 5rem;
+              overflow: hidden;
+              width: 30%;
+              min-width: 15rem;
+              display: flex;
+              gap: 20%;
+              align-items: center;
+              justify-content: space-between;
+              p {
+                font-size: 2rem;
+                color: var(--logo-color);
+                font-family: Montserrat;
+                font-weight: 500;
+              }
+              .reviews_pagination {
+                width: 12rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 1rem;
+                button {
+                  width: 3rem;
+                  height: 3rem;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  overflow: hidden;
+                  background-color: unset;
+                  border: unset;
+                  outline: unset;
+                  --icon-color-here: var(--text-color);
+                  &:disabled {
+                    --icon-color-here: var(--label-color);
+                  }
+                  svg {
+                    transform: scale(0.9);
+                  }
+                  &:last-of-type > svg {
+                    transform: scale(-0.9, 0.9);
+                  }
+                }
+              }
+            }
             h2 {
               font-size: 2.5rem;
               font-weight: 500;
