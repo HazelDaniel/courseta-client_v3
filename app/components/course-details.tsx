@@ -56,7 +56,7 @@ export const AssessmentForm: React.FC<{
     if (formRef.current) {
       formRef.current.reset();
     }
-  }, [location.search, formRef]);
+  }, [location.pathname, formRef]);
 
   return (
     <Form

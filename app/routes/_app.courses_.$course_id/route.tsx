@@ -49,7 +49,11 @@ export const ErrorBoundary: React.FC = () => {
       case 404:
         return <NotFound />;
       default:
-        return <h2>error fetching exam. {error.data.error}</h2>;
+        return (
+          <h2>
+            error fetching course. {error.data.error} {error.statusText}
+          </h2>
+        );
     }
   } else {
     return <h2>something went wrong! {(error as Error)?.message}</h2>;

@@ -21,7 +21,7 @@ export const Quiz: React.FC<{
                 type="radio"
                 name={`${assessmentID}-${value.id}`}
                 id={`${assessmentID}-${value.id}-${opt.id}`}
-                defaultValue={`${assessmentID}-${value.id}-${opt.id}`}
+                // defaultValue={`${assessmentID}-${value.id}-${opt.id}`}
                 onChange={(e: React.FormEvent) => {
                   if ((e.currentTarget as HTMLInputElement).checked) {
                     console.log(e.currentTarget);

@@ -33,14 +33,6 @@ export const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
       : "side-tab");
 
   const loaderData: AuthType = useRouteLoaderData("root") as AuthType;
-  loaderData.token = "kjlfklsjfsdfs";
-  loaderData.user = {
-    avatarURL: "/illustrations/avatar1.jpg",
-    email: "hazeldaniel856@gmail.com",
-    isLoggedIn: true,
-    name: "daniel emmanuel",
-    role: "student",
-  };
 
   if (!loaderData.token) {
     return <Navigate to={"/auth?type=sign_in"} />;

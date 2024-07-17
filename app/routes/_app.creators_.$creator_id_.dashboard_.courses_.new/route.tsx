@@ -65,46 +65,31 @@ export const courseTagsUpdateFormData: DashboardCustomInputType = {
 
 export const CourseCreationPage: React.FC = () => {
   const contextData = useOutletContext() as { profile: CreatorProfileType };
-  void contextData; // we should use this later for verification of the creator (client side)
+  void contextData; // BUGFIX: undefined because this is not nested under the dashboard route. we should use this later for verification of the creator (client side)
+  console.log("context data is : ", contextData);
   return (
     <>
       <div className="course_creation_area">
         <DashboardFormInput
-          defaultData={
-            {
-              title: "introduction to programming",
-            } as DefaultCourseFormDataType
-          }
+          defaultData={{} as DefaultCourseFormDataType}
           data={courseTitleUpdateFormData}
           asInput
         />
 
         <DashboardFormInput
-          defaultData={
-            {
-              avatar_url: courseImageUpdateFormData.images[0].url,
-            } as DefaultDashboardFormDataType
-          }
+          defaultData={{} as DefaultDashboardFormDataType}
           data={courseImageUpdateFormData}
           asInput
         />
 
         <DashboardFormInput
-          defaultData={
-            {
-              description: "the course description",
-            } as DefaultFormDataType
-          }
+          defaultData={ {} as DefaultFormDataType }
           data={courseDescriptionUpdateFormData}
           asInput
         />
 
         <DashboardFormInput
-          defaultData={
-            {
-              tags: "introduction, programming, blockchain",
-            } as DefaultCourseFormDataType
-          }
+          defaultData={ {} as DefaultCourseFormDataType }
           data={courseTagsUpdateFormData}
           asInput
         />

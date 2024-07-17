@@ -73,6 +73,7 @@ export const CourseStatInfo: React.FC = () => {
               <img
                 src="/logo.svg"
                 alt="avatar image of a course creator on the courseta platform"
+                loading="lazy"
               />
             </div>
           </div>

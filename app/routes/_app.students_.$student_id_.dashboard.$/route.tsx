@@ -31,9 +31,7 @@ export const loader: LoaderFunction = ({ params }) => {
 
 
 export const Dashboard: React.FC = () => {
-  const { profile } = useLoaderData<typeof loader>() as {
-    profile: StudentProfileType;
-  };
+  const { profile } = useLoaderData<typeof loader>() as { profile: StudentProfileType; };
 
   return (
     <DashboardBody profile={profile}/>

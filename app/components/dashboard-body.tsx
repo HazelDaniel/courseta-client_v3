@@ -23,6 +23,7 @@ export const DashboardBody: React.FC<{
       <div className="banner_styled">
         <img
           src="/images/profile-header-bg.svg"
+          loading="lazy"
           alt="generic header image for the courseta platform"
         />
       </div>
