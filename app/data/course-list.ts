@@ -9,6 +9,10 @@ export const courseData: CourseEntryType[] = [
     id: 0,
     description: "Learn the basics of programming languages and concepts.",
     duration: 10000,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
+    archived: true,
   },
   {
     imageUrl: "/images/programming-1.jpg",
@@ -19,6 +23,9 @@ export const courseData: CourseEntryType[] = [
     description:
       "Build upon your programming foundation in this follow-up course.",
     duration: 28080,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
   },
   {
     imageUrl: "/images/sticky-notes-introduction.jpg",
@@ -29,6 +36,10 @@ export const courseData: CourseEntryType[] = [
     description:
       "Master the art of using sticky notes for optimal organization.",
     duration: 25880,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
+    archived: true,
   },
   {
     imageUrl: "/images/computer-networks.jpg",
@@ -38,6 +49,9 @@ export const courseData: CourseEntryType[] = [
     id: 10,
     description: "Explore the fundamentals of programming concepts.",
     duration: 38000,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
   },
   {
     imageUrl: "/images/programming-1.jpg",
@@ -48,6 +62,9 @@ export const courseData: CourseEntryType[] = [
     description:
       "Another introduction to programming course, consider this a refresher.",
     duration: 18060,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
   },
   {
     imageUrl: "/images/building-soft-skills.jpg",
@@ -57,6 +74,10 @@ export const courseData: CourseEntryType[] = [
     id: 12,
     description: "Gain programming knowledge through this introductory course.",
     duration: 18260,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
+    archived: true,
   },
   {
     imageUrl: "/images/computer-networks.jpg",
@@ -66,6 +87,9 @@ export const courseData: CourseEntryType[] = [
     id: 13,
     description: "Learn programming concepts explained for beginners.",
     duration: 48260,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
   },
   {
     imageUrl: "//images/building-soft-skills.jpg",
@@ -75,6 +99,9 @@ export const courseData: CourseEntryType[] = [
     id: 14,
     description: "Deepen your understanding of programming fundamentals.",
     duration: 48290,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
   },
 ];
 
@@ -87,6 +114,9 @@ export const courseDataDetailed: CourseDetailType[] = [
     id: 0,
     description: "Learn the basics of programming languages and concepts.",
     duration: 10000,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
     lessons: [
       {
         id: 3,
@@ -312,6 +342,10 @@ export const courseDataDetailed: CourseDetailType[] = [
     description:
       "Build upon your programming foundation in this follow-up course.",
     duration: 28080,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
+    archived: true,
     lessons: [],
   },
   {
@@ -323,6 +357,9 @@ export const courseDataDetailed: CourseDetailType[] = [
     description:
       "Master the art of using sticky notes for optimal organization.",
     duration: 25880,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
     lessons: [],
   },
   {
@@ -333,6 +370,9 @@ export const courseDataDetailed: CourseDetailType[] = [
     id: 10,
     description: "Explore the fundamentals of programming concepts.",
     duration: 38000,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
     lessons: [],
   },
   {
@@ -344,6 +384,10 @@ export const courseDataDetailed: CourseDetailType[] = [
     description:
       "Another introduction to programming course, consider this a refresher.",
     duration: 18060,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
+    archived: true,
     lessons: [],
   },
   {
@@ -354,6 +398,9 @@ export const courseDataDetailed: CourseDetailType[] = [
     id: 12,
     description: "Gain programming knowledge through this introductory course.",
     duration: 18260,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
     lessons: [],
   },
   {
@@ -364,6 +411,9 @@ export const courseDataDetailed: CourseDetailType[] = [
     id: 13,
     description: "Learn programming concepts explained for beginners.",
     duration: 48260,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
     lessons: [],
   },
   {
@@ -374,6 +424,10 @@ export const courseDataDetailed: CourseDetailType[] = [
     id: 14,
     description: "Deepen your understanding of programming fundamentals.",
     duration: 48290,
+    createdAt: "2022-04-01T12:00:00Z",
+    updatedAt: "2023-06-21T12:00:00Z",
+    tags: ["programming", "introduction"],
+    archived: true,
     lessons: [],
   },
 ];

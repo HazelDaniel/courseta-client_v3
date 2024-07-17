@@ -1,0 +1,60 @@
+import { CourseReviewType } from "~/types";
+
+export const courseReviews: CourseReviewType[] = [
+  {
+    studentEmail: "student1@example.com",
+    studentID: "s12345",
+    studentAvatarURL: "/illustrations/avatar1.jpg",
+    reviewText: "This course was extremely helpful and well-structured.I learned a lot, but some parts were confusing.",
+    rating: 4.5,
+    dateCreated: "2024-07-17T06:57:42.447Z",
+  },
+  {
+    studentEmail: "student3@example.com",
+    studentID: "s11223",
+    studentAvatarURL: "/illustrations/avatar1.jpg",
+    reviewText: "Great content but the instructor was hard to follow.",
+    rating: 3,
+    dateCreated: "2024-06-20T06:57:42.447Z",
+  },
+  {
+    studentEmail: "student4@example.com",
+    studentID: "s44556",
+    studentAvatarURL: "/illustrations/avatar1.jpg",
+    reviewText: "Excellent course, highly recommend it.",
+    rating: 5,
+    dateCreated: "2024-06-22T06:57:42.447Z",
+  },
+  {
+    studentEmail: "student5@example.com",
+    studentID: "s77889",
+    studentAvatarURL: "/illustrations/avatar1.jpg",
+    reviewText: "Not what I expected, the course needs improvement.",
+    rating: 2,
+    dateCreated: "2024-05-01T06:57:42.447Z",
+  },
+  // {
+  //   studentEmail: "student6@example.com",
+  //   studentID: "s99001",
+  //   studentAvatarURL: "https://example.com/avatars/student6.png",
+  //   reviewText: "Good course, but too lengthy.",
+  //   rating: 3,
+  //   dateCreated: "2023-06-20",
+  // },
+  // {
+  //   studentEmail: "student7@example.com",
+  //   studentID: "s22334",
+  //   studentAvatarURL: "https://example.com/avatars/student7.png",
+  //   reviewText: "Amazing course with practical examples.",
+  //   rating: 5,
+  //   dateCreated: "2023-06-21",
+  // },
+  // {
+  //   studentEmail: "student8@example.com",
+  //   studentID: "s55667",
+  //   studentAvatarURL: "https://example.com/avatars/student8.png",
+  //   reviewText: "The course was good but could use more interactive content.",
+  //   rating: 4,
+  //   dateCreated: "2023-06-22",
+  // },
+];
