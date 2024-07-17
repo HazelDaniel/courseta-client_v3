@@ -1,25 +1,21 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useContext } from "react";
 import { handleFileSelect } from "~/utils/image-convert.client";
 import "~/styles/file-upload-form-modal.css";
+import { ModalActionType, __hideModal } from "~/reducers/modal.reducer";
+import { ModalContext, ModalContextValueType } from "~/contexts/modal.context";
 
 export const FileUploadFormModal: React.FC<{
-  modalVisible: boolean;
-  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setImageState: React.Dispatch<React.SetStateAction<[string, string]>>;
   inputType: string;
   originalImage: string;
-}> = ({
-  modalVisible,
-  setModalVisible,
-  setImageState,
-  inputType,
-  originalImage,
-}) => {
+}> = ({ setImageState, inputType, originalImage }) => {
+  const { modalState: modalVisible, modalDispatch: setModalVisible } =
+    useContext(ModalContext) as ModalContextValueType;
   return (
-    <div className={`input_form_modal${modalVisible ? " visible" : ""}`}>
+    <div className={`input_form_modal${modalVisible.uploadModal ? " visible" : ""}`}>
       <div className="input_form_modal_top">
         <h2>upload image</h2>
-        <span onMouseDown={() => setModalVisible(false)}>
+        <span onMouseDown={() => setModalVisible(__hideModal("uploadModal"))}>
           <svg
             viewBox="0 0 28 28"
             fill="none"
@@ -76,12 +72,14 @@ export const FileUploadFormModal: React.FC<{
         <button
           onClick={() => {
             setImageState(() => [originalImage, ""]);
-            setModalVisible(false);
+            setModalVisible(__hideModal("uploadModal"));
           }}
         >
           Cancel
         </button>
-        <button onClick={() => setModalVisible(false)}>Continue</button>
+        <button onClick={() => setModalVisible(__hideModal("uploadModal"))}>
+          Continue
+        </button>
       </div>
     </div>
   );

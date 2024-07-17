@@ -1,12 +1,26 @@
 import "~/styles/lesson-content-addition-modal.css";
 import { LessonItemAdditionBox } from "./lesson-item-addition-box";
+import React, { useContext } from "react";
+import { ModalContext, ModalContextValueType } from "~/contexts/modal.context";
+import { __hideModal } from "~/reducers/modal.reducer";
 
-export const LessonContentAdditionModal: React.FC = () => {
+export const LessonContentAdditionModal: React.FC = React.memo(() => {
+  const { modalState, modalDispatch } = useContext(
+    ModalContext
+  ) as ModalContextValueType;
   return (
-    <div className="lesson_content_addition_modal">
+    <div
+      className={`lesson_content_addition_modal${
+        modalState.lessonContentAdditionModal ? " visible" : ""
+      }`}
+    >
       <div className="lesson_content_addition_modal_top">
         <h2>add lesson contents</h2>
-        <span>
+        <span
+          onClick={() => {
+            modalDispatch(__hideModal("lessonContentAdditionModal"));
+          }}
+        >
           <svg
             viewBox="0 0 28 28"
             fill="none"
@@ -34,4 +48,4 @@ export const LessonContentAdditionModal: React.FC = () => {
       </div>
     </div>
   );
-};
+});

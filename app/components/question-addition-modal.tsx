@@ -3,6 +3,9 @@ import "~/styles/question-item-addition-box.css";
 import { QuestionItemAdditionBox } from "./question-item-addition-box";
 import { DashboardFormInput } from "./dashboard-form-input";
 import { DashboardCustomInputType } from "~/types";
+import { useContext } from "react";
+import { ModalContext, ModalContextValueType } from "~/contexts/modal.context";
+import { __hideModal } from "~/reducers/modal.reducer";
 
 export const AnswerAdditionFormData: DashboardCustomInputType = {
   heading: "",
@@ -29,11 +32,21 @@ export const AnswerAdditionFormData: DashboardCustomInputType = {
 };
 
 export const QuestionAdditionModal: React.FC = () => {
+  const { modalState, modalDispatch } = useContext(
+    ModalContext
+  ) as ModalContextValueType;
+
   return (
-    <div className="lesson_content_addition_modal">
-      <div className="lesson_content_addition_modal_top">
+    <div
+      className={`question_addition_modal${
+        modalState.questionAdditionModal ? "" : " hidden"
+      }`}
+    >
+      <div className="question_addition_modal_top">
         <h2>Add new question</h2>
-        <span>
+        <span
+          onClick={() => modalDispatch(__hideModal("questionAdditionModal"))}
+        >
           <svg
             viewBox="0 0 28 28"
             fill="none"
@@ -50,7 +63,7 @@ export const QuestionAdditionModal: React.FC = () => {
         </span>
       </div>
 
-      <div className="lesson_content_addition_modal_middle">
+      <div className="question_addition_modal_middle">
         <QuestionItemAdditionBox />
         <h2>
           question answers{" "}
@@ -76,7 +89,7 @@ export const QuestionAdditionModal: React.FC = () => {
           />
         </ul>
       </div>
-      <div className="lesson_content_addition_modal_bottom">
+      <div className="question_addition_modal_bottom">
         <button> Cancel </button>
         <button>Continue</button>
       </div>

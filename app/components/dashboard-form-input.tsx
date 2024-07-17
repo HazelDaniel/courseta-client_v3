@@ -4,20 +4,21 @@ import {
   DefaultFormDataType,
 } from "~/types";
 import "~/styles/dashboard-form-input.css";
-import { Form, useParams, useSearchParams } from "@remix-run/react";
+import { Form, useSearchParams } from "@remix-run/react";
 
 import { ImageReplaceButton } from "./image-replace-button";
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { handleFileSelect } from "~/utils/image-convert.client";
+import React, {
+  useRef,
+  useState,
+} from "react";
 import { FileUploadFormModal } from "./file-upload-form-modal";
 
 export const InputGraphicWrapper: React.FC<{
   imageUrl: string;
   buttonText: string;
-  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   willDisable: boolean;
   asInput?: boolean;
-}> = ({ buttonText, imageUrl, setModalVisible, willDisable, asInput }) => {
+}> = ({ buttonText, imageUrl, willDisable, asInput }) => {
   const imageRef = useRef<HTMLImageElement>(null);
 
   return (
@@ -29,11 +30,7 @@ export const InputGraphicWrapper: React.FC<{
         ref={imageRef}
       />
 
-      <ImageReplaceButton
-        text={buttonText}
-        setModalVisible={setModalVisible}
-        willDisable={willDisable}
-      />
+      <ImageReplaceButton text={buttonText} willDisable={willDisable} />
     </div>
   );
 };
@@ -46,23 +43,10 @@ export const GraphicInputForm: React.FC<{
   const [action] = data.form.actions;
   const { variant } = data.form;
 
-  // const buttonRef = useRef<HTMLButtonElement>(null);
-  // const [_, setCurrButtonRef] =
-  //   useState<React.RefObject<HTMLButtonElement> | null>(null);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [imageState, setImageState] = useState<[string, string]>([
     data.images[0].url,
     "",
   ]);
-  console.log(" as input ? ", asInput);
-  console.log(" avatar url", imageState);
-  console.log("data", data);
-
-  // useEffect(() => {
-  //   if (buttonRef) {
-  //     setCurrButtonRef(buttonRef);
-  //   }
-  // }, [buttonRef]);
 
   return (
     <>
@@ -97,7 +81,6 @@ export const GraphicInputForm: React.FC<{
               disabled={willDisable}
               onClick={(e) => {
                 e.preventDefault();
-                console.log(imageState);
               }}
             >
               {data.buttons[0].text}
@@ -109,7 +92,6 @@ export const GraphicInputForm: React.FC<{
           <InputGraphicWrapper
             imageUrl={imageState[0]}
             buttonText={data.buttons[1]?.text}
-            setModalVisible={setModalVisible}
             willDisable={willDisable}
             asInput={asInput}
           />
@@ -117,9 +99,7 @@ export const GraphicInputForm: React.FC<{
       </Form>
       <FileUploadFormModal
         inputType={data.inputs[0]?.type}
-        modalVisible={modalVisible}
         setImageState={setImageState}
-        setModalVisible={setModalVisible}
         originalImage={data.images[0].url}
       />
     </>
@@ -131,92 +111,94 @@ export const DashboardFormInput: React.FC<{
   defaultData: DefaultFormDataType;
   checkMode?: boolean;
   asInput?: boolean;
-}> = ({ data, defaultData, checkMode = false, asInput }) => {
-  const [action] = data.form.actions;
-  const { variant } = data.form;
-  const [params] = useSearchParams();
-  const mode = params.get("mode");
-  if (data.images[0])
-    data.images[0].url = defaultData[data.inputs[0].name] as string;
+}> = React.memo(
+  ({ data, defaultData, checkMode = false, asInput }) => {
+    const [action] = data.form.actions;
+    const { variant } = data.form;
+    const [params] = useSearchParams();
+    const mode = params.get("mode");
+    if (data.images[0])
+      data.images[0].url = defaultData[data.inputs[0].name] as string;
 
-  const willDisable = checkMode ? (mode === "edit" ? false : true) : false;
+    const willDisable = checkMode ? (mode === "edit" ? false : true) : false;
 
-  if (variant === "one-graphic-button") {
+    if (variant === "one-graphic-button") {
+      return (
+        <GraphicInputForm
+          data={data}
+          willDisable={willDisable}
+          asInput={asInput}
+        />
+      );
+    }
+
     return (
-      <GraphicInputForm
-        data={data}
-        willDisable={willDisable}
-        asInput={asInput}
-      />
+      <Form action={action} className={`input_form ${variant}`}>
+        <div className="input_form_top">
+          {variant === "one-dual-button" || asInput ? null : (
+            <>
+              <p>{data.heading}</p>
+              <button
+                className="input_button_primary"
+                name="intent"
+                value={data.form.intent}
+                disabled={willDisable}
+              >
+                {data.buttons[0]?.text}
+              </button>
+            </>
+          )}
+        </div>
+        <div className="input_form_bottom">
+          {data.inputs.map(({ name, title, type }, idx) => {
+            return (
+              <div className={`input_wrapper ${name}`}>
+                <label htmlFor={`${data.namespace}.${name}`}>{title}</label>
+                {type === "textarea" ? (
+                  <textarea
+                    id={`${data.namespace}.${name}`}
+                    name={`${data.namespace}.${name}`}
+                    disabled={willDisable}
+                    maxLength={200}
+                    cols={20}
+                    rows={10}
+                    defaultValue={`${
+                      name === "old_password" || name === "new_password"
+                        ? ""
+                        : defaultData[name] || ""
+                    }`}
+                  />
+                ) : (
+                  <input
+                    type={type}
+                    id={`${data.namespace}.${name}`}
+                    name={`${data.namespace}.${name}`}
+                    disabled={willDisable}
+                    min={data.inputs[idx].min || 0}
+                    max={data.inputs[idx].max || ""}
+                    defaultValue={`${
+                      name === "old_password" || name === "new_password"
+                        ? ""
+                        : defaultData[name] || ""
+                    }`}
+                  />
+                )}
+              </div>
+            );
+          })}
+
+          {variant === "one-dual-button" && !asInput ? (
+            <div className="dual_buttons">
+              <button className="input_button_secondary" disabled={willDisable}>
+                {data.buttons[0].text}
+              </button>
+              <button className="input_button_primary" disabled={willDisable}>
+                {data.buttons[1].text}
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </Form>
     );
   }
-
-  return (
-    <Form action={action} className={`input_form ${variant}`}>
-      <div className="input_form_top">
-        {variant === "one-dual-button" || asInput ? null : (
-          <>
-            <p>{data.heading}</p>
-            <button
-              className="input_button_primary"
-              name="intent"
-              value={data.form.intent}
-              disabled={willDisable}
-            >
-              {data.buttons[0]?.text}
-            </button>
-          </>
-        )}
-      </div>
-      <div className="input_form_bottom">
-        {data.inputs.map(({ name, title, type }, idx) => {
-          return (
-            <div className={`input_wrapper ${name}`}>
-              <label htmlFor={`${data.namespace}.${name}`}>{title}</label>
-              {type === "textarea" ? (
-                <textarea
-                  id={`${data.namespace}.${name}`}
-                  name={`${data.namespace}.${name}`}
-                  disabled={willDisable}
-                  maxLength={200}
-                  cols={20}
-                  rows={10}
-                  defaultValue={`${
-                    name === "old_password" || name === "new_password"
-                      ? ""
-                      : defaultData[name] || ""
-                  }`}
-                />
-              ) : (
-                <input
-                  type={type}
-                  id={`${data.namespace}.${name}`}
-                  name={`${data.namespace}.${name}`}
-                  disabled={willDisable}
-                  min={data.inputs[idx].min || 0}
-                  max={data.inputs[idx].max || ""}
-                  defaultValue={`${
-                    name === "old_password" || name === "new_password"
-                      ? ""
-                      : defaultData[name] || ""
-                  }`}
-                />
-              )}
-            </div>
-          );
-        })}
-
-        {variant === "one-dual-button" && !asInput ? (
-          <div className="dual_buttons">
-            <button className="input_button_secondary" disabled={willDisable}>
-              {data.buttons[0].text}
-            </button>
-            <button className="input_button_primary" disabled={willDisable}>
-              {data.buttons[1].text}
-            </button>
-          </div>
-        ) : null}
-      </div>
-    </Form>
-  );
-};
+);
