@@ -184,6 +184,15 @@ export interface CourseDetailType extends CourseEntryType {
   exam?: CourseExamType;
 }
 
+export interface CourseReviewType {
+  studentEmail: string;
+  studentID: string;
+  studentAvatarURL: string;
+  reviewText: string;
+  rating: number;
+  dateCreated: string;
+}
+
 export interface DBUserType extends Pick<UserType, "email" | "name"> {
   points: number;
   rank: string;
