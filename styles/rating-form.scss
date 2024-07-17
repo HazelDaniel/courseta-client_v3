@@ -1,0 +1,36 @@
+@import "_components";
+
+.rating *::selection {
+  background-color: transparent;
+}
+.rating {
+  display: flex;
+  direction: row-reverse;
+  justify-content: center;
+  transform: scaleX(-1);
+}
+button[type="reset"] {
+  transform: scaleX(-1);
+}
+
+.rating input {
+  display: none;
+}
+
+.rating label {
+  font-size: 4rem;
+  color: var(--label-color);
+  cursor: pointer;
+}
+
+.rating.view label {
+  font-size: 2rem;
+}
+
+.rating input:checked ~ label {
+  color: var(--badge-color);
+}
+
+.rating input:checked + label ~ input + label {
+  color: var(--badge-color);
+}

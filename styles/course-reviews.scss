@@ -30,6 +30,8 @@
         padding: 1rem;
         gap: 3rem;
         align-items: flex-start;
+        background-color: #00000007;
+        border-radius: 1rem;
         // @include debug;
         img {
           width: 5rem;
@@ -145,7 +147,7 @@
         font-family: Montserrat;
         font-size: 2rem;
         &::placeholder {
-          font-weight: 600;
+          font-weight: 500;
           color: var(--label-color);
         }
       }
