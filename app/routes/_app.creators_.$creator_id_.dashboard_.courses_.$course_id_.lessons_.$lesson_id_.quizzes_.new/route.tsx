@@ -1,3 +1,4 @@
+import { useNavigate } from "@remix-run/react";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
 import "~/styles/assessment-addition.css";
 import { DashboardCustomInputType, DefaultFormDataType } from "~/types";
@@ -112,7 +113,10 @@ export const AssessmentDescriptionFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const QuizAdditionSection: React.FC<{variant: "exam" | "quiz"}> = ({variant}) => {
+export const QuizAdditionSection: React.FC<{ variant: "exam" | "quiz" }> = ({
+  variant,
+}) => {
+  const navigate = useNavigate();
   return (
     <section className="quiz_addition_area">
       <h2 className="section_header">Add quiz</h2>
@@ -129,29 +133,26 @@ export const QuizAdditionSection: React.FC<{variant: "exam" | "quiz"}> = ({varia
           asInput
         />
 
-        {
-          variant === "exam" ?
+        {variant === "exam" ? (
           <>
-          <DashboardFormInput
-          defaultData={{} as DefaultFormDataType}
-          data={AssessmentDurationFormData}
-          asInput
-          />
+            <DashboardFormInput
+              defaultData={{} as DefaultFormDataType}
+              data={AssessmentDurationFormData}
+              asInput
+            />
 
-          <DashboardFormInput
-          defaultData={{} as DefaultFormDataType}
-          data={AssessmentStartDateFormData}
-          asInput
-          />
-          <DashboardFormInput
-            defaultData={{} as DefaultFormDataType}
-            data={AssessmentEndDateFormData}
-            asInput
-          />
-
-        </>
-        : null
-      }
+            <DashboardFormInput
+              defaultData={{} as DefaultFormDataType}
+              data={AssessmentStartDateFormData}
+              asInput
+            />
+            <DashboardFormInput
+              defaultData={{} as DefaultFormDataType}
+              data={AssessmentEndDateFormData}
+              asInput
+            />
+          </>
+        ) : null}
 
         <DashboardFormInput
           defaultData={{} as DefaultFormDataType}
@@ -162,16 +163,19 @@ export const QuizAdditionSection: React.FC<{variant: "exam" | "quiz"}> = ({varia
 
       <div className="assessment_creation_cta_area">
         <button>cancel</button>
-        <button className="primary">save changes</button>
+        <button
+          className="primary"
+          onClick={() => navigate("/creators/0/dashboard/assessments/0/edit")}
+        >
+          save changes
+        </button>
       </div>
     </section>
-  )
-}
+  );
+};
 
 export const QuizAdditionPage: React.FC = () => {
-  return (
-    <QuizAdditionSection variant="quiz"/>
-  );
+  return <QuizAdditionSection variant="quiz" />;
 };
 
 export default QuizAdditionPage;
