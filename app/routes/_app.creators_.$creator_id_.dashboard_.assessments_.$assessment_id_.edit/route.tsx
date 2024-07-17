@@ -1,3 +1,4 @@
+import { QuestionAdditionModal } from "~/components/question-addition-modal";
 import "~/styles/assessment-update.css";
 export const AssessmentEditPage: React.FC = () => {
   return (
@@ -162,6 +163,9 @@ export const AssessmentEditPage: React.FC = () => {
             </div>
           </li>
         </ul>
+
+        <QuestionAdditionModal />
+
         <div className="assessment_table_navigation">
           <button>
             <span>
@@ -182,7 +186,6 @@ export const AssessmentEditPage: React.FC = () => {
           </button>
         </div>
       </div>
-
     </div>
   );
 };
