@@ -1,16 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { CourseAccordion } from "~/components/course-accordion";
 import { CourseDetailType } from "~/types";
 import { convertSecondsToHms } from "~/utils/conversion";
 import { CourseStatInfo } from "./course-stat-info";
 
 import styles from "~/styles/course-info.module.css";
-// import { LinksFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
-
-// export const links: LinksFunction = () => {
-//   return [{ rel: "stylesheet", href: styles }];
-// };
+import { Link, Outlet, useLocation } from "@remix-run/react";
 
 export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
   course,
@@ -19,6 +14,8 @@ export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
     const { hours, minutes, seconds } = convertSecondsToHms(course.duration);
     return `${hours}hr ${minutes}min ${seconds}s`;
   }, [course.duration]);
+
+  const { pathname } = useLocation();
 
   return (
     <section className={styles.course_info_styled}>
@@ -31,17 +28,35 @@ export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
         <div className={styles.area_left}>
           <ul className={styles.horizontal_file_tab}>
             <li>
-              <a href="" className={styles.active}>
-                <span>outline</span>
-              </a>
+              <Link
+                to=""
+                className={
+                  /^\/courses\/\d+(\/)?$/gi.test(pathname)
+                    ? `${styles.active}`
+                    : ""
+                }
+              >
+                <span>Outline</span>
+              </Link>
             </li>
             <li>
-              <Link to="">
+              <Link
+                to="./reviews"
+                className={
+                  /^\/courses\/\d+\/reviews(\/)?$/gi.test(pathname)
+                    ? `${styles.active}`
+                    : ""
+                }
+              >
                 <span>Reviews (980)</span>
               </Link>
             </li>
             <li>
-              <Link to={`/courses/${course.id}/exams/${course.exam ? course.exam.id : -1}`}>
+              <Link
+                to={`/courses/${course.id}/exams/${
+                  course.exam ? course.exam.id : -1
+                }`}
+              >
                 <span>Exam Link</span>
               </Link>
             </li>
@@ -59,16 +74,40 @@ export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
                 </div>
               </div>
               <div className={styles.coa_top_right}>
-                <h2>Course Outline</h2>
-                <div className={styles.course_outline_stat_div}>
-                  <p>{course.lessonCount} lessons</p> <span></span>
-                  <p>{courseDurationString()} Total length</p>
-                </div>
+                <h2>
+                  {/^\/courses\/\d+(\/)?$/gi.test(pathname)
+                    ? "Course Outline"
+                    : "Course Reviews"}
+                </h2>
+                {/^\/courses\/\d+(\/)?$/gi.test(pathname) ? (
+                  <div className={styles.course_outline_stat_div}>
+                    <p>{course.lessonCount} lessons</p> <span></span>
+                    <p>{courseDurationString()} Total length</p>
+                  </div>
+                ) : null}
+                {/^\/courses\/\d+\/reviews(\/)?$/gi.test(pathname) ? (
+                  <div className={styles.reviews_pagination_area}>
+                    <p>1 of 30</p>
+                    <div className={styles.reviews_pagination}>
+                      <button disabled>
+                        <svg>
+                          <use xlinkHref="#arrow-left"></use>
+                        </svg>
+                      </button>
+
+                      <button>
+                        <svg>
+                          <use xlinkHref="#arrow-left"></use>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
 
             <div className={styles.coa_bottom}>
-              <CourseAccordion variant="outline" course={course} />
+              <Outlet context={course} />
             </div>
           </div>
         </div>
