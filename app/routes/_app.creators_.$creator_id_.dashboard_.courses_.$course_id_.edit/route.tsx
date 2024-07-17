@@ -4,10 +4,14 @@ import {
   Link,
   json,
   useLoaderData,
+  useNavigate,
   useOutletContext,
 } from "@remix-run/react";
+import React, { useState } from "react";
 import { CourseContentIcon } from "~/components/course-accordion";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
+import { LessonContentAdditionModal } from "~/components/lesson-content-addition-modal";
+import { LessonItemAdditionBox } from "~/components/lesson-item-addition-box";
 import { courseData } from "~/data/course-list";
 import "~/styles/course-creation-page.css";
 import "~/styles/course-edit.css";
@@ -101,6 +105,122 @@ export const loader: LoaderFunction = ({ params }) => {
   });
 };
 
+const EditAccordionHead: React.FC = () => {
+  const [isItemAdditionModalOpened, setItemAdditionModalOpened] =
+    useState<boolean>(false);
+  const navigate = useNavigate();
+  return (
+    <div className="accordion_head">
+      <h3>
+        Getting started in the middle of the conversation. how will the
+        blockchain move forward if you{" "}
+      </h3>
+      <p>41 contents</p>
+      <span
+        className="course_item_add_cta"
+        onClick={() => setItemAdditionModalOpened(true)}
+      >
+        <svg>
+          <use xlinkHref="#add"></use>
+        </svg>
+        <div
+          className={`item_addition_prompt_box${
+            !isItemAdditionModalOpened ? ` hidden` : ""
+          }`}
+        >
+          <div className="prompt_box_top">
+            <span onMouseDown={() => setItemAdditionModalOpened(false)}>
+              <svg>
+                <use xlinkHref="#cancel"></use>
+              </svg>
+            </span>
+          </div>
+          <p>Choose an item to add</p>
+          <div className="prompt_box_ctas">
+            <button>Content</button>
+            <button
+              onClick={() =>
+                navigate("../lessons/0/quizzes/new", { relative: "path" })
+              }
+            >
+              Quiz
+            </button>
+          </div>
+        </div>
+      </span>
+      <span>
+        <svg>
+          <use xlinkHref="#caret-up"></use>
+        </svg>
+      </span>
+    </div>
+  );
+};
+
+export const CourseEditAccordionEntry: React.FC = () => {
+  return (
+    <div className="accordion_section">
+      <EditAccordionHead />
+      <ul className="accordion_details">
+        <li>
+          <CourseContentIcon type="text" />
+          <p>what is blockchain and how does it work?</p>
+          <button>
+            <svg>
+              <use xlinkHref="#delete"></use>
+            </svg>
+          </button>
+        </li>
+        <li>
+          <CourseContentIcon type="text" />
+          <p>what is blockchain and how does it work?</p>
+          <button>
+            <svg>
+              <use xlinkHref="#delete"></use>
+            </svg>
+          </button>
+        </li>
+
+        <li>
+          <CourseContentIcon type="quiz" />
+          <p>what is blockchain and how does it work?</p>
+
+          <div className={`accordion_content_badge`}>
+            <p>20xp</p>
+            <svg
+              viewBox="0 0 12 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0.5 14C0.367392 14 0.240215 13.9473 0.146447 13.8536C0.0526785 13.7598 0 13.6326 0 13.5V1.12906C3.57728e-05 0.998057 0.0343858 0.869347 0.0996304 0.755744C0.164875 0.642142 0.258738 0.547611 0.371875 0.481562C0.75 0.261875 1.51188 0 3 0C4.16281 0 5.46344 0.459688 6.61094 0.865C7.535 1.19156 8.40781 1.5 9 1.5C9.76233 1.49769 10.5166 1.34366 11.2188 1.04688C11.3043 1.01078 11.3974 0.996406 11.4898 1.00503C11.5822 1.01366 11.671 1.04502 11.7484 1.09632C11.8257 1.14762 11.8892 1.21726 11.9331 1.29904C11.977 1.38082 12 1.47218 12 1.565V8.42C11.9999 8.5415 11.9643 8.66033 11.8977 8.76196C11.8311 8.86358 11.7364 8.94359 11.625 8.99219C11.3528 9.11125 10.3591 9.5 9 9.5C8.24563 9.5 7.30062 9.27688 6.30031 9.04031C5.17594 8.77469 4.01344 8.5 3 8.5C1.84781 8.5 1.25813 8.67437 1 8.78469V13.5C1 13.6326 0.947321 13.7598 0.853553 13.8536C0.759785 13.9473 0.632608 14 0.5 14Z"
+                fill="#2D6B10"
+              />
+            </svg>
+          </div>
+
+          <Link to={""} className="edit_link">
+            edit quiz{" "}
+            <span>
+              <svg>
+                <use xlinkHref="#link"></use>
+              </svg>
+            </span>
+          </Link>
+
+          <button>
+            <svg>
+              <use xlinkHref="#delete"></use>
+            </svg>
+          </button>
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+
+
 export const LessonContentAdditionArea: React.FC = () => {
   return (
     <section className="lesson_content_addition_area">
@@ -131,65 +251,7 @@ export const LessonContentAdditionArea: React.FC = () => {
         </div>
       </div>
       <ul className="content_addition_area">
-        <li className="content_addition_box">
-          <Form>
-            <div className="input_wrapper">
-              <label htmlFor="contenttitle">content title</label>
-              <input
-                type="text"
-                name="content_title"
-                id="contenttitle"
-                defaultValue={"this is the input title"}
-              />
-            </div>
-            <div className="input_wrapper">
-              <label htmlFor="contenturl">content url</label>
-              <input
-                type="url"
-                name="content_url"
-                id="contenturl"
-                defaultValue={"this is the input url"}
-              />
-            </div>
-
-            <div className="radio_options">
-              <p>content type</p>
-              <div className="input_wrapper radio">
-                <div>
-                  <input
-                    type="radio"
-                    name="contenttype"
-                    id="contenttype1"
-                    checked
-                  />
-                  <label htmlFor="contenttype1">text</label>
-                </div>
-
-                <div>
-                  <input
-                    type="radio"
-                    name="contenttype"
-                    id="contenttype2"
-                    checked
-                  />
-                  <label htmlFor="contenttype2">video</label>
-                </div>
-              </div>
-            </div>
-
-            <div className="input_wrapper number">
-              <label htmlFor="contentduration">
-                content duration (seconds)
-              </label>
-              <input
-                type="number"
-                name="content_duration"
-                id="contentduration"
-                defaultValue={0}
-              />
-            </div>
-          </Form>
-        </li>
+        <LessonItemAdditionBox lessonPositionID={0} itemType="quiz" />
       </ul>
 
       <div className="course_creation_cta_area">
@@ -225,7 +287,7 @@ export const ExamEditArea: React.FC = () => {
             <span>Duration</span> 120s
           </li>
         </ul>
-        <div className="exam_edit_cta_area">
+        <div className="exam_update_cta_area">
           <Link to={""} className="edit_link">
             edit exam{" "}
             <span>
@@ -234,12 +296,21 @@ export const ExamEditArea: React.FC = () => {
               </svg>
             </span>
           </Link>
+          <button>
+            delete exam
+            <span>
+              <svg>
+                <use xlinkHref="#trash"></use>
+              </svg>
+            </span>
+          </button>
         </div>
-
       </div>
     </>
   );
 };
+
+
 
 export const CourseEditPage: React.FC = () => {
   const contextData = useOutletContext() as { profile: CreatorProfileType };
@@ -298,95 +369,11 @@ export const CourseEditPage: React.FC = () => {
       <section className="course_interaction_area">
         <h2 className="section_header">course lessons</h2>
         <div className="interaction_accordion">
-          <div className="accordion_section">
-            <div className="accordion_head">
-              <h3>
-                Getting started in the middle of the conversation. how will the
-                blockchain move forward if you{" "}
-              </h3>
-              <p>41 contents</p>
-              <span className="course_item_add_cta">
-                <svg>
-                  <use xlinkHref="#add"></use>
-                </svg>
-                <div className="item_addition_prompt_box prompt_box">
-                  <div className="prompt_box_top">
-                    <span>
-                      <svg>
-                        <use xlinkHref="#cancel"></use>
-                      </svg>
-                    </span>
-                  </div>
-                  <p>Choose an item to add</p>
-                  <div className="prompt_box_ctas">
-                    <button>Content</button>
-                    <button>Quiz</button>
-                  </div>
-                </div>
-              </span>
-              <span>
-                <svg>
-                  <use xlinkHref="#caret-up"></use>
-                </svg>
-              </span>
-            </div>
-            <ul className="accordion_details">
-              <li>
-                <CourseContentIcon type="text" />
-                <p>what is blockchain and how does it work?</p>
-                <button>
-                  <svg>
-                    <use xlinkHref="#delete"></use>
-                  </svg>
-                </button>
-              </li>
-              <li>
-                <CourseContentIcon type="text" />
-                <p>what is blockchain and how does it work?</p>
-                <button>
-                  <svg>
-                    <use xlinkHref="#delete"></use>
-                  </svg>
-                </button>
-              </li>
-
-              <li>
-                <CourseContentIcon type="quiz" />
-                <p>what is blockchain and how does it work?</p>
-
-                <div className={`accordion_content_badge`}>
-                  <p>20xp</p>
-                  <svg
-                    viewBox="0 0 12 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M0.5 14C0.367392 14 0.240215 13.9473 0.146447 13.8536C0.0526785 13.7598 0 13.6326 0 13.5V1.12906C3.57728e-05 0.998057 0.0343858 0.869347 0.0996304 0.755744C0.164875 0.642142 0.258738 0.547611 0.371875 0.481562C0.75 0.261875 1.51188 0 3 0C4.16281 0 5.46344 0.459688 6.61094 0.865C7.535 1.19156 8.40781 1.5 9 1.5C9.76233 1.49769 10.5166 1.34366 11.2188 1.04688C11.3043 1.01078 11.3974 0.996406 11.4898 1.00503C11.5822 1.01366 11.671 1.04502 11.7484 1.09632C11.8257 1.14762 11.8892 1.21726 11.9331 1.29904C11.977 1.38082 12 1.47218 12 1.565V8.42C11.9999 8.5415 11.9643 8.66033 11.8977 8.76196C11.8311 8.86358 11.7364 8.94359 11.625 8.99219C11.3528 9.11125 10.3591 9.5 9 9.5C8.24563 9.5 7.30062 9.27688 6.30031 9.04031C5.17594 8.77469 4.01344 8.5 3 8.5C1.84781 8.5 1.25813 8.67437 1 8.78469V13.5C1 13.6326 0.947321 13.7598 0.853553 13.8536C0.759785 13.9473 0.632608 14 0.5 14Z"
-                      fill="#2D6B10"
-                    />
-                  </svg>
-                </div>
-
-                <Link to={""} className="edit_link">
-                  edit quiz{" "}
-                  <span>
-                    <svg>
-                      <use xlinkHref="#link"></use>
-                    </svg>
-                  </span>
-                </Link>
-
-                <button>
-                  <svg>
-                    <use xlinkHref="#delete"></use>
-                  </svg>
-                </button>
-              </li>
-            </ul>
-          </div>
+          <CourseEditAccordionEntry />
         </div>
       </section>
+
+      <LessonContentAdditionModal />
 
       <div className="lesson_add_cta_area">
         <button>
