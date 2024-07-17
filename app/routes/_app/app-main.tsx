@@ -1,5 +1,5 @@
 import { courseData } from "~/data/course-list";
-import { AuthType, CourseListType, UserType } from "~/types";
+import { AuthType, CourseListType, CreatorUserType, UserType } from "~/types";
 import { AnnouncementTab } from "~/components/announcement-tab";
 import { WideCourseCard } from "~/components/wide-course-card";
 import { SmallCourseCard } from "~/components/small-course-card";
@@ -20,17 +20,18 @@ import styles from "~/styles/app-main.module.css";
 //   return [{ rel: "stylesheet", href: styles }, { rel: "stylesheet", href: wideCourseCardStyles }];
 // };
 
-const WelcomeBoard: React.FC<{ user: UserType }> = ({ user }) => {
+const WelcomeBoard: React.FC<{ user: UserType | CreatorUserType }> = ({ user }) => {
   return (
     <div className={styles.welcome_board_styled}>
       <div className={styles.wp_left}>
         <span>welcome,</span>
-        <h2>{user?.name}</h2>
+        <h2>{user?.firstName}</h2>
       </div>
       <div className={styles.wp_right}>
         <img
           src="/illustrations/community-learning.png"
           alt="community learning illustration"
+          loading="lazy"
           className={styles.img}
         />
       </div>
