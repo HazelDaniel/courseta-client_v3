@@ -163,13 +163,13 @@ export const DashboardFormInput: React.FC<{
               value={data.form.intent}
               disabled={willDisable}
             >
-              {data.buttons[0].text}
+              {data.buttons[0]?.text}
             </button>
           </>
         )}
       </div>
       <div className="input_form_bottom">
-        {data.inputs.map(({ name, title, type }) => {
+        {data.inputs.map(({ name, title, type }, idx) => {
           return (
             <div className={`input_wrapper ${name}`}>
               <label htmlFor={`${data.namespace}.${name}`}>{title}</label>
@@ -193,6 +193,8 @@ export const DashboardFormInput: React.FC<{
                   id={`${data.namespace}.${name}`}
                   name={`${data.namespace}.${name}`}
                   disabled={willDisable}
+                  min={data.inputs[idx].min || 0}
+                  max={data.inputs[idx].max || ""}
                   defaultValue={`${
                     name === "old_password" || name === "new_password"
                       ? ""
