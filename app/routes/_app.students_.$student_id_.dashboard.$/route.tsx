@@ -3,9 +3,12 @@ import {
   useLoaderData,
   useSearchParams,
 } from "@remix-run/react";
+import { useMemo, useReducer } from "react";
 import { LoaderFunction, json } from "react-router";
 import { DashboardBody } from "~/components/dashboard-body";
+import { ModalProvider } from "~/contexts/modal.context";
 import { studentsData } from "~/data/users";
+import { InitialModalState, ModalReducer } from "~/reducers/modal.reducer";
 // import profileStyles from "~/styles/profile.module.css";
 
 // import "~/styles/profile.module.css";
@@ -32,9 +35,21 @@ export const loader: LoaderFunction = ({ params }) => {
 
 export const Dashboard: React.FC = () => {
   const { profile } = useLoaderData<typeof loader>() as { profile: StudentProfileType; };
+  const [modalState, modalDispatch] = useReducer(
+    ModalReducer,
+    InitialModalState
+  );
+
+  const modalContextValue = useMemo(
+    () => ({ modalState, modalDispatch }),
+    [modalState, modalDispatch]
+  );
+
 
   return (
-    <DashboardBody profile={profile}/>
+    <ModalProvider value={modalContextValue}>
+      <DashboardBody profile={profile}/>
+    </ModalProvider>
   );
 };
 
