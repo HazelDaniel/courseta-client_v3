@@ -1,13 +1,18 @@
 import { LoaderFunction } from "@remix-run/node";
 import {
-  Form,
   Link,
   json,
   useLoaderData,
   useNavigate,
   useOutletContext,
 } from "@remix-run/react";
-import React, { useState } from "react";
+import React, {
+  useContext,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { CourseContentIcon } from "~/components/course-accordion";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
 import { LessonContentAdditionModal } from "~/components/lesson-content-addition-modal";
@@ -24,6 +29,17 @@ import {
   DefaultDashboardFormDataType,
   DefaultFormDataType,
 } from "~/types";
+import {
+  InitialModalState,
+  ModalReducer,
+  __hideModal,
+  __showModal,
+} from "~/reducers/modal.reducer";
+import {
+  ModalContext,
+  ModalContextValueType,
+  ModalProvider,
+} from "~/contexts/modal.context";
 
 export const courseTitleUpdateFormData: DashboardCustomInputType = {
   heading: "",
@@ -105,10 +121,72 @@ export const loader: LoaderFunction = ({ params }) => {
   });
 };
 
-const EditAccordionHead: React.FC = () => {
-  const [isItemAdditionModalOpened, setItemAdditionModalOpened] =
-    useState<boolean>(false);
+export const AccordionPromptbox: React.FC = React.memo(() => {
+  const { modalState, modalDispatch } = useContext(
+    ModalContext
+  ) as ModalContextValueType;
   const navigate = useNavigate();
+  return (
+    <div
+      className={`item_addition_prompt_box${
+        !modalState.accordionModal ? ` hidden` : ""
+      }`}
+    >
+      <div className="prompt_box_top">
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            modalDispatch(__hideModal("accordionModal"));
+          }}
+        >
+          <svg>
+            <use xlinkHref="#cancel"></use>
+          </svg>
+        </span>
+      </div>
+
+      <p>Choose an item to add</p>
+      <div className="prompt_box_ctas">
+        <button
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            modalDispatch(__showModal("lessonContentAdditionModal"));
+          }}
+        >
+          Content
+        </button>
+        <button
+          onClick={() =>
+            navigate("../lessons/0/quizzes/new", { relative: "path" })
+          }
+        >
+          Quiz
+        </button>
+      </div>
+    </div>
+  );
+});
+
+const EditAccordionButtonToggler: React.FC = () => {
+  const { modalDispatch } = useContext(ModalContext) as ModalContextValueType;
+  return (
+    <span
+      className="course_item_add_cta"
+      onClick={(e) => {
+        e.stopPropagation();
+        modalDispatch(__showModal("accordionModal"));
+      }}
+    >
+      <svg>
+        <use xlinkHref="#add"></use>
+      </svg>
+
+      <AccordionPromptbox />
+    </span>
+  );
+};
+
+const EditAccordionHead: React.FC = React.memo(() => {
   return (
     <div className="accordion_head">
       <h3>
@@ -116,38 +194,9 @@ const EditAccordionHead: React.FC = () => {
         blockchain move forward if you{" "}
       </h3>
       <p>41 contents</p>
-      <span
-        className="course_item_add_cta"
-        onClick={() => setItemAdditionModalOpened(true)}
-      >
-        <svg>
-          <use xlinkHref="#add"></use>
-        </svg>
-        <div
-          className={`item_addition_prompt_box${
-            !isItemAdditionModalOpened ? ` hidden` : ""
-          }`}
-        >
-          <div className="prompt_box_top">
-            <span onMouseDown={() => setItemAdditionModalOpened(false)}>
-              <svg>
-                <use xlinkHref="#cancel"></use>
-              </svg>
-            </span>
-          </div>
-          <p>Choose an item to add</p>
-          <div className="prompt_box_ctas">
-            <button>Content</button>
-            <button
-              onClick={() =>
-                navigate("../lessons/0/quizzes/new", { relative: "path" })
-              }
-            >
-              Quiz
-            </button>
-          </div>
-        </div>
-      </span>
+
+      <EditAccordionButtonToggler />
+
       <span>
         <svg>
           <use xlinkHref="#caret-up"></use>
@@ -155,9 +204,9 @@ const EditAccordionHead: React.FC = () => {
       </span>
     </div>
   );
-};
+});
 
-export const CourseEditAccordionEntry: React.FC = () => {
+export const CourseEditAccordionEntry: React.FC = React.memo(() => {
   return (
     <div className="accordion_section">
       <EditAccordionHead />
@@ -217,11 +266,9 @@ export const CourseEditAccordionEntry: React.FC = () => {
       </ul>
     </div>
   );
-};
+});
 
-
-
-export const LessonContentAdditionArea: React.FC = () => {
+export const LessonContentAdditionArea: React.FC = React.memo(() => {
   return (
     <section className="lesson_content_addition_area">
       <div className="lesson_addition_top">
@@ -260,9 +307,9 @@ export const LessonContentAdditionArea: React.FC = () => {
       </div>
     </section>
   );
-};
+});
 
-export const ExamEditArea: React.FC = () => {
+export const ExamEditArea: React.FC = React.memo(() => {
   return (
     <>
       <div className="exam_edit_area">
@@ -288,7 +335,7 @@ export const ExamEditArea: React.FC = () => {
           </li>
         </ul>
         <div className="exam_update_cta_area">
-          <Link to={""} className="edit_link">
+          <Link to={"../exams/new"} relative="path" className="edit_link">
             edit exam{" "}
             <span>
               <svg>
@@ -308,16 +355,12 @@ export const ExamEditArea: React.FC = () => {
       </div>
     </>
   );
-};
+});
 
-
-
-export const CourseEditPage: React.FC = () => {
-  const contextData = useOutletContext() as { profile: CreatorProfileType };
+export const CourseCreationArea: React.FC = React.memo(() => {
   const { course: loadedCourse } = useLoaderData<typeof loader>() as {
     course: CourseEntryType;
   };
-  void contextData; // BUGFIX: undefined because this is not nested under the dashboard route. we should use this later for verification of the creator (client side)
   return (
     <>
       <section className="course_creation_area">
@@ -365,7 +408,27 @@ export const CourseEditPage: React.FC = () => {
         <button>cancel</button>
         <button className="primary">save changes</button>
       </div>
+    </>
+  );
+});
 
+export const CourseEditPage: React.FC = () => {
+  const contextData = useOutletContext() as { profile: CreatorProfileType };
+
+  const [modalState, modalDispatch] = useReducer(
+    ModalReducer,
+    InitialModalState
+  );
+
+  const modalContextValue = useMemo(
+    () => ({ modalState, modalDispatch }),
+    [modalState, modalDispatch]
+  );
+
+  void contextData; // BUGFIX: undefined because this is not nested under the dashboard route. we should use this later for verification of the creator (client side)
+  return (
+    <ModalProvider value={modalContextValue}>
+      <CourseCreationArea />
       <section className="course_interaction_area">
         <h2 className="section_header">course lessons</h2>
         <div className="interaction_accordion">
@@ -388,7 +451,7 @@ export const CourseEditPage: React.FC = () => {
 
       <LessonContentAdditionArea />
       <ExamEditArea />
-    </>
+    </ModalProvider>
   );
 };
 
