@@ -1,5 +1,8 @@
 import { useOutletContext } from "@remix-run/react";
+import React, { useMemo, useReducer } from "react";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
+import { ModalProvider } from "~/contexts/modal.context";
+import { InitialModalState, ModalReducer } from "~/reducers/modal.reducer";
 import "~/styles/course-creation-page.css";
 import {
   CreatorProfileType,
@@ -63,42 +66,58 @@ export const courseTagsUpdateFormData: DashboardCustomInputType = {
   images: [],
 };
 
+export const CourseCreationArea: React.FC = React.memo(() => {
+  const emptyDefault = useMemo(() => ({}), []);
+  return (
+    <div className="course_creation_area">
+      <DashboardFormInput
+        defaultData={emptyDefault as DefaultCourseFormDataType}
+        data={courseTitleUpdateFormData}
+        asInput
+      />
+
+      <DashboardFormInput
+        defaultData={emptyDefault as DefaultDashboardFormDataType}
+        data={courseImageUpdateFormData}
+        asInput
+      />
+
+      <DashboardFormInput
+        defaultData={emptyDefault as DefaultFormDataType}
+        data={courseDescriptionUpdateFormData}
+        asInput
+      />
+
+      <DashboardFormInput
+        defaultData={emptyDefault as DefaultCourseFormDataType}
+        data={courseTagsUpdateFormData}
+        asInput
+      />
+    </div>
+  );
+});
+
 export const CourseCreationPage: React.FC = () => {
   const contextData = useOutletContext() as { profile: CreatorProfileType };
   void contextData; // BUGFIX: undefined because this is not nested under the dashboard route. we should use this later for verification of the creator (client side)
-  console.log("context data is : ", contextData);
+  // console.log("context data is : ", contextData);
+  const [modalState, modalDispatch] = useReducer(
+    ModalReducer,
+    InitialModalState
+  );
+
+  const modalContextValue = useMemo(
+    () => ({ modalState, modalDispatch }),
+    [modalState, modalDispatch]
+  );
   return (
-    <>
-      <div className="course_creation_area">
-        <DashboardFormInput
-          defaultData={{} as DefaultCourseFormDataType}
-          data={courseTitleUpdateFormData}
-          asInput
-        />
-
-        <DashboardFormInput
-          defaultData={{} as DefaultDashboardFormDataType}
-          data={courseImageUpdateFormData}
-          asInput
-        />
-
-        <DashboardFormInput
-          defaultData={ {} as DefaultFormDataType }
-          data={courseDescriptionUpdateFormData}
-          asInput
-        />
-
-        <DashboardFormInput
-          defaultData={ {} as DefaultCourseFormDataType }
-          data={courseTagsUpdateFormData}
-          asInput
-        />
-      </div>
+    <ModalProvider value={modalContextValue}>
+      <CourseCreationArea />
       <div className="course_creation_cta_area">
         <button>cancel</button>
         <button className="primary">save changes</button>
       </div>
-    </>
+    </ModalProvider>
   );
 };
 
