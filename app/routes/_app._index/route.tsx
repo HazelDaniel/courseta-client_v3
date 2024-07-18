@@ -1,5 +1,4 @@
 import type { MetaFunction } from "@remix-run/node";
-import { useLocation } from "@remix-run/react";
 import { AppMain } from "../_app/app-main";
 
 export const meta: MetaFunction = () => {
@@ -13,5 +12,5 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  return <AppMain />
+  return <AppMain />;
 }
