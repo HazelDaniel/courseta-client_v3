@@ -1,7 +1,7 @@
 @import "_functions";
 @import "_components";
 
-.lesson_content_addition_modal {
+.question_addition_modal {
   width: 80vw;
   @media screen and (min-width: 990px) {
     min-width: 80%;
@@ -16,11 +16,17 @@
   z-index: 2;
   top: 50%;
   left: 50%;
-  // transform: translate(-40%, -50%);
-  transform: translate(-40%, -50%) scale(0);
+  transform: translate(-40%, -50%);
+  transition: all 0.3s linear;
+  &.hidden {
+    transform: translate(-40%, -50%) scale(0);
+  }
   padding: var(--padding_L);
   @media screen and (max-width: 800px) {
-    transform: translate(-50%, -50%) scale(0);
+    transform: translate(-50%, -50%);
+    &.hidden {
+      transform: translate(-50%, -50%) scale(0);
+    }
   }
   &_top {
     display: flex;

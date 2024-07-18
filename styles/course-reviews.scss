@@ -133,6 +133,11 @@
         border: unset;
         --icon-color-here: var(--badge-color);
         opacity: 0.8;
+        svg {
+          width: 5rem;
+          height: 5rem;
+          min-width: 5rem;
+        }
       }
       textarea {
         border: unset;
