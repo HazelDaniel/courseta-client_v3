@@ -121,13 +121,20 @@
             display: block;
             transform: scaleY(-1);
             position: relative;
+            &.flipped {
+              transform: unset;
+            }
           }
         }
       }
       .accordion_details {
         width: 100%;
-        height: max-content;
+        height: 0;
         overflow: hidden;
+        transition: height 1s linear;
+        &.visible {
+          height: max-content;
+        }
         li {
           width: 100%;
           height: 8rem;
