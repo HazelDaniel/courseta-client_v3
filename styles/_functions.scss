@@ -1,6 +1,6 @@
 @mixin debug() {
   border: 1px solid red;
-  background-color: rgba(94, 95, 96, 0.17);
+  background-color: #5e5f602b;
 }
 
 @mixin courseAccordionStyle() {
@@ -15,6 +15,7 @@
   .accordion_head {
     height: 8rem;
     width: 100%;
+    cursor: pointer;
     &.first {
       border-radius: inherit;
     }
@@ -63,6 +64,10 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        transition: transform 0.2s linear;
+        &.flipped {
+          transform: rotateZ(180deg);
+        }
         svg {
           height: 80%;
           transform: scale(0.6);
@@ -78,6 +83,11 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: 0;
+    transition: height 0.2s linear;
+    &.visible {
+      height: max-content;
+    }
     .accordion_content {
       height: 8rem;
       width: 100%;

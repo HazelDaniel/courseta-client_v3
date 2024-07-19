@@ -108,6 +108,6 @@
 
   .course_table_navigation {
     @extend .table_navigation;
-
+    --icon-color-here: var(--text-color);
   }
 }

@@ -173,6 +173,7 @@ p,h2,h3 {
     }
     .assessment_table_navigation {
       @extend .table_navigation;
+      --icon-color-here: var(--text-color);
     }
   }
 }

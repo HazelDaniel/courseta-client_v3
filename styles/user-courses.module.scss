@@ -1,4 +1,5 @@
 @import "./_functions";
+@import "_components";
 
 .user_courses_styled {
   width: 100%;
@@ -11,6 +12,15 @@
   justify-content: flex-start;
   padding: var(--padding_S) var(--padding_XL);
   font-family: poppins;
+  & > h2 {
+    font-size: 2.2rem;
+    text-transform: capitalize;
+    font-weight: 500;
+    width: 100%;
+    margin-bottom: var(--margin_L);
+    margin-top: 0;
+    margin-left: -3rem;
+  }
   .courses_top {
     width: 100%;
     height: max-content;
@@ -19,11 +29,6 @@
     flex-direction: column;
     overflow: hidden;
     gap: 5rem;
-    & > h2 {
-      font-size: 2.2rem;
-      text-transform: capitalize;
-      font-weight: 500;
-    }
   }
   .courses_bottom {
     width: 100%;
@@ -49,5 +54,9 @@
       justify-content: center;
       margin-right: auto;
     }
+  }
+  .navigation_ctas {
+    @extend .table_navigation;
+    --icon-color-here: var(--text-color);
   }
 }
