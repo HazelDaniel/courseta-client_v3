@@ -1,3 +1,4 @@
+import {isEqual} from "~/utils/comparison";
 const ModalActionTypes = {
   showModal: "SHOW_MODAL",
   closeModal: "CLOSE_MODAL",
@@ -6,16 +7,11 @@ const ModalActionTypes = {
 
 export type ModalTypes =
   | "uploadModal"
-  | "accordionModal"
+  | `accordionModal${string}`
   | "questionAdditionModal"
   | "lessonContentAdditionModal";
 
-export const InitialModalState = {
-  uploadModal: false,
-  accordionModal: false,
-  questionAdditionModal: false,
-  lessonContentAdditionModal: false
-};
+export const InitialModalState: { [prop: string]: boolean } = {};
 
 export interface ModalActionType {
   type: keyof typeof ModalActionTypes;
@@ -31,33 +27,43 @@ export const ModalReducer = (
   switch (action.type) {
     case ModalActionTypes.showModal: {
       let i: string;
+      let payloadValue: boolean;
+      let payloadKey: ModalTypes;
       newState = { ...state };
       for (i of Object.keys(newState)) {
-        newState[i as keyof typeof InitialModalState] = false;
+        newState[i as string] = false;
       }
-      if (action.payload?.accordionModal)
-        newState = { ...newState, accordionModal: true };
-      else if (action.payload?.uploadModal)
-        newState = { ...newState, uploadModal: true };
-      else if (action.payload?.questionAdditionModal)
-        newState = { ...newState, questionAdditionModal: true };
-      else if (action.payload?.lessonContentAdditionModal)
-        newState = { ...newState, lessonContentAdditionModal: true };
-      else return state;
-      return newState;
+      payloadValue = Object.values(
+        action.payload as Partial<typeof InitialModalState>
+      )[0]!;
+      payloadKey = Object.keys(
+        action.payload as Partial<typeof InitialModalState>
+      )[0] as ModalTypes;
+      // console.log(
+      //   "payload value is ",
+      //   payloadValue,
+      //   " payload key is ",
+      //   payloadKey
+      // );
+      if (payloadValue) {
+        newState = { ...newState, [payloadKey]: true };
+        if (isEqual(newState, state)) return state;
+        return newState;
+      } else return state;
     }
     case ModalActionTypes.closeModal: {
-      if (action.payload?.accordionModal) {
-        newState = { ...state, accordionModal: false };
-        return newState;
-      } else if (action.payload?.uploadModal) {
-        newState = { ...state, uploadModal: false };
-        return newState;
-      } else if (action.payload?.questionAdditionModal) {
-        newState = { ...state, questionAdditionModal: false };
-        return newState;
-      } else if (action.payload?.lessonContentAdditionModal) {
-        newState = { ...state, lessonContentAdditionModal: false };
+      let payloadValue: boolean;
+      let payloadKey: ModalTypes;
+      payloadValue = Object.values(
+        action.payload as Partial<typeof InitialModalState>
+      )[0]!;
+      payloadKey = Object.keys(
+        action.payload as Partial<typeof InitialModalState>
+      )[0] as ModalTypes;
+      newState = { ...state };
+      if (payloadValue) {
+        newState = { ...newState, [payloadKey]: false };
+        if (isEqual(newState, state)) return state;
         return newState;
       } else {
         return state;
@@ -69,6 +75,7 @@ export const ModalReducer = (
       for (i of Object.keys(newState)) {
         newState[i as keyof typeof InitialModalState] = false;
       }
+      if (isEqual(newState, state)) return state;
       return newState;
     }
     default:
@@ -81,7 +88,7 @@ export const __showModal: (modalType: ModalTypes) => ModalActionType = (
 ) => {
   return {
     type: ModalActionTypes.showModal as keyof typeof ModalActionTypes,
-    payload: {[modalType]: true}
+    payload: { [modalType]: true },
   };
 };
 
@@ -90,7 +97,7 @@ export const __hideModal: (modalType: ModalTypes) => ModalActionType = (
 ) => {
   return {
     type: ModalActionTypes.closeModal as keyof typeof ModalActionTypes,
-    payload: {[modalType]: true}
+    payload: { [modalType]: true },
   };
 };
 
