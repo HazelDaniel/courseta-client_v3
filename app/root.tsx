@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     // }
     res.token = "kjlfklsjfsdfs";
     res.user = creatorsData[0].user;
-    // res.user = studentsData[1].user;
+    // res.user = studentsData[0].user;
     // console.log("response from root is ", res);
     return json(res as AuthType);
   } catch (err) {

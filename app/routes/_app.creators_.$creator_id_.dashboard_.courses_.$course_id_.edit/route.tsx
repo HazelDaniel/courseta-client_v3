@@ -262,7 +262,11 @@ export const CourseEditAccordionEntry: React.FC<{ position: number }> =
               </svg>
             </div>
 
-            <Link to={""} className="edit_link">
+            <Link
+              to={"../lessons/0/quizzes/new"}
+              relative="path"
+              className="edit_link"
+            >
               edit quiz{" "}
               <span>
                 <svg>

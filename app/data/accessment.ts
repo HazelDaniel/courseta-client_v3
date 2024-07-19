@@ -1,6 +1,6 @@
-import type { QuizType } from "~/types";
+import type { QuestionType } from "~/types";
 
-export const quizzes: QuizType[] = [
+export const questionData: QuestionType[] = [
   {
     id: "1",
     question:

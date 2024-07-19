@@ -1,9 +1,9 @@
-import { QuizOptionType, QuizType } from "~/types";
+import { QuizOptionType, QuestionType } from "~/types";
 
 import styles from "~/styles/assessment.module.css";
 
 export const Quiz: React.FC<{
-  value: QuizType;
+  value: QuestionType;
   key_: number;
   assessmentID: number;
 }> = ({ value, key_, assessmentID }) => {
