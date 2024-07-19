@@ -1,8 +1,4 @@
-import {
-  redirect,
-  useLoaderData,
-  useSearchParams,
-} from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { useMemo, useReducer } from "react";
 import { LoaderFunction, json } from "react-router";
 import { DashboardBody } from "~/components/dashboard-body";
@@ -15,26 +11,17 @@ import { InitialModalState, ModalReducer } from "~/reducers/modal.reducer";
 import "~/styles/profile.css";
 import { StudentProfileType } from "~/types";
 
-
-
 export const loader: LoaderFunction = ({ params }) => {
-  const splat = params["*"];
   const studentID = params["student_id"];
-  if (splat !== "profile") {
-    if (splat === "") {
-      throw redirect(`/students/${studentID}/dashboard/profile`, {
-        status: 307,
-      });
-    }
-    throw json({ error: "not found!" }, { status: 404 });
-  }
-  return json({ profile: studentsData.filter(data => data.user.id === studentID)[0] });
+  return json({
+    profile: studentsData.filter((data) => data.user.id === studentID)[0],
+  });
 };
 
-
-
 export const Dashboard: React.FC = () => {
-  const { profile } = useLoaderData<typeof loader>() as { profile: StudentProfileType; };
+  const { profile } = useLoaderData<typeof loader>() as {
+    profile: StudentProfileType;
+  };
   const [modalState, modalDispatch] = useReducer(
     ModalReducer,
     InitialModalState
@@ -45,10 +32,9 @@ export const Dashboard: React.FC = () => {
     [modalState, modalDispatch]
   );
 
-
   return (
     <ModalProvider value={modalContextValue}>
-      <DashboardBody profile={profile}/>
+      <DashboardBody profile={profile} />
     </ModalProvider>
   );
 };
