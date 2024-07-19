@@ -171,12 +171,12 @@ async function processAndCompressImage(file: File): Promise<string[]> {
   const halfSizeQuality = originalSize > 500 * 1024 ? 0.5 : 1; // 50% quality if > 500KB, else 100%
 
   try {
-    const [halfSizeImage, ninetyPercentImage] = await Promise.all([
+    const [halfSizeImage, ninetyFivePercentImage] = await Promise.all([
       compressImage(file, maxWidth, maxHeight, halfSizeQuality),
-      compressImage(file, maxWidth, maxHeight, 0.1),
+      compressImage(file, maxWidth, maxHeight, 0.05),
     ]);
 
-    return [halfSizeImage, ninetyPercentImage];
+    return [halfSizeImage, ninetyFivePercentImage];
   } catch (error) {
     console.error("Error processing image:", error);
     throw error;
@@ -196,10 +196,9 @@ export async function handleFileSelect(
 
   const file = input.files[0];
   try {
-    const [halfSizeImage, ninetyPercentImage] = await processAndCompressImage(
-      file
-    );
-    handler([halfSizeImage, ninetyPercentImage]);
+    const [halfSizeImage, ninetyFivePercentImage] =
+      await processAndCompressImage(file);
+    handler([halfSizeImage, ninetyFivePercentImage]);
   } catch (error) {
     console.error("Error processing file:", error);
   }
