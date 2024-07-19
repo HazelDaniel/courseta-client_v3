@@ -1,11 +1,22 @@
 import { useLocation, useParams } from "@remix-run/react";
-import { useCallback } from "react";
+import { useCallback, useContext, useMemo, useReducer } from "react";
 import { Link } from "react-router-dom";
 import { CourseDetailType, CourseLessonType } from "~/types";
 import { convertSecondsToHms } from "~/utils/conversion";
 import { NoContent } from "./no-content";
 
 import styles from "~/styles/course-accordion.module.css";
+import {
+  AccordionReducer,
+  InitialAccordionState,
+  __hideAccordion,
+  __showAccordion,
+} from "~/reducers/accordion-reducer";
+import {
+  AccordionContext,
+  AccordionContextValueType,
+  AccordionProvider,
+} from "~/contexts/accordion-context";
 
 export const CourseContentIcon: React.FC<{
   type: "video" | "text" | "quiz";
@@ -49,7 +60,8 @@ export const CourseContentIcon: React.FC<{
 const CourseLessonLayout: React.FC<{
   lesson: CourseLessonType;
   variant: "outline" | "details";
-}> = ({ lesson, variant }) => {
+  position: number;
+}> = ({ lesson, variant, position }) => {
   const lessonDurationString = useCallback(() => {
     const { hours, minutes, seconds } = convertSecondsToHms(lesson.duration);
     return `${hours}hr ${minutes}min ${seconds}s`;
@@ -60,10 +72,24 @@ const CourseLessonLayout: React.FC<{
   const courseIDParam = params["course_id"];
   const courseID = courseIDParam || search.get("course_id");
   const lessonIDParam = params["lesson_id"] || search.get("lesson_id") || "";
+  const { accordionState, accordionDispatch } = useContext(
+    AccordionContext
+  ) as AccordionContextValueType;
 
   return (
     <>
-      <div className={`${styles.accordion_head} ${styles.first}`}>
+      <div
+        className={`${styles.accordion_head}${
+          position === 0 ? ` ${styles.first}` : ""
+        }`}
+        onClick={() => {
+          if (accordionState[`accordion${position}`]) {
+            accordionDispatch(__hideAccordion(`accordion${position}`))
+            return;
+          }
+          accordionDispatch(__showAccordion(`accordion${position}`))
+        }}
+      >
         <p>{lesson.title}</p>
         <div className={styles.head_right}>
           {variant !== "details" ? (
@@ -76,8 +102,16 @@ const CourseLessonLayout: React.FC<{
           <span
             className={
               variant === "details"
-                ? `${styles.accordion_controller} ${styles.shrinked}`
-                : styles.accordion_controller
+                ? `${styles.accordion_controller} ${styles.shrinked}${
+                    accordionState[`accordion${position}`]
+                      ? ""
+                      : ` ${styles.flipped}`
+                  }`
+                : `${styles.accordion_controller}${
+                    accordionState[`accordion${position}`]
+                      ? ""
+                      : ` ${styles.flipped}`
+                  }`
             }
           >
             <svg
@@ -95,7 +129,11 @@ const CourseLessonLayout: React.FC<{
           </span>
         </div>
       </div>
-      <ul className={styles.accordion_content_list}>
+      <ul
+        className={`${styles.accordion_content_list}${
+          accordionState[`accordion${position}`] ? ` ${styles.visible}` : ""
+        }`}
+      >
         {lesson.contents.map((content) => {
           return (
             // <></> don't forget that there's an active class functionality on the li item
@@ -161,31 +199,49 @@ export const CourseAccordion: React.FC<{
   variant: "outline" | "details";
   course: CourseDetailType;
 }> = ({ variant, course }) => {
+  const [accordionState, accordionDispatch] = useReducer(
+    AccordionReducer,
+    InitialAccordionState
+  );
+
+  const accordionContextValue = useMemo(
+    () => ({
+      accordionState,
+      accordionDispatch,
+    }),
+    [accordionState, accordionDispatch]
+  );
+
   return (
-    <div
-      className={`${styles.course_outline_accordion} ${styles.course_variant}${
-        variant === "details"
-          ? ` ${styles.details} ${styles.lesson_variant}`
-          : ""
-      }`}
-    >
-      {course.lessons.length >= 1 && course.lessonCount >= 1 ? (
-        course.lessons.map((lesson) => {
-          lesson = { ...lesson, courseTitle: course.title };
-          return (
-            <CourseLessonLayout
-              lesson={lesson as CourseLessonType}
-              variant={variant}
-              key={lesson.id}
-            />
-          );
-        })
-      ) : (
-        <NoContent
-          text="No Lessons For This Course"
-          variant={"course_outline"}
-        />
-      )}
-    </div>
+    <AccordionProvider value={accordionContextValue}>
+      <div
+        className={`${styles.course_outline_accordion} ${
+          styles.course_variant
+        }${
+          variant === "details"
+            ? ` ${styles.details} ${styles.lesson_variant}`
+            : ""
+        }`}
+      >
+        {course.lessons.length >= 1 && course.lessonCount >= 1 ? (
+          course.lessons.map((lesson, idx) => {
+            lesson = { ...lesson, courseTitle: course.title };
+            return (
+              <CourseLessonLayout
+                lesson={lesson as CourseLessonType}
+                variant={variant}
+                key={lesson.id}
+                position={idx}
+              />
+            );
+          })
+        ) : (
+          <NoContent
+            text="No Lessons For This Course"
+            variant={"course_outline"}
+          />
+        )}
+      </div>
+    </AccordionProvider>
   );
 };
