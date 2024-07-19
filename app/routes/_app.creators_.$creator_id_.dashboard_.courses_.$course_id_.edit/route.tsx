@@ -121,72 +121,80 @@ export const loader: LoaderFunction = ({ params }) => {
   });
 };
 
-export const AccordionPromptbox: React.FC = React.memo(() => {
-  const { modalState, modalDispatch } = useContext(
-    ModalContext
-  ) as ModalContextValueType;
-  const navigate = useNavigate();
-  return (
-    <div
-      className={`item_addition_prompt_box${
-        !modalState.accordionModal ? ` hidden` : ""
-      }`}
-    >
-      <div className="prompt_box_top">
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            modalDispatch(__hideModal("accordionModal"));
-          }}
-        >
-          <svg>
-            <use xlinkHref="#cancel"></use>
-          </svg>
-        </span>
-      </div>
+export const AccordionPromptbox: React.FC<{ position: number }> = React.memo(
+  ({ position }) => {
+    const { modalState, modalDispatch } = useContext(
+      ModalContext
+    ) as ModalContextValueType;
+    const navigate = useNavigate();
+    return (
+      <div
+        className={`item_addition_prompt_box${
+          !modalState[`accordionModal${position}`] ? ` hidden` : ""
+        }`}
+      >
+        <div className="prompt_box_top">
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              modalDispatch(__hideModal(`accordionModal${position}`));
+            }}
+          >
+            <svg>
+              <use xlinkHref="#cancel"></use>
+            </svg>
+          </span>
+        </div>
 
-      <p>Choose an item to add</p>
-      <div className="prompt_box_ctas">
-        <button
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            modalDispatch(__showModal("lessonContentAdditionModal"));
-          }}
-        >
-          Content
-        </button>
-        <button
-          onClick={() =>
-            navigate("../lessons/0/quizzes/new", { relative: "path" })
-          }
-        >
-          Quiz
-        </button>
+        <p>Choose an item to add</p>
+        <div className="prompt_box_ctas">
+          <button
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              modalDispatch(__showModal("lessonContentAdditionModal"));
+            }}
+          >
+            Content
+          </button>
+          <button
+            onClick={() =>
+              navigate("../lessons/0/quizzes/new", { relative: "path" })
+            }
+          >
+            Quiz
+          </button>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
-const EditAccordionButtonToggler: React.FC = () => {
+const EditAccordionButtonToggler: React.FC<{ position: number }> = ({
+  position,
+}) => {
   const { modalDispatch } = useContext(ModalContext) as ModalContextValueType;
   return (
     <span
       className="course_item_add_cta"
       onClick={(e) => {
         e.stopPropagation();
-        modalDispatch(__showModal("accordionModal"));
+        modalDispatch(__showModal(`accordionModal${position}`));
       }}
     >
       <svg>
         <use xlinkHref="#add"></use>
       </svg>
 
-      <AccordionPromptbox />
+      <AccordionPromptbox position={position} />
     </span>
   );
 };
 
-const EditAccordionHead: React.FC = React.memo(() => {
+const EditAccordionHead: React.FC<{
+  detailVisible: boolean;
+  setDetailVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  position: number;
+}> = React.memo(({ detailVisible, setDetailVisible, position }) => {
   return (
     <div className="accordion_head">
       <h3>
@@ -195,10 +203,10 @@ const EditAccordionHead: React.FC = React.memo(() => {
       </h3>
       <p>41 contents</p>
 
-      <EditAccordionButtonToggler />
+      <EditAccordionButtonToggler position={position} />
 
-      <span>
-        <svg>
+      <span onClick={() => setDetailVisible((prevState) => !prevState)}>
+        <svg className={detailVisible ? "flipped" : ""}>
           <use xlinkHref="#caret-up"></use>
         </svg>
       </span>
@@ -206,67 +214,73 @@ const EditAccordionHead: React.FC = React.memo(() => {
   );
 });
 
-export const CourseEditAccordionEntry: React.FC = React.memo(() => {
-  return (
-    <div className="accordion_section">
-      <EditAccordionHead />
-      <ul className="accordion_details">
-        <li>
-          <CourseContentIcon type="text" />
-          <p>what is blockchain and how does it work?</p>
-          <button>
-            <svg>
-              <use xlinkHref="#delete"></use>
-            </svg>
-          </button>
-        </li>
-        <li>
-          <CourseContentIcon type="text" />
-          <p>what is blockchain and how does it work?</p>
-          <button>
-            <svg>
-              <use xlinkHref="#delete"></use>
-            </svg>
-          </button>
-        </li>
-
-        <li>
-          <CourseContentIcon type="quiz" />
-          <p>what is blockchain and how does it work?</p>
-
-          <div className={`accordion_content_badge`}>
-            <p>20xp</p>
-            <svg
-              viewBox="0 0 12 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0.5 14C0.367392 14 0.240215 13.9473 0.146447 13.8536C0.0526785 13.7598 0 13.6326 0 13.5V1.12906C3.57728e-05 0.998057 0.0343858 0.869347 0.0996304 0.755744C0.164875 0.642142 0.258738 0.547611 0.371875 0.481562C0.75 0.261875 1.51188 0 3 0C4.16281 0 5.46344 0.459688 6.61094 0.865C7.535 1.19156 8.40781 1.5 9 1.5C9.76233 1.49769 10.5166 1.34366 11.2188 1.04688C11.3043 1.01078 11.3974 0.996406 11.4898 1.00503C11.5822 1.01366 11.671 1.04502 11.7484 1.09632C11.8257 1.14762 11.8892 1.21726 11.9331 1.29904C11.977 1.38082 12 1.47218 12 1.565V8.42C11.9999 8.5415 11.9643 8.66033 11.8977 8.76196C11.8311 8.86358 11.7364 8.94359 11.625 8.99219C11.3528 9.11125 10.3591 9.5 9 9.5C8.24563 9.5 7.30062 9.27688 6.30031 9.04031C5.17594 8.77469 4.01344 8.5 3 8.5C1.84781 8.5 1.25813 8.67437 1 8.78469V13.5C1 13.6326 0.947321 13.7598 0.853553 13.8536C0.759785 13.9473 0.632608 14 0.5 14Z"
-                fill="#2D6B10"
-              />
-            </svg>
-          </div>
-
-          <Link to={""} className="edit_link">
-            edit quiz{" "}
-            <span>
+export const CourseEditAccordionEntry: React.FC<{ position: number }> =
+  React.memo(({ position }) => {
+    const [detailVisible, setDetailVisible] = useState<boolean>(false);
+    return (
+      <div className="accordion_section">
+        <EditAccordionHead
+          detailVisible={detailVisible}
+          setDetailVisible={setDetailVisible}
+          position={position}
+        />
+        <ul className={`accordion_details${detailVisible ? " visible" : ""}`}>
+          <li>
+            <CourseContentIcon type="text" />
+            <p>what is blockchain and how does it work?</p>
+            <button>
               <svg>
-                <use xlinkHref="#link"></use>
+                <use xlinkHref="#delete"></use>
               </svg>
-            </span>
-          </Link>
+            </button>
+          </li>
+          <li>
+            <CourseContentIcon type="text" />
+            <p>what is blockchain and how does it work?</p>
+            <button>
+              <svg>
+                <use xlinkHref="#delete"></use>
+              </svg>
+            </button>
+          </li>
 
-          <button>
-            <svg>
-              <use xlinkHref="#delete"></use>
-            </svg>
-          </button>
-        </li>
-      </ul>
-    </div>
-  );
-});
+          <li>
+            <CourseContentIcon type="quiz" />
+            <p>what is blockchain and how does it work?</p>
+
+            <div className={`accordion_content_badge`}>
+              <p>20xp</p>
+              <svg
+                viewBox="0 0 12 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0.5 14C0.367392 14 0.240215 13.9473 0.146447 13.8536C0.0526785 13.7598 0 13.6326 0 13.5V1.12906C3.57728e-05 0.998057 0.0343858 0.869347 0.0996304 0.755744C0.164875 0.642142 0.258738 0.547611 0.371875 0.481562C0.75 0.261875 1.51188 0 3 0C4.16281 0 5.46344 0.459688 6.61094 0.865C7.535 1.19156 8.40781 1.5 9 1.5C9.76233 1.49769 10.5166 1.34366 11.2188 1.04688C11.3043 1.01078 11.3974 0.996406 11.4898 1.00503C11.5822 1.01366 11.671 1.04502 11.7484 1.09632C11.8257 1.14762 11.8892 1.21726 11.9331 1.29904C11.977 1.38082 12 1.47218 12 1.565V8.42C11.9999 8.5415 11.9643 8.66033 11.8977 8.76196C11.8311 8.86358 11.7364 8.94359 11.625 8.99219C11.3528 9.11125 10.3591 9.5 9 9.5C8.24563 9.5 7.30062 9.27688 6.30031 9.04031C5.17594 8.77469 4.01344 8.5 3 8.5C1.84781 8.5 1.25813 8.67437 1 8.78469V13.5C1 13.6326 0.947321 13.7598 0.853553 13.8536C0.759785 13.9473 0.632608 14 0.5 14Z"
+                  fill="#2D6B10"
+                />
+              </svg>
+            </div>
+
+            <Link to={""} className="edit_link">
+              edit quiz{" "}
+              <span>
+                <svg>
+                  <use xlinkHref="#link"></use>
+                </svg>
+              </span>
+            </Link>
+
+            <button>
+              <svg>
+                <use xlinkHref="#delete"></use>
+              </svg>
+            </button>
+          </li>
+        </ul>
+      </div>
+    );
+  });
 
 export const LessonContentAdditionArea: React.FC = React.memo(() => {
   return (
@@ -432,7 +446,8 @@ export const CourseEditPage: React.FC = () => {
       <section className="course_interaction_area">
         <h2 className="section_header">course lessons</h2>
         <div className="interaction_accordion">
-          <CourseEditAccordionEntry />
+          <CourseEditAccordionEntry position={0} />
+          <CourseEditAccordionEntry position={1} />
         </div>
       </section>
 
