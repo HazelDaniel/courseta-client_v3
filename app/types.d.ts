@@ -70,7 +70,7 @@ export interface QuizOptionType {
   quizID: string;
   id: string;
 }
-export interface QuizType {
+export interface QuestionType {
   id: string;
   question: string;
   points: number;
@@ -140,7 +140,7 @@ export interface LessonContentType {
 export interface LessonAssessmentType {
   id: number;
   completed: boolean;
-  questions: QuizType[];
+  questions: QuestionType[];
   lostPoints?: number;
   availablePoints: number;
 }
