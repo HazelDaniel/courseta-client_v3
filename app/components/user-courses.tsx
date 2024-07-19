@@ -11,10 +11,7 @@ export const UserCourses: React.FC<{
 }> = ({ isGeneric, courses }) => {
   return (
     <section className={userCoursesStyles.user_courses_styled}>
-      <div className={userCoursesStyles.courses_top}>
-        <h2>{isGeneric ? "All Courses" : "My Courses"}</h2>
-        {isGeneric ? <CourseFilter /> : null}
-      </div>
+      <h2>{isGeneric ? "All Courses" : "My Courses"}</h2>
       <div className={userCoursesStyles.courses_bottom}>
         <ul className={userCoursesStyles.courses_list_container}>
           {courses.length ? (
@@ -29,13 +26,40 @@ export const UserCourses: React.FC<{
               );
             })
           ) : (
-            <NoContent text="No courses to show" variant="courses"/>
+            <NoContent text="No courses to show" variant="courses" />
           )}
         </ul>
 
         {/* <div className="courses_pagination_area">
           <Pagination itemsPerPage={5} key={1}/>
         </div> */}
+      </div>
+      <div
+        className={`${userCoursesStyles.courses_top}${
+          isGeneric ? ` ${userCoursesStyles.vacuumed}` : ""
+        }`}
+      >
+        {isGeneric ? <CourseFilter /> : null}
+      </div>
+
+      <div className={userCoursesStyles.navigation_ctas}>
+        <button>
+          <span>
+            <svg>
+              <use xlinkHref="#arrow-left"></use>
+            </svg>
+          </span>{" "}
+          previous
+        </button>
+
+        <button className={userCoursesStyles.flipped}>
+          next
+          <span>
+            <svg>
+              <use xlinkHref="#arrow-left"></use>
+            </svg>
+          </span>{" "}
+        </button>
       </div>
     </section>
   );
