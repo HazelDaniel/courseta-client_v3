@@ -37,23 +37,25 @@ export const CourseFilter: React.FC = () => {
         </div>
       </div>
 
-      {filterVisible ? (
-        <div className={styles.filter_select_area}>
-          <ul className={styles.filter_select_parent}>
-            {filterData.map((entry, idx) => {
-              return <CourseFilterSelect data={entry} key={idx} />;
-            })}
-          </ul>
-          <button
-            className={styles.filter_select_cta}
-            onClick={() => {
-              setFilterVisible(false);
-            }}
-          >
-            Apply Filter
-          </button>
-        </div>
-      ) : null}
+      <div
+        className={`${styles.filter_select_area}${
+          filterVisible ? ` ${styles.visible}` : ""
+        }`}
+      >
+        <ul className={styles.filter_select_parent}>
+          {filterData.map((entry, idx) => {
+            return <CourseFilterSelect data={entry} key={idx} />;
+          })}
+        </ul>
+        <button
+          className={styles.filter_select_cta}
+          onClick={() => {
+            setFilterVisible(false);
+          }}
+        >
+          Apply Filter
+        </button>
+      </div>
     </div>
   );
 };
