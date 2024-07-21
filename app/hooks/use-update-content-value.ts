@@ -3,7 +3,8 @@ import { useDebounce } from "~/hooks/use-debounce";
 import {
   LessonUpdateContext,
   LessonUpdateContextValueType,
-} from "./lesson-update.context";
+} from "~/contexts/lesson-update.context";
+
 import {
   LessonUpdateActionType,
   __updateContent,
