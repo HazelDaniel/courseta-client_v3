@@ -135,6 +135,7 @@ export interface LessonContentType {
   title: string;
   href: string;
   type?: "video" | "text";
+  duration?: number
 }
 
 export interface LessonAssessmentType {
@@ -166,6 +167,7 @@ export interface LessonContentFormType extends Omit<LessonContentType, "id"> {
 }
 
 export interface QuizFormType {
+  id?: number;
   lessonPositionID: number;
   title: string;
   passScore: number;
