@@ -15,7 +15,7 @@ export const LessonContentAdditionModal: React.FC = React.memo(() => {
       }`}
     >
       <div className="lesson_content_addition_modal_top">
-        <h2>add lesson contents</h2>
+        <h2>add lesson content</h2>
         <span
           onClick={() => {
             modalDispatch(__hideModal("lessonContentAdditionModal"));

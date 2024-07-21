@@ -36,6 +36,8 @@ export const LessonCreationReducer = (
           ...state,
           lessons: [...state.lessons, { id: state.lessons.length }],
         };
+      // console.log("new state after creating a new lesson");
+      // console.log(newState);
       return newState;
     }
     case LessonCreationActionTypes.updateTitle: {

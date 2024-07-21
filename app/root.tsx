@@ -11,18 +11,12 @@ import {
 } from "@remix-run/react";
 
 import type {
-  LinksFunction,
   LoaderFunction,
   LoaderFunctionArgs,
 } from "@remix-run/node";
-import { AuthType, DBUserType } from "./types";
-import { AuthDao } from "./dao/auth";
-import axios from "axios";
-import { BASE_URL } from "./config/base";
-import { transformUserProfile } from "./transformers/users";
+import { AuthType } from "./types";
 import "~/styles/root.css";
-import { NotFound } from "./components/not-found";
-import { creatorsData, studentsData } from "./data/users";
+import { creatorsData } from "./data/users";
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   try {
