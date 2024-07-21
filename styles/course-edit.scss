@@ -239,8 +239,24 @@
       min-width: 80rem;
       width: 60% !important;
       margin-right: unset;
+
       .input_form_top {
         display: none !important;
+      }
+      .input_form_bottom {
+        flex: 1;
+        // max-height: 20rem;
+        display: flex;
+        gap: 20%;
+        min-width: 80rem !important;
+
+        .input_wrapper {
+          @extend ._input_wrapper;
+          min-width: 95%;
+          height: max-content !important;
+          align-self: center;
+        }
+
       }
       .input_wrapper {
         width: 100%;
