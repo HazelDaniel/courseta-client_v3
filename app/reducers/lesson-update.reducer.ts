@@ -1,17 +1,24 @@
-import { LessonAssessmentType, LessonContentType } from "~/types";
+import {
+  LessonAssessmentType,
+  LessonContentFormType,
+  LessonContentType,
+  QuizFormType,
+} from "~/types";
 import { isEqual } from "~/utils/comparison";
 const LessonUpdateActionTypes = {
   addContent: "ADD_CONTENT",
   addQuiz: "ADD_QUIZ",
   updateContent: "UPDATE_CONTENT",
   updateQuiz: "UPDATE_QUIZ",
-  // updateTitle: "UPDATE_TITLE",
   updatePosition: "UPDATE_POSITION",
 };
 
 export type LessonUpdateType = keyof typeof LessonUpdateActionTypes;
 interface StateContentType extends Partial<LessonContentType> {
   lessonPosition: number;
+}
+interface ItemAdditionPayloadType {
+  lessonPositionID: number;
 }
 interface StateQuizType extends LessonAssessmentType {
   lessonPosition: number;
@@ -37,8 +44,8 @@ export interface LessonUpdateActionType {
   payload?:
     | string
     | number
-    | Partial<LessonContentType>
-    | Partial<LessonAssessmentType>;
+    | Partial<LessonContentFormType>
+    | Partial<QuizFormType>;
 }
 
 export const LessonUpdateReducer = (
@@ -46,13 +53,15 @@ export const LessonUpdateReducer = (
   action: LessonUpdateActionType
 ) => {
   let newState: LessonUpdateStateType;
-  console.log(
-    "we hit the reducer with a state ",
-    state,
-    " and an action of ",
-    action.type,
-    " type"
-  );
+  // console.log(
+  //   "we hit the reducer with a state ",
+  //   state,
+  //   " and an action of ",
+  //   action.type,
+  //   " type"
+  // );
+  const payload: ItemAdditionPayloadType =
+    action.payload as ItemAdditionPayloadType;
   switch (action.type) {
     case LessonUpdateActionTypes.addContent: {
       if (state.position === undefined) return state; // we need a lesson position
@@ -68,7 +77,10 @@ export const LessonUpdateReducer = (
           ...state,
           lessonContents: [
             ...state.lessonContents,
-            { id: state.lessonContents.length, lessonPosition: state.position },
+            {
+              id: state.lessonContents.length,
+              lessonPosition: payload.lessonPositionID,
+            },
           ],
         };
       return newState;
@@ -81,24 +93,28 @@ export const LessonUpdateReducer = (
           el.id !== undefined &&
           el.lessonPosition !== undefined
       ); //again, having only the id field
-      if (emptyQuiz || state.lessonQuizzes.length) return state;
+      if (
+        emptyQuiz ||
+        state.lessonQuizzes.filter((el) => {
+          // console.log("found a matching quiz : ", el);
+          return el.id === payload.lessonPositionID;
+        }).length
+      )
+        return state;
       else {
         newState = {
           ...state,
           lessonQuizzes: [
             ...state.lessonQuizzes,
-            { id: state.lessonQuizzes.length, lessonPosition: state.position },
+            {
+              id: state.lessonQuizzes.length,
+              lessonPosition: payload.lessonPositionID,
+            },
           ],
         };
         return newState;
       }
     }
-    // case "updateTitle": {
-    //   let payload: string = action.payload as string;
-    //   if (state.lessonTitle === action.payload) return state;
-    //   newState = { ...state, lessonTitle: payload };
-    //   return newState;
-    // }
     case LessonUpdateActionTypes.updateContent: {
       if (state.position === undefined) return state; // we need a lesson position
       newState = { ...state };
@@ -106,6 +122,7 @@ export const LessonUpdateReducer = (
       const contentIndex = state.lessonContents.findIndex(
         (el) => el.id === payload.id
       );
+      // console.log("content index is ", contentIndex);
       const resultContent: StateContentType = {
         ...state.lessonContents[contentIndex],
         ...payload,
@@ -135,7 +152,7 @@ export const LessonUpdateReducer = (
       let payload: number = action.payload as number;
       if (state.position === action.payload) return state;
       newState = { ...state, position: payload };
-      console.log("new state is ", newState);
+      // console.log("new state is ", newState);
       return newState;
     }
     default: {
@@ -146,20 +163,26 @@ export const LessonUpdateReducer = (
 
 // updatePosition: "UPDATE_POSITION",
 
-export const __addContent: () => LessonUpdateActionType = () => {
+export const __addContent: (
+  payload: ItemAdditionPayloadType
+) => LessonUpdateActionType = (payload) => {
   return {
     type: LessonUpdateActionTypes.addContent as keyof typeof LessonUpdateActionTypes,
+    payload,
   };
 };
 
-export const __addQuiz: () => LessonUpdateActionType = () => {
+export const __addQuiz: (
+  payload: ItemAdditionPayloadType
+) => LessonUpdateActionType = (payload) => {
   return {
     type: LessonUpdateActionTypes.addQuiz as keyof typeof LessonUpdateActionTypes,
+    payload,
   };
 };
 
 export const __updateContent: (
-  payload: Partial<LessonContentType>
+  payload: Partial<LessonContentFormType>
 ) => LessonUpdateActionType = (payload) => {
   return {
     type: LessonUpdateActionTypes.updateContent as keyof typeof LessonUpdateActionTypes,
@@ -168,7 +191,7 @@ export const __updateContent: (
 };
 
 export const __updateQuiz: (
-  payload: Partial<LessonAssessmentType>
+  payload: Partial<QuizFormType>
 ) => LessonUpdateActionType = (payload) => {
   return {
     type: LessonUpdateActionTypes.updateQuiz as keyof typeof LessonUpdateActionTypes,
@@ -184,12 +207,3 @@ export const __updatePosition: (payload: number) => LessonUpdateActionType = (
     payload,
   };
 };
-
-// export const __updateTitle: (
-//   payload: string
-// ) => LessonUpdateActionType = (payload) => {
-//   return {
-//     type: LessonUpdateActionTypes.updateTitle as keyof typeof LessonUpdateActionTypes,
-//     payload,
-//   };
-// };
