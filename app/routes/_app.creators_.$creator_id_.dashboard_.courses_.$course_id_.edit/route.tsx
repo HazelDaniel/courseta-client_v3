@@ -1,5 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import {
+  Form,
   Link,
   json,
   useLoaderData,
@@ -7,7 +8,9 @@ import {
   useOutletContext,
 } from "@remix-run/react";
 import React, {
+  useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -23,6 +26,7 @@ import "~/styles/course-edit.css";
 
 import {
   CourseEntryType,
+  CourseLessonType,
   CreatorProfileType,
   DashboardCustomInputType,
   DefaultCourseFormDataType,
@@ -40,6 +44,30 @@ import {
   ModalContextValueType,
   ModalProvider,
 } from "~/contexts/modal.context";
+import {
+  InitialLessonUpdateState,
+  LessonUpdateReducer,
+  __addContent,
+  __addQuiz,
+  __updatePosition,
+} from "~/reducers/lesson-update.reducer";
+import {
+  LessonUpdateContext,
+  LessonUpdateContextValueType,
+  LessonUpdateProvider,
+} from "~/contexts/lesson-update.context";
+import {
+  InitialLessonCreationState,
+  LessonCreationReducer,
+  __addLesson,
+  __updateTitle,
+} from "~/reducers/lesson-creation.reducer";
+import {
+  LessonCreationContext,
+  LessonCreationContextValueType,
+  LessonCreationProvider,
+} from "~/contexts/lesson-creation.context";
+import { useDebounce } from "~/hooks/use-debounce";
 
 export const courseTitleUpdateFormData: DashboardCustomInputType = {
   heading: "",
@@ -105,7 +133,7 @@ export const courseLessonTitleCreateForm: DashboardCustomInputType = {
   },
   inputs: [
     {
-      name: "lessons_title",
+      name: "lesson_title",
       title: "Lesson Title",
       type: "text",
     },
@@ -149,7 +177,7 @@ export const AccordionPromptbox: React.FC<{ position: number }> = React.memo(
         <p>Choose an item to add</p>
         <div className="prompt_box_ctas">
           <button
-            onMouseDown={(e) => {
+            onClick={(e) => {
               e.stopPropagation();
               modalDispatch(__showModal("lessonContentAdditionModal"));
             }}
@@ -286,44 +314,142 @@ export const CourseEditAccordionEntry: React.FC<{ position: number }> =
     );
   });
 
-export const LessonContentAdditionArea: React.FC = React.memo(() => {
-  return (
-    <section className="lesson_content_addition_area">
-      <div className="lesson_addition_top">
-        <DashboardFormInput
-          data={courseLessonTitleCreateForm}
-          defaultData={{}}
-          asInput
-        />
-        <div className="lesson_addition_cta_area">
-          <button>
-            <span>
-              <svg>
-                <use xlinkHref="#add"></use>
-              </svg>
-            </span>{" "}
-            add content
-          </button>
+export const LessonTitleInput: React.FC<{
+  pos: number;
+}> = ({ pos }) => {
+  const [lessonTitleState, setLessonTitleState] = useState<string>("");
+  const debouncedLessonTitle = useDebounce<string>(lessonTitleState, 1000);
+  const { lessonCreationDispatch } = useContext(
+    LessonCreationContext
+  ) as LessonCreationContextValueType;
+  const { lessonUpdateDispatch } = useContext(
+    LessonUpdateContext
+  ) as LessonUpdateContextValueType;
 
-          <button>
-            <span>
-              <svg>
-                <use xlinkHref="#add"></use>
-              </svg>
-            </span>{" "}
-            add quiz
-          </button>
-        </div>
-      </div>
-      <ul className="content_addition_area">
-        <LessonItemAdditionBox lessonPositionID={0} itemType="quiz" />
-      </ul>
+  useEffect(() => {
+    if (debouncedLessonTitle)
+      lessonCreationDispatch(
+        __updateTitle({ title: debouncedLessonTitle, id: pos })
+      );
+  }, [debouncedLessonTitle, lessonCreationDispatch]);
+
+  useEffect(() => {
+    lessonUpdateDispatch(__updatePosition(pos));
+  }, []);
+
+  return (
+    <input
+      type="text"
+      id={`lesson${pos}.lesson_title`}
+      name={`lesson${pos}.lesson_title`}
+      value={lessonTitleState}
+      onChange={(e) => setLessonTitleState(e.target.value)}
+    />
+  );
+};
+
+export const LessonContentAdditionArea: React.FC = React.memo(() => {
+  const [lessonUpdateState, lessonUpdateDispatch] = useReducer(
+    LessonUpdateReducer,
+    InitialLessonUpdateState
+  );
+  const lessonUpdateContextValue = useMemo(
+    () => ({ lessonUpdateState, lessonUpdateDispatch }),
+    [lessonUpdateState, lessonUpdateDispatch]
+  );
+  const { lessonCreationState } = useContext(
+    LessonCreationContext
+  ) as LessonCreationContextValueType;
+
+  return (
+    <LessonUpdateProvider value={lessonUpdateContextValue}>
+      {lessonCreationState.lessons.map((lesson, idx) => {
+        return (
+          <section className="lesson_content_addition_area" key={idx}>
+            <div className="lesson_addition_top">
+              <Form className="input_form none">
+                <div className="input_form_bottom">
+                  <div className="input_wrapper lesson_title">
+                    <label htmlFor="add_lesson_title.lesson_title">
+                      Lesson title
+                    </label>
+                    <LessonTitleInput pos={lesson.id as number} />
+                  </div>
+                </div>
+              </Form>
+
+              <div className="lesson_addition_cta_area">
+                <button
+                  onClick={() =>
+                    lessonUpdateDispatch(
+                      __addContent({ lessonPositionID: lesson.id as number })
+                    )
+                  }
+                >
+                  <span>
+                    <svg>
+                      <use xlinkHref="#add"></use>
+                    </svg>
+                  </span>{" "}
+                  add content
+                </button>
+
+                <button
+                  onClick={() =>
+                    lessonUpdateDispatch(
+                      __addQuiz({ lessonPositionID: lesson.id as number })
+                    )
+                  }
+                >
+                  <span>
+                    <svg>
+                      <use xlinkHref="#add"></use>
+                    </svg>
+                  </span>{" "}
+                  add quiz
+                </button>
+              </div>
+            </div>
+
+            <ul className="content_addition_area">
+              <>
+                {lessonUpdateState.lessonContents
+                  .filter((content) => content.lessonPosition === lesson.id)
+                  .map((content, contentIdx) => {
+                    return (
+                      <LessonItemAdditionBox
+                        lessonPositionID={idx}
+                        itemType="content"
+                        key={contentIdx}
+                        itemID={content.id}
+                        withUpdate
+                      />
+                    );
+                  })}
+                {lessonUpdateState.lessonQuizzes
+                  .filter((quiz) => quiz.lessonPosition === lesson.id)
+                  .map((quiz, quizIdx) => {
+                    return (
+                      <LessonItemAdditionBox
+                        lessonPositionID={idx}
+                        itemType="quiz"
+                        key={quizIdx}
+                        itemID={quiz.id}
+                        withUpdate
+                      />
+                    );
+                  })}
+              </>
+            </ul>
+          </section>
+        );
+      })}
 
       <div className="course_creation_cta_area">
         <button>cancel</button>
         <button className="primary">save changes</button>
       </div>
-    </section>
+    </LessonUpdateProvider>
   );
 });
 
@@ -430,6 +556,34 @@ export const CourseCreationArea: React.FC = React.memo(() => {
   );
 });
 
+export const LessonAdditionArea: React.FC = () => {
+  const [lessonCreationState, lessonCreationDispatch] = useReducer(
+    LessonCreationReducer,
+    InitialLessonCreationState
+  );
+  const lessonCreationContextValue = useMemo(
+    () => ({ lessonCreationState, lessonCreationDispatch }),
+    [lessonCreationState, lessonCreationDispatch]
+  );
+  console.log("lesson addition area rendering");
+
+  return (
+    <LessonCreationProvider value={lessonCreationContextValue}>
+      <div className="lesson_add_cta_area">
+        <button onClick={() => lessonCreationDispatch(__addLesson())}>
+          <span>
+            <svg>
+              <use xlinkHref="#add"></use>
+            </svg>
+          </span>{" "}
+          add lesson
+        </button>
+      </div>
+
+      <LessonContentAdditionArea />
+    </LessonCreationProvider>
+  );
+};
 export const CourseEditPage: React.FC = () => {
   const contextData = useOutletContext() as { profile: CreatorProfileType };
 
@@ -457,18 +611,8 @@ export const CourseEditPage: React.FC = () => {
 
       <LessonContentAdditionModal />
 
-      <div className="lesson_add_cta_area">
-        <button>
-          <span>
-            <svg>
-              <use xlinkHref="#add"></use>
-            </svg>
-          </span>{" "}
-          add lesson
-        </button>
-      </div>
+      <LessonAdditionArea />
 
-      <LessonContentAdditionArea />
       <ExamEditArea />
     </ModalProvider>
   );
