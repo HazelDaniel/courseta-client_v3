@@ -48,6 +48,7 @@ export const CreatorsCourses: React.FC = () => {
               className={`course_table_entry${
                 course.archived ? ` archived` : ""
               }`}
+              key={course.id}
             >
               <div className="entry_left">
                 <div className="course_avatar">
@@ -69,6 +70,7 @@ export const CreatorsCourses: React.FC = () => {
               <div className="entry_right">
                 <span
                   onMouseDown={() => {
+                    if (course.archived)  return;
                     navigate(`./${course.id}/edit`);
                   }}
                   >
