@@ -565,7 +565,6 @@ export const LessonAdditionArea: React.FC = () => {
     () => ({ lessonCreationState, lessonCreationDispatch }),
     [lessonCreationState, lessonCreationDispatch]
   );
-  console.log("lesson addition area rendering");
 
   return (
     <LessonCreationProvider value={lessonCreationContextValue}>

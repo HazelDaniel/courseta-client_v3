@@ -1,9 +1,8 @@
 import { Form } from "@remix-run/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useUpdateLessonItemValue } from "~/hooks/use-update-content-value";
 import "~/styles/lesson-item-addition-box.css";
 import {
-  LessonAssessmentType,
   LessonContentFormType,
   LessonContentType,
   QuizFormType,

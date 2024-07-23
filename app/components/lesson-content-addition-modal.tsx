@@ -29,9 +29,9 @@ export const LessonContentAdditionModal: React.FC = React.memo(() => {
             <path
               d="M26 2L2 26M2 2L26 26"
               stroke="var(--icon-fill-here)"
-              stroke-width="4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </span>
