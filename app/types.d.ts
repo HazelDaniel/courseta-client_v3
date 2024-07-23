@@ -64,7 +64,7 @@ export interface AuthType {
   user: Pick<StudentProfileType, "user">["user"] | CreatorProfileType["user"];
 }
 
-export interface QuizOptionType {
+export interface QuizAnswerType {
   correct: boolean;
   text: string;
   quizID: string;
@@ -74,7 +74,8 @@ export interface QuestionType {
   id: string;
   question: string;
   points: number;
-  options: QuizOptionType[];
+  options: QuizAnswerType[];
+  trashed?: boolean;
 }
 
 export interface CourseEntryType {
@@ -135,7 +136,7 @@ export interface LessonContentType {
   title: string;
   href: string;
   type?: "video" | "text";
-  duration?: number
+  duration?: number;
 }
 
 export interface LessonAssessmentType {
@@ -249,3 +250,23 @@ export interface DashboardCustomInputType {
 }
 
 export interface DBCreatorType extends DBUserType {}
+
+//RE-USABLE REDUCER TYPES
+export interface StateAnswerType
+  extends Partial<Omit<QuizAnswerType, "quizID">> {
+  questionPosition: number;
+  id: string;
+}
+
+export interface StateQuestionType
+  extends Partial<Omit<QuestionType, "options">> {
+  position: number;
+  trashed?: boolean;
+  loaded?: boolean;
+}
+
+//RE-USABLE STATE TYPES
+export interface QuestionModalStateType {
+  question: Omit<StateQuestionType, "id">;
+  answers: Partial<StateAnswerType>[];
+}
