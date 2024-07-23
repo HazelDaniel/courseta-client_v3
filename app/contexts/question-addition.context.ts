@@ -1,14 +1,14 @@
 import {
-  InitialAnswerCreationState,
-  AnswerCreationActionType,
-} from "./../reducers/question-creation.reducer";
+  InitialQuestionAdditionState,
+  QuestionAdditionActionType,
+} from "~/reducers/question-addition.reducer";
 import React from "react";
 
-export interface AnswerCreationContextValueType {
-  answerCreationState: typeof InitialAnswerCreationState;
-  answerCreationDispatch: React.Dispatch<AnswerCreationActionType>;
+export interface QuestionAdditionContextValueType {
+  questionAdditionState: typeof InitialQuestionAdditionState;
+  questionAdditionDispatch: React.Dispatch<QuestionAdditionActionType>;
 }
 
-export const answerCreationContext =
-  React.createContext<AnswerCreationContextValueType | null>(null);
-export const AnswerCreationProvider = answerCreationContext.Provider;
+export const questionAdditionContext =
+  React.createContext<QuestionAdditionContextValueType | null>(null);
+export const QuestionAdditionProvider = questionAdditionContext.Provider;
