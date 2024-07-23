@@ -99,6 +99,7 @@
       }
       &.archived {
         opacity: 0.5;
+        background-color: #00000007;
         .entry_right .archive_button {
           transform: scale(0.9, -0.9);
         }

@@ -126,3 +126,7 @@
     }
   }
 }
+
+.input_form {
+  @extend ._input_form;
+}
