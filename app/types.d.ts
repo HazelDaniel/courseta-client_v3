@@ -270,3 +270,19 @@ export interface QuestionModalStateType {
   question: Omit<StateQuestionType, "id">;
   answers: Partial<StateAnswerType>[];
 }
+
+export interface CourseEditStateType {
+  title: string;
+  description: string;
+  thumbnail: string;
+  tags: string;
+}
+
+export interface AssessmentEditStateType {
+  title?: string;
+  passScore?: number;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  duration?: number;
+}
