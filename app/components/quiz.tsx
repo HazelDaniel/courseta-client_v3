@@ -1,4 +1,4 @@
-import { QuizOptionType, QuestionType } from "~/types";
+import { QuizAnswerType, QuestionType } from "~/types";
 
 import styles from "~/styles/assessment.module.css";
 
@@ -14,7 +14,7 @@ export const Quiz: React.FC<{
       </span>
 
       <div className={styles.options_area}>
-        {value.options.map((opt: QuizOptionType, index) => {
+        {value.options.map((opt: QuizAnswerType, index) => {
           return (
             <div className={styles.option} key={index}>
               <input
