@@ -1,11 +1,25 @@
 import { QuizAnswerType } from "~/types";
 import { isEqual } from "~/utils/comparison";
-const AnswerCreationActionTypes = {
+
+//UTILS
+const computeAnswerID: (state: QuestionCreationStateType) => string = (
+  state
+) => {
+  if (state.answers.length > 0) {
+    return (
+      +(state.answers[state.answers.length - 1].id || "0") + 1
+    ).toString();
+  } else {
+    return `${state.answers.length}`;
+  }
+};
+
+const QuestionCreationActionTypes = {
   addAnswer: "ADD_ANSWER",
   updateAnswer: "UPDATE_ANSWER",
 };
 
-export type AnswerUpdateType = keyof typeof AnswerCreationActionTypes;
+export type AnswerUpdateType = keyof typeof QuestionCreationActionTypes;
 
 interface StateAnswerType extends Partial<Omit<QuizAnswerType, "quizID">> {
   questionPosition: number;
@@ -15,27 +29,27 @@ interface ItemAdditionPayloadType {
   questionPositionID: number;
 }
 
-export interface AnswerCreationStateType {
+export interface QuestionCreationStateType {
   answers: Partial<StateAnswerType>[];
 }
 
-export const InitialAnswerCreationState: AnswerCreationStateType = {
+export const InitialQuestionCreationState: QuestionCreationStateType = {
   answers: [],
 };
 
-export interface AnswerCreationActionType {
-  type: keyof typeof AnswerCreationActionTypes;
+export interface QuestionCreationActionType {
+  type: keyof typeof QuestionCreationActionTypes;
   payload?:
     | Partial<StateAnswerType>
     | Partial<StateAnswerType>
     | ItemAdditionPayloadType;
 }
 
-export const AnswerCreationReducer = (
-  state = InitialAnswerCreationState,
-  action: AnswerCreationActionType
+export const QuestionCreationReducer = (
+  state = InitialQuestionCreationState,
+  action: QuestionCreationActionType
 ) => {
-  let newState: AnswerCreationStateType;
+  let newState: QuestionCreationStateType;
   console.log(
     "we hit the question addition reducer with a state ",
     state,
@@ -47,7 +61,7 @@ export const AnswerCreationReducer = (
   const payload: ItemAdditionPayloadType =
     action.payload as ItemAdditionPayloadType;
   switch (action.type) {
-    case AnswerCreationActionTypes.addAnswer: {
+    case QuestionCreationActionTypes.addAnswer: {
       let emptyAnswer = state.answers.find(
         (el) =>
           Object.keys(el).length === 2 &&
@@ -61,14 +75,14 @@ export const AnswerCreationReducer = (
           answers: [
             ...state.answers,
             {
-              id: `${state.answers.length}`,
+              id: computeAnswerID(state),
               questionPosition: payload.questionPositionID,
             },
           ],
         };
       return newState;
     }
-    case AnswerCreationActionTypes.updateAnswer: {
+    case QuestionCreationActionTypes.updateAnswer: {
       newState = { ...state };
       const payload = action.payload as StateAnswerType;
       const answerIndex = state.answers.findIndex((el) => el.id === payload.id);
@@ -89,18 +103,18 @@ export const AnswerCreationReducer = (
 
 export const __addAnswer: (
   payload: ItemAdditionPayloadType
-) => AnswerCreationActionType = (payload) => {
+) => QuestionCreationActionType = (payload) => {
   return {
-    type: AnswerCreationActionTypes.addAnswer as keyof typeof AnswerCreationActionTypes,
+    type: QuestionCreationActionTypes.addAnswer as keyof typeof QuestionCreationActionTypes,
     payload,
   };
 };
 
 export const __updateAnswer: (
   payload: Partial<StateAnswerType>
-) => AnswerCreationActionType = (payload) => {
+) => QuestionCreationActionType = (payload) => {
   return {
-    type: AnswerCreationActionTypes.updateAnswer as keyof typeof AnswerCreationActionTypes,
+    type: QuestionCreationActionTypes.updateAnswer as keyof typeof QuestionCreationActionTypes,
     payload,
   };
 };

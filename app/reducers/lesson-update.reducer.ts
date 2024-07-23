@@ -96,8 +96,8 @@ export const LessonUpdateReducer = (
       if (
         emptyQuiz ||
         state.lessonQuizzes.filter((el) => {
-          // console.log("found a matching quiz : ", el);
-          return el.id === payload.lessonPositionID;
+          console.log("found a matching quiz : ", el);
+          return el.lessonPosition === payload.lessonPositionID;
         }).length
       )
         return state;
