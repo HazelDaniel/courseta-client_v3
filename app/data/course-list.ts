@@ -12,7 +12,6 @@ export const courseData: CourseEntryType[] = [
     createdAt: "2022-04-01T12:00:00Z",
     updatedAt: "2023-06-21T12:00:00Z",
     tags: ["programming", "introduction"],
-    archived: true,
   },
   {
     imageUrl: "/images/programming-1.jpg",
@@ -174,6 +173,10 @@ export const courseDataDetailed: CourseDetailType[] = [
             id: 10,
             title: "Sorting algorithms - A refresher",
             href: "https://en.wikipedia.org/wiki/Sorting_algorithm#:~:text=In%20computer%20science%2C%20a%20sorting,and%20either%20ascending%20or%20descending.",
+          },          {
+            id: 12,
+            title: "deep dive into kosaraju's algorithm",
+            href: "https://en.wikipedia.org/wiki/Sorting_algorithm#:~:text=In%20computer%20science%2C%20a%20sorting,and%20either%20ascending%20or%20descending.",
           },
         ],
         assessment: {
@@ -205,98 +208,98 @@ export const courseDataDetailed: CourseDetailType[] = [
                   quizID: "1",
                   id: "3",
                 },
-    ],
-  },
-  {
-    id: "2",
-    question:
-      "What is the main advantage of using a blockchain for data storage?",
-    points: 20,
-    options: [
-      {
-        correct: true,
-        text: "Decentralization in a blockchain ensures data immutability and tamper-proof records.",
-        quizID: "2",
-        id: "1",
-      },
-      {
-        correct: false,
-        text: "Centralized servers often offer faster transaction processing speeds.",
-        quizID: "2",
-        id: "2",
-      },
-      {
-        correct: false,
-        text: "Cryptocurrencies are a specific application built on blockchain technology.",
-        quizID: "2",
-        id: "3",
-      },
-    ],
-  },
-  {
-    id: "3",
-    question:
-      "What is a smart contract and how does it function on a blockchain?",
-    points: 30,
-    options: [
-      {
-        correct: true,
-        text: "A smart contract is a self-executing program stored on a blockchain that automatically executes when predetermined conditions are met.",
-        quizID: "3",
-        id: "1",
-      },
-      {
-        correct: false,
-        text: "Miners write and deploy smart contracts, not users.",
-        quizID: "3",
-        id: "2",
-      },
-      {
-        correct: false,
-        text: "Blockchain transactions involve transferring cryptocurrency, smart contracts can manage various data and agreements.",
-        quizID: "3",
-        id: "3",
-      },
-      {
-        correct: false,
-        text: "some test question",
-        quizID: "3",
-        id: "4",
-      },
-      {
-        correct: false,
-        text: "Blockchain transactions involve transferring cryptocurrency, smart contracts can manage various data and agreements.",
-        quizID: "3",
-        id: "5",
-      },
-    ],
-  },
-  {
-    id: "4",
-    question:
-      "What are some potential challenges associated with blockchain technology?",
-    points: 40,
-    options: [
-      {
-        correct: true,
-        text: "Scalability is a challenge for some blockchains, limiting the number of transactions they can process.",
-        quizID: "4",
-        id: "1",
-      },
-      {
-        correct: false,
-        text: "Security is a major strength of blockchain technology.",
-        quizID: "4",
-        id: "2",
-      },
-      {
-        correct: false,
-        text: "Widespread adoption and real-world use cases are still being explored for blockchain.",
-        quizID: "4",
-        id: "3",
-      }, // Combined two points for readability
-    ],
-  },
+              ],
+            },
+            {
+              id: "2",
+              question:
+                "What is the main advantage of using a blockchain for data storage?",
+              points: 20,
+              options: [
+                {
+                  correct: true,
+                  text: "Decentralization in a blockchain ensures data immutability and tamper-proof records.",
+                  quizID: "2",
+                  id: "1",
+                },
+                {
+                  correct: false,
+                  text: "Centralized servers often offer faster transaction processing speeds.",
+                  quizID: "2",
+                  id: "2",
+                },
+                {
+                  correct: false,
+                  text: "Cryptocurrencies are a specific application built on blockchain technology.",
+                  quizID: "2",
+                  id: "3",
+                },
+              ],
+            },
+            {
+              id: "3",
+              question:
+                "What is a smart contract and how does it function on a blockchain?",
+              points: 30,
+              options: [
+                {
+                  correct: true,
+                  text: "A smart contract is a self-executing program stored on a blockchain that automatically executes when predetermined conditions are met.",
+                  quizID: "3",
+                  id: "1",
+                },
+                {
+                  correct: false,
+                  text: "Miners write and deploy smart contracts, not users.",
+                  quizID: "3",
+                  id: "2",
+                },
+                {
+                  correct: false,
+                  text: "Blockchain transactions involve transferring cryptocurrency, smart contracts can manage various data and agreements.",
+                  quizID: "3",
+                  id: "3",
+                },
+                {
+                  correct: false,
+                  text: "some test question",
+                  quizID: "3",
+                  id: "4",
+                },
+                {
+                  correct: false,
+                  text: "Blockchain transactions involve transferring cryptocurrency, smart contracts can manage various data and agreements.",
+                  quizID: "3",
+                  id: "5",
+                },
+              ],
+            },
+            {
+              id: "4",
+              question:
+                "What are some potential challenges associated with blockchain technology?",
+              points: 40,
+              options: [
+                {
+                  correct: true,
+                  text: "Scalability is a challenge for some blockchains, limiting the number of transactions they can process.",
+                  quizID: "4",
+                  id: "1",
+                },
+                {
+                  correct: false,
+                  text: "Security is a major strength of blockchain technology.",
+                  quizID: "4",
+                  id: "2",
+                },
+                {
+                  correct: false,
+                  text: "Widespread adoption and real-world use cases are still being explored for blockchain.",
+                  quizID: "4",
+                  id: "3",
+                }, // Combined two points for readability
+              ],
+            },
           ],
           lostPoints: 0,
         },
@@ -319,19 +322,19 @@ export const courseDataDetailed: CourseDetailType[] = [
               correct: true,
               text: "A storage location paired with an associated symbolic name.",
               quizID: "ex1",
-              id: "exopt1"
+              id: "exopt1",
             },
             {
               correct: false,
               text: "A function",
               quizID: "ex1",
-              id: "exopt2"
-            }
-          ]
-        }
+              id: "exopt2",
+            },
+          ],
+        },
       ],
-      availablePoints: 20
-    }
+      availablePoints: 20,
+    },
   },
   {
     imageUrl: "/images/programming-1.jpg",
