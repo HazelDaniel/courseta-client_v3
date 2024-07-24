@@ -1,7 +1,12 @@
-import { DashboardCustomInputType, DefaultFormDataType } from "~/types";
+import {
+  AssessmentEditStateType,
+  DashboardCustomInputType,
+  DefaultFormDataType,
+} from "~/types";
 import { DashboardFormInput } from "./dashboard-form-input";
 import { useNavigate } from "@remix-run/react";
 import "~/styles/assessment-addition.css";
+import { ChangeEvent, useCallback, useState } from "react";
 
 export const AssessmentTitleFormData: DashboardCustomInputType = {
   heading: "",
@@ -68,7 +73,7 @@ export const AssessmentStartDateFormData: DashboardCustomInputType = {
     {
       name: "start_date",
       title: "start date",
-      type: "date",
+      type: "datetime-local",
     },
   ],
   buttons: [],
@@ -87,7 +92,7 @@ export const AssessmentEndDateFormData: DashboardCustomInputType = {
     {
       name: "end_date",
       title: "end date",
-      type: "date",
+      type: "datetime-local",
     },
   ],
   buttons: [],
@@ -117,6 +122,34 @@ export const AssessmentAdditionSection: React.FC<{
   variant: "exam" | "quiz";
 }> = ({ variant }) => {
   const navigate = useNavigate();
+  const [assessmentEditState, setAssessmentEditState] =
+    useState<AssessmentEditStateType>({});
+
+  const AssessmentEditStateHandler = useCallback(
+    (
+      source: ChangeEvent,
+      setFunction: React.Dispatch<
+        React.SetStateAction<AssessmentEditStateType>
+      >,
+      keySelector: keyof AssessmentEditStateType,
+      isNumeric?: boolean
+    ) => {
+      const target: HTMLInputElement = source.target as HTMLInputElement;
+      setFunction((prevState) => {
+        if (target.value === prevState[keySelector]) {
+          return prevState;
+        }
+        return {
+          ...prevState,
+          [keySelector]: isNumeric ? +target.value : target.value || target,
+        };
+      });
+    },
+    []
+  );
+
+  console.log("new assessment state is ", assessmentEditState);
+
   return (
     <section className="quiz_addition_area">
       <h2 className="section_header">Add quiz</h2>
@@ -125,12 +158,23 @@ export const AssessmentAdditionSection: React.FC<{
           defaultData={{} as DefaultFormDataType}
           data={AssessmentTitleFormData}
           asInput
+          onChangeHandler={(e) => {
+            AssessmentEditStateHandler(e, setAssessmentEditState, "title");
+          }}
         />
 
         <DashboardFormInput
           defaultData={{} as DefaultFormDataType}
           data={AssessmentPassScoreFormData}
           asInput
+          onChangeHandler={(e) => {
+            AssessmentEditStateHandler(
+              e,
+              setAssessmentEditState,
+              "passScore",
+              true
+            );
+          }}
         />
 
         {variant === "exam" ? (
@@ -139,17 +183,39 @@ export const AssessmentAdditionSection: React.FC<{
               defaultData={{} as DefaultFormDataType}
               data={AssessmentDurationFormData}
               asInput
+              onChangeHandler={(e) => {
+                AssessmentEditStateHandler(
+                  e,
+                  setAssessmentEditState,
+                  "duration",
+                  true
+                );
+              }}
             />
 
             <DashboardFormInput
               defaultData={{} as DefaultFormDataType}
               data={AssessmentStartDateFormData}
               asInput
+              onChangeHandler={(e) => {
+                AssessmentEditStateHandler(
+                  e,
+                  setAssessmentEditState,
+                  "startDate"
+                );
+              }}
             />
             <DashboardFormInput
               defaultData={{} as DefaultFormDataType}
               data={AssessmentEndDateFormData}
               asInput
+              onChangeHandler={(e) => {
+                AssessmentEditStateHandler(
+                  e,
+                  setAssessmentEditState,
+                  "endDate"
+                );
+              }}
             />
           </>
         ) : null}
@@ -158,6 +224,13 @@ export const AssessmentAdditionSection: React.FC<{
           defaultData={{} as DefaultFormDataType}
           data={AssessmentDescriptionFormData}
           asInput
+          onChangeHandler={(e) => {
+            AssessmentEditStateHandler(
+              e,
+              setAssessmentEditState,
+              "description"
+            );
+          }}
         />
       </div>
 
