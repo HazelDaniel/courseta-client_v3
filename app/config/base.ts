@@ -4,6 +4,7 @@ export const BASE_URL: string =
   import.meta.env.VITE_ENV === "dev"
     ? import.meta.env.VITE_BASE_URL_DEV
     : import.meta.env.VITE_BASE_URL_PROD;
+export const FAKE_REQUEST_DELAY = 2000;
 
 export const updateInterceptorWithToken = () => {
   const newToken = AuthDao.getAccessToken;
