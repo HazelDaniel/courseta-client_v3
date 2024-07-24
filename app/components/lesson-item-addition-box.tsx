@@ -1,8 +1,9 @@
 import { Form } from "@remix-run/react";
-import { useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useUpdateLessonItemValue } from "~/hooks/use-update-content-value";
 import "~/styles/lesson-item-addition-box.css";
 import {
+  LessonContentAdditionStateType,
   LessonContentFormType,
   LessonContentType,
   QuizFormType,
@@ -88,6 +89,7 @@ const LessonItemInput: React.FC<{
   checked?: boolean;
   withUpdate?: boolean;
   itemID?: number;
+  onChangeHandler?: (e: ChangeEvent<HTMLElement>) => void;
 }> = ({
   id,
   name,
@@ -99,10 +101,19 @@ const LessonItemInput: React.FC<{
   _default,
   withUpdate,
   itemID,
+  onChangeHandler,
 }) => {
-  const [isChecked, setChecked] = useState<boolean>(!!checked);
-  const [numberValue, setNumberValue] = useState<number>(+(_default || 0));
-  const [textValue, setTextValue] = useState<string>("");
+  const [e, setE] = useState<ChangeEvent<HTMLElement> | null>(null);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (e && onChangeHandler) onChangeHandler(e);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [e]);
 
   if (withUpdate)
     return (
@@ -126,9 +137,8 @@ const LessonItemInput: React.FC<{
         id={id}
         min={min || 0}
         max={max || 20000}
-        value={numberValue}
         onChange={(e) => {
-          setNumberValue(+e.target.value);
+          setE(e);
         }}
       />
     );
@@ -140,7 +150,7 @@ const LessonItemInput: React.FC<{
         name={name}
         id={id}
         onChange={(e) => {
-          setChecked((checked) => !checked);
+          setE(e);
         }}
       />
     );
@@ -150,9 +160,9 @@ const LessonItemInput: React.FC<{
       type={type}
       name={name}
       id={id}
-      value={textValue}
+      // value={textValue}
       onChange={(e) => {
-        setTextValue(e.target.value);
+        setE(e);
       }}
     />
   );
@@ -163,135 +173,193 @@ export const LessonItemAdditionBox: React.FC<{
   itemType: "quiz" | "content";
   itemID?: number;
   withUpdate?: boolean;
-}> = ({ lessonPositionID, itemType, withUpdate, itemID }) => {
-  if (itemType === "quiz") {
+  stateHandler?: (
+    source: ChangeEvent,
+    setFunction: React.Dispatch<
+      React.SetStateAction<LessonContentAdditionStateType>
+    >,
+    keySelector: keyof LessonContentAdditionStateType,
+    isNumeric?: boolean,
+    isCheckable?: boolean,
+    checkedValue?: string
+  ) => void;
+  additionDispatch?: React.Dispatch<
+    React.SetStateAction<LessonContentAdditionStateType>
+  >;
+}> = React.memo(
+  ({
+    lessonPositionID,
+    itemType,
+    withUpdate,
+    itemID,
+    stateHandler,
+    additionDispatch,
+  }) => {
+    if (itemType === "quiz") {
+      return (
+        <li className="content_addition_box quiz">
+          <Form>
+            <div className="input_wrapper">
+              <label htmlFor={`${lessonPositionID}.quiz_title`}>
+                quiz title
+              </label>
+              <LessonItemInput
+                type="text"
+                name={`${lessonPositionID}.quiz_title`}
+                id={`${lessonPositionID}.quiz_title`}
+                propKey={"title"}
+                withUpdate={withUpdate}
+                itemID={itemID}
+              />
+            </div>
+            <div className="input_wrapper">
+              <label htmlFor={`${lessonPositionID}.quiz_description`}>
+                quiz description
+              </label>
+              <LessonItemInput
+                type="text"
+                name={`${lessonPositionID}.quiz_description`}
+                id={`${lessonPositionID}.quiz_description`}
+                propKey={"description"}
+                withUpdate={withUpdate}
+                itemID={itemID}
+              />
+            </div>
+
+            <div className="input_wrapper number">
+              <label htmlFor={`${lessonPositionID}.quiz_pass_score`}>
+                quiz pass score
+              </label>
+              <LessonItemInput
+                type="number"
+                name={`${lessonPositionID}.quiz_pass_score`}
+                id={`${lessonPositionID}.quiz_pass_score`}
+                min={0}
+                max={100}
+                _default={0}
+                propKey={"passScore"}
+                withUpdate={withUpdate}
+                itemID={itemID}
+              />
+            </div>
+          </Form>
+        </li>
+      );
+    }
+
     return (
-      <li className="content_addition_box quiz">
+      <li className="content_addition_box">
         <Form>
           <div className="input_wrapper">
-            <label htmlFor={`${lessonPositionID}.quiz_title`}>quiz title</label>
+            <label htmlFor={`${lessonPositionID}.content_title`}>
+              content title
+            </label>
             <LessonItemInput
               type="text"
-              name={`${lessonPositionID}.quiz_title`}
-              id={`${lessonPositionID}.quiz_title`}
+              name={`${lessonPositionID}.content_title`}
+              id={`${lessonPositionID}.content_title`}
               propKey={"title"}
               withUpdate={withUpdate}
               itemID={itemID}
+              onChangeHandler={(e) => {
+                if (stateHandler && additionDispatch)
+                  stateHandler(e, additionDispatch, "title");
+              }}
             />
           </div>
           <div className="input_wrapper">
-            <label htmlFor={`${lessonPositionID}.quiz_description`}>
-              quiz description
+            <label htmlFor={`${lessonPositionID}.content_href`}>
+              content url
             </label>
             <LessonItemInput
-              type="text"
-              name={`${lessonPositionID}.quiz_description`}
-              id={`${lessonPositionID}.quiz_description`}
-              propKey={"description"}
+              type="url"
+              name={`${lessonPositionID}.content_href`}
+              id={`${lessonPositionID}.content_href`}
+              propKey={"href"}
               withUpdate={withUpdate}
               itemID={itemID}
+              onChangeHandler={(e) => {
+                if (stateHandler && additionDispatch)
+                  stateHandler(e, additionDispatch, "href");
+              }}
             />
           </div>
 
+          <div className="radio_options">
+            <p>content type</p>
+            <div className="input_wrapper radio">
+              <div>
+                <LessonItemInput
+                  type="radio"
+                  name={`${lessonPositionID}.content_type`}
+                  id={`${lessonPositionID}.content_type_text`}
+                  propKey={"type"}
+                  withUpdate={withUpdate}
+                  itemID={itemID}
+                  onChangeHandler={(e) => {
+                    if (stateHandler && additionDispatch)
+                      stateHandler(
+                        e,
+                        additionDispatch,
+                        "type",
+                        false,
+                        true,
+                        "text"
+                      );
+                  }}
+                />
+                <label htmlFor={`${lessonPositionID}.content_type_text`}>
+                  text
+                </label>
+              </div>
+
+              <div>
+                <LessonItemInput
+                  type="radio"
+                  name={`${lessonPositionID}.content_type`}
+                  id={`${lessonPositionID}.content_type_video`}
+                  propKey="type"
+                  withUpdate={withUpdate}
+                  itemID={itemID}
+                  onChangeHandler={(e) => {
+                    if (stateHandler && additionDispatch)
+                      stateHandler(
+                        e,
+                        additionDispatch,
+                        "type",
+                        false,
+                        true,
+                        "video"
+                      );
+                  }}
+                />
+                <label htmlFor={`${lessonPositionID}.content_type_video`}>
+                  video
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div className="input_wrapper number">
-            <label htmlFor={`${lessonPositionID}.quiz_pass_score`}>
-              quiz pass score
+            <label htmlFor={`${lessonPositionID}.content_duration`}>
+              content duration (seconds)
             </label>
             <LessonItemInput
               type="number"
-              name={`${lessonPositionID}.quiz_pass_score`}
-              id={`${lessonPositionID}.quiz_pass_score`}
-              min={0}
-              max={100}
+              name={`${lessonPositionID}.content_duration`}
+              id={`${lessonPositionID}.content_duration`}
               _default={0}
-              propKey={"passScore"}
+              propKey="duration"
               withUpdate={withUpdate}
               itemID={itemID}
+              onChangeHandler={(e) => {
+                if (stateHandler && additionDispatch)
+                  stateHandler(e, additionDispatch, "duration", true);
+              }}
             />
           </div>
         </Form>
       </li>
     );
   }
-
-  return (
-    <li className="content_addition_box">
-      <Form>
-        <div className="input_wrapper">
-          <label htmlFor={`${lessonPositionID}.content_title`}>
-            content title
-          </label>
-          <LessonItemInput
-            type="text"
-            name={`${lessonPositionID}.content_title`}
-            id={`${lessonPositionID}.content_title`}
-            propKey={"title"}
-            withUpdate={withUpdate}
-            itemID={itemID}
-          />
-        </div>
-        <div className="input_wrapper">
-          <label htmlFor={`${lessonPositionID}.content_href`}>
-            content url
-          </label>
-          <LessonItemInput
-            type="url"
-            name={`${lessonPositionID}.content_href`}
-            id={`${lessonPositionID}.content_href`}
-            propKey={"href"}
-            withUpdate={withUpdate}
-            itemID={itemID}
-          />
-        </div>
-
-        <div className="radio_options">
-          <p>content type</p>
-          <div className="input_wrapper radio">
-            <div>
-              <LessonItemInput
-                type="radio"
-                name={`${lessonPositionID}.content_type`}
-                id={`${lessonPositionID}.content_type_text`}
-                propKey={"type"}
-                withUpdate={withUpdate}
-                itemID={itemID}
-              />
-              <label htmlFor={`${lessonPositionID}.content_type_text`}>
-                text
-              </label>
-            </div>
-
-            <div>
-              <LessonItemInput
-                type="radio"
-                name={`${lessonPositionID}.content_type`}
-                id={`${lessonPositionID}.content_type_video`}
-                propKey="type"
-                withUpdate={withUpdate}
-                itemID={itemID}
-              />
-              <label htmlFor={`${lessonPositionID}.content_type_video`}>
-                video
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div className="input_wrapper number">
-          <label htmlFor={`${lessonPositionID}.content_duration`}>
-            content duration (seconds)
-          </label>
-          <LessonItemInput
-            type="number"
-            name={`${lessonPositionID}.content_duration`}
-            id={`${lessonPositionID}.content_duration`}
-            _default={0}
-            propKey="duration"
-            withUpdate={withUpdate}
-            itemID={itemID}
-          />
-        </div>
-      </Form>
-    </li>
-  );
-};
+);
