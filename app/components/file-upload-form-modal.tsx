@@ -8,11 +8,16 @@ export const FileUploadFormModal: React.FC<{
   setImageState: React.Dispatch<React.SetStateAction<[string, string]>>;
   inputType: string;
   originalImage: string;
-}> = ({ setImageState, inputType, originalImage }) => {
+  onChangeHandler?: (e: ChangeEvent<HTMLElement>) => void;
+}> = ({ setImageState, inputType, originalImage, onChangeHandler }) => {
   const { modalState: modalVisible, modalDispatch: setModalVisible } =
     useContext(ModalContext) as ModalContextValueType;
   return (
-    <div className={`input_form_modal${modalVisible.uploadModal ? " visible" : ""}`}>
+    <div
+      className={`input_form_modal${
+        modalVisible.uploadModal ? " visible" : ""
+      }`}
+    >
       <div className="input_form_modal_top">
         <h2>upload image</h2>
         <span onMouseDown={() => setModalVisible(__hideModal("uploadModal"))}>
@@ -53,6 +58,7 @@ export const FileUploadFormModal: React.FC<{
               type={inputType}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 (async () => {
+                  if (onChangeHandler) onChangeHandler(e);
                   await handleFileSelect(e, setImageState);
                 })();
               }}
