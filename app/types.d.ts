@@ -286,3 +286,7 @@ export interface AssessmentEditStateType {
   endDate?: string;
   duration?: number;
 }
+
+
+export interface LessonContentAdditionStateType extends Partial<Omit<LessonContentType, "id">> {
+}
