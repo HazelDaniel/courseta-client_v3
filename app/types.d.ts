@@ -242,7 +242,7 @@ export interface DashboardCustomInputType {
     min?: number;
     max?: number;
   }[];
-  buttons: { text: string }[];
+  buttons: { text: string; name?: string }[];
   images: {
     url: string;
     ref: Partial<React.Ref<HTMLImageElement>>;
@@ -287,6 +287,41 @@ export interface AssessmentEditStateType {
   duration?: number;
 }
 
+export interface LessonContentAdditionStateType
+  extends Partial<Omit<LessonContentType, "id">> {}
 
-export interface LessonContentAdditionStateType extends Partial<Omit<LessonContentType, "id">> {
+//SERIALIZERS
+
+export interface CourseCreationPayloadType
+  extends Partial<{
+    info: Partial<CourseEditStateType>;
+    images: [string | null, string | null];
+  }> {}
+
+export interface CourseEditPayloadType extends CourseCreationPayloadType {}
+
+export interface ActionButtonType<T extends object> {
+  intent: string;
+  payload: T;
+}
+
+export type CoursesActionIntentType = "DELETE" | "ARCHIVE" | "UNARCHIVE";
+
+export interface CourseDeletionActionType
+  extends ActionButtonType<{ courseID: number }> {
+  intent: CoursesActionIntentType;
+}
+
+export type CourseEditActionIntentType = "UPDATE_INFO" | "DELETE_CONTENT" | "DELETE_QUIZ" | "DELETE_EXAM";
+
+export interface CourseArchiveActionType
+  extends ActionButtonType<{ courseID: number }> {}
+
+export interface CourseInfoEditActionType extends ActionButtonType<Partial<CourseEditPayloadType>> {
+  intent: CourseEditActionIntentType;
+}
+
+export interface CourseItemDeletionActionType
+  extends ActionButtonType<{ contentID?: number, quizID?: string, examID?: string }> {
+  intent: Exclude<CourseEditActionIntentType, "UPDATE_INFO">;
 }
