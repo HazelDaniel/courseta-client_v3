@@ -1,11 +1,20 @@
-import { useOutletContext } from "@remix-run/react";
-import React, { useMemo, useReducer } from "react";
+import { ActionFunction } from "@remix-run/node";
+import { useOutletContext, useSubmit } from "@remix-run/react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
 import { ModalProvider } from "~/contexts/modal.context";
 import { InitialModalState, ModalReducer } from "~/reducers/modal.reducer";
+import { serializeCourseCreationState } from "~/serializers/course.serializer";
 import "~/styles/course-creation-page.css";
 import {
-  CreatorProfileType,
+  CourseCreationPayloadType,
+  CourseEditStateType,
   DashboardCustomInputType,
   DefaultCourseFormDataType,
   DefaultDashboardFormDataType,
@@ -56,11 +65,11 @@ export const courseTagsUpdateFormData: DashboardCustomInputType = {
   namespace: "update_tags",
   form: {
     intent: "update_tags",
-    actions: ["/save"],
+    actions: [""],
     variant: "none",
   },
   inputs: [
-    { name: "tags", title: "course tags (comma, separated)", type: "text" },
+    { name: "tags", title: "course tags (space separated)", type: "text" },
   ],
   buttons: [],
   images: [],
@@ -68,39 +77,107 @@ export const courseTagsUpdateFormData: DashboardCustomInputType = {
 
 export const CourseCreationArea: React.FC = React.memo(() => {
   const emptyDefault = useMemo(() => ({}), []);
+  const [courseCreationState, setCourseCreationState] = useState<
+    Partial<CourseEditStateType>
+  >({});
+
+  const [uploadImageState, setUploadImageState] = useState<
+    [string | null, string | null]
+  >([null, null]);
+
+  const submit = useSubmit();
+
+  const courseCreationStateHandler = useCallback(
+    (
+      source: ChangeEvent,
+      setFunction: React.Dispatch<
+        React.SetStateAction<typeof courseCreationState>
+      >,
+      keySelector: keyof typeof courseCreationState
+    ) => {
+      const target: HTMLInputElement = source.target as HTMLInputElement;
+      setFunction((prevState) => {
+        if (target.value === prevState[keySelector]) {
+          return prevState;
+        }
+        return {
+          ...prevState,
+          [keySelector]: target.value || target,
+        };
+      });
+    },
+    []
+  );
+
   return (
-    <div className="course_creation_area">
-      <DashboardFormInput
-        defaultData={emptyDefault as DefaultCourseFormDataType}
-        data={courseTitleUpdateFormData}
-        asInput
-      />
+    <>
+      <div className="course_creation_area">
+        <DashboardFormInput
+          defaultData={emptyDefault as DefaultCourseFormDataType}
+          data={courseTitleUpdateFormData}
+          asInput
+          onChangeHandler={(e) => {
+            courseCreationStateHandler(e, setCourseCreationState, "title");
+          }}
+        />
 
-      <DashboardFormInput
-        defaultData={emptyDefault as DefaultDashboardFormDataType}
-        data={courseImageUpdateFormData}
-        asInput
-      />
+        <DashboardFormInput
+          defaultData={emptyDefault as DefaultDashboardFormDataType}
+          data={courseImageUpdateFormData}
+          asInput
+          onUploadHandler={(state) => {
+            setUploadImageState(state);
+          }}
+        />
 
-      <DashboardFormInput
-        defaultData={emptyDefault as DefaultFormDataType}
-        data={courseDescriptionUpdateFormData}
-        asInput
-      />
+        <DashboardFormInput
+          defaultData={emptyDefault as DefaultFormDataType}
+          data={courseDescriptionUpdateFormData}
+          asInput
+          onChangeHandler={(e) => {
+            courseCreationStateHandler(
+              e,
+              setCourseCreationState,
+              "description"
+            );
+          }}
+        />
 
-      <DashboardFormInput
-        defaultData={emptyDefault as DefaultCourseFormDataType}
-        data={courseTagsUpdateFormData}
-        asInput
-      />
-    </div>
+        <DashboardFormInput
+          defaultData={emptyDefault as DefaultCourseFormDataType}
+          data={courseTagsUpdateFormData}
+          asInput
+          onChangeHandler={(e) => {
+            courseCreationStateHandler(e, setCourseCreationState, "tags");
+          }}
+        />
+      </div>
+
+      <div className="course_creation_cta_area">
+        <button>cancel</button>
+        <button
+          className="primary"
+          onClick={() => {
+            const resCourseCreationPayload = serializeCourseCreationState(
+              courseCreationState,
+              uploadImageState
+            );
+
+            submit(resCourseCreationPayload, {
+              method: "post",
+              encType: "application/json",
+              action: "./",
+            });
+          }}
+        >
+          save changes
+        </button>
+      </div>
+    </>
   );
 });
 
 export const CourseCreationPage: React.FC = () => {
-  const contextData = useOutletContext() as { profile: CreatorProfileType };
-  void contextData; // BUGFIX: undefined because this is not nested under the dashboard route. we should use this later for verification of the creator (client side)
-  // console.log("context data is : ", contextData);
   const [modalState, modalDispatch] = useReducer(
     ModalReducer,
     InitialModalState
@@ -113,12 +190,15 @@ export const CourseCreationPage: React.FC = () => {
   return (
     <ModalProvider value={modalContextValue}>
       <CourseCreationArea />
-      <div className="course_creation_cta_area">
-        <button>cancel</button>
-        <button className="primary">save changes</button>
-      </div>
     </ModalProvider>
   );
 };
 
 export default CourseCreationPage;
+
+export const action: ActionFunction = async ({ params, request }) => {
+  const reqJson = await request.json();
+  console.log("hitting the action for the course creation route");
+  console.log("request form data is : ", reqJson);
+  return {};
+};
