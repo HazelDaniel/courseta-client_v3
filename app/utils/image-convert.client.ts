@@ -92,7 +92,7 @@ function imgToCanvasWithOrientation(
   }
 
   if (orientation > 1) {
-    console.log("EXIF orientation = " + orientation + ", rotating picture");
+    // console.log("EXIF orientation = " + orientation + ", rotating picture");
   }
 
   const ctx = canvas.getContext("2d");
@@ -171,12 +171,12 @@ async function processAndCompressImage(file: File): Promise<string[]> {
   const halfSizeQuality = originalSize > 500 * 1024 ? 0.5 : 1; // 50% quality if > 500KB, else 100%
 
   try {
-    const [halfSizeImage, ninetyFivePercentImage] = await Promise.all([
+    const [halfSizeImage, fullyCompressedImage] = await Promise.all([
       compressImage(file, maxWidth, maxHeight, halfSizeQuality),
-      compressImage(file, maxWidth, maxHeight, 0.05),
+      compressImage(file, maxWidth, maxHeight, 0.01),
     ]);
 
-    return [halfSizeImage, ninetyFivePercentImage];
+    return [halfSizeImage, fullyCompressedImage];
   } catch (error) {
     console.error("Error processing image:", error);
     throw error;
@@ -196,9 +196,9 @@ export async function handleFileSelect(
 
   const file = input.files[0];
   try {
-    const [halfSizeImage, ninetyFivePercentImage] =
+    const [halfSizeImage, fullyCompressedImage] =
       await processAndCompressImage(file);
-    handler([halfSizeImage, ninetyFivePercentImage]);
+    handler([halfSizeImage, fullyCompressedImage]);
   } catch (error) {
     console.error("Error processing file:", error);
   }
