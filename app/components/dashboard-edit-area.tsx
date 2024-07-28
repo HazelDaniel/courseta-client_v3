@@ -10,7 +10,7 @@ export const namesUpdateFormData: DashboardCustomInputType = {
   namespace: "update_names",
   form: {
     intent: "update_names",
-    actions: ["/save"],
+    actions: ["?index"],
     variant: "two-uni-button",
   },
   inputs: [
@@ -26,7 +26,7 @@ export const emailUpdateFormData: DashboardCustomInputType = {
   namespace: "update_email",
   form: {
     intent: "update_email",
-    actions: ["/save"],
+    actions: ["?index"],
     variant: "one-uni-button",
   },
   inputs: [{ name: "email", title: "email", type: "email" }],
@@ -39,7 +39,7 @@ export const passWordUpdateFormData: DashboardCustomInputType = {
   namespace: "update_password",
   form: {
     intent: "update_password",
-    actions: ["/save"],
+    actions: ["?index"],
     variant: "two-uni-button",
   },
   inputs: [
@@ -55,11 +55,11 @@ export const creatorPassUpdateFormData: DashboardCustomInputType = {
   namespace: "update_creator_pass",
   form: {
     intent: "submit",
-    actions: ["/save", "/reset"],
+    actions: ["?index", "?index"],
     variant: "one-dual-button",
   },
   inputs: [{ name: "creator_pass", title: "creator pass", type: "password" }],
-  buttons: [{ text: "request a new pass" }, { text: "save changes" }],
+  buttons: [{ text: "request a new pass", name: "request_new" }, { text: "save changes" }],
   images: [],
 };
 
@@ -68,7 +68,7 @@ export const avatarUpdateFormData: DashboardCustomInputType = {
   namespace: "update_avatar",
   form: {
     intent: "update_avatar",
-    actions: ["/save"],
+    actions: ["?index"],
     variant: "one-graphic-button",
   },
   inputs: [{ name: "avatar", title: "avatar", type: "file" }],
