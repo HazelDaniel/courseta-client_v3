@@ -144,8 +144,11 @@ export interface LessonAssessmentType {
   id: number;
   completed: boolean;
   questions: QuestionType[];
-  lostPoints?: number;
   availablePoints: number;
+  lostPoints?: number;
+  description?: string;
+  passScore?: number;
+  title?: string;
 }
 
 export interface CourseExamType extends LessonAssessmentType {
@@ -321,45 +324,55 @@ export interface CourseDeletionActionType
   intent: CoursesActionIntentType;
 }
 
-export type CourseEditActionIntentType = "UPDATE_INFO" | "DELETE_CONTENT" | "DELETE_QUIZ" | "DELETE_EXAM" | "ADD_LESSONS";
+export type CourseEditActionIntentType =
+  | "UPDATE_INFO"
+  | "DELETE_CONTENT"
+  | "DELETE_QUIZ"
+  | "DELETE_EXAM"
+  | "ADD_LESSONS";
 
 export interface CourseArchiveActionType
   extends ActionButtonType<{ courseID: number }> {}
 
-export interface CourseInfoEditActionType extends ActionButtonType<Partial<CourseEditPayloadType>> {
+export interface CourseInfoEditActionType
+  extends ActionButtonType<Partial<CourseEditPayloadType>> {
   intent: CourseEditActionIntentType;
 }
 
 export interface CourseItemDeletionActionType
-  extends ActionButtonType<{ contentID?: number, quizID?: string, examID?: string }> {
+  extends ActionButtonType<{
+    contentID?: number;
+    quizID?: string;
+    examID?: string;
+  }> {
   intent: Exclude<CourseEditActionIntentType, "UPDATE_INFO">;
 }
 
 export interface LessonCreationPayloadType {
-	courseID: number;
-	title: string;
-	positionID: number;
+  courseID: number;
+  title: string;
+  positionID: number;
 }
 
 export interface LessonContentCreationPayloadType {
-	title: string;
-	href: string;
-	contentType: LessonVariantType;
-	duration: number;
-	lessonPositionID: number;
+  title: string;
+  href: string;
+  contentType: LessonVariantType;
+  duration: number;
+  lessonPositionID: number;
 }
 
 export interface LessonQuizCreationPayloadType {
-	quizTitle: string;
-	description: string;
-	passScore: number;
-	lessonPositionID: number;
+  quizTitle: string;
+  description: string;
+  passScore: number;
+  lessonPositionID: number;
 }
 
 export interface LessonAdditionPayloadType {
-	lessonData: LessonCreationPayloadType[];
-	lessonContentData: LessonContentCreationPayloadType[];
-	lessonQuizData: LessonQuizCreationPayloadType[];
+  lessonData: LessonCreationPayloadType[];
+  lessonContentData: LessonContentCreationPayloadType[];
+  lessonQuizData: LessonQuizCreationPayloadType[];
 }
 
 export interface LessonAdditionActionType
