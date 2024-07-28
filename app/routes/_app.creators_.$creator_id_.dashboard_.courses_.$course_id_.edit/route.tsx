@@ -1,4 +1,4 @@
-import { LoaderFunction } from "@remix-run/node";
+import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import {
   Await,
   Form,
@@ -12,8 +12,10 @@ import {
   useLoaderData,
   useNavigate,
   useOutletContext,
+  useParams,
   useRouteError,
   useSearchParams,
+  useSubmit,
 } from "@remix-run/react";
 import React, {
   ChangeEvent,
@@ -35,15 +37,21 @@ import "~/styles/course-creation-page.css";
 import "~/styles/course-edit.css";
 
 import {
+  ActionButtonType,
   CourseDetailType,
+  CourseEditActionIntentType,
   CourseEditStateType,
   CourseEntryType,
+  CourseInfoEditActionType,
+  CourseItemDeletionActionType,
   CourseLessonType,
   CreatorProfileType,
   DashboardCustomInputType,
   DefaultCourseFormDataType,
   DefaultDashboardFormDataType,
   DefaultFormDataType,
+  LessonAdditionActionType,
+  LessonAdditionPayloadType,
 } from "~/types";
 import {
   InitialModalState,
@@ -82,6 +90,11 @@ import {
 import { useDebounce } from "~/hooks/use-debounce";
 import { NotFound } from "~/components/not-found";
 import { FAKE_REQUEST_DELAY } from "~/config/base";
+import { NoContent } from "~/components/no-content";
+import { serializeCourseEditState } from "~/serializers/course.serializer";
+import { serializeLessonStateForAction } from "~/serializers/lesson.serializer";
+import { serializeLessonContentForAction } from "~/serializers/lesson-content.serializer";
+import { serializeLessonQuizForAction } from "~/serializers/quiz.serializer";
 
 export const courseTitleUpdateFormData: DashboardCustomInputType = {
   heading: "",
@@ -131,7 +144,7 @@ export const courseTagsUpdateFormData: DashboardCustomInputType = {
     variant: "none",
   },
   inputs: [
-    { name: "tags", title: "course tags (comma, separated)", type: "text" },
+    { name: "tags", title: "course tags (space separated)", type: "text" },
   ],
   buttons: [],
   images: [],
@@ -245,7 +258,7 @@ export const AccordionPromptbox: React.FC<{ position: number }> = React.memo(
           <button
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`#lessonID.${position}`)
+              navigate(`#lessonID.${position}`);
               modalDispatch(__showModal("lessonContentAdditionModal"));
             }}
           >
@@ -310,7 +323,7 @@ const EditAccordionHead: React.FC<{
 export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
   React.memo(({ lesson }) => {
     const [detailVisible, setDetailVisible] = useState<boolean>(false);
-    console.log("accordion entry rendering again");
+    const submit = useSubmit();
     return (
       <div className="accordion_section">
         <EditAccordionHead
@@ -325,7 +338,19 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
               <li key={content.id}>
                 <CourseContentIcon type={content.type || "text"} />
                 <p>{content.title}</p>
-                <button>
+                <button
+                  onClick={() => {
+                    const payload: CourseItemDeletionActionType = {
+                      intent: "DELETE_CONTENT",
+                      payload: { contentID: content.id },
+                    };
+                    submit(payload as any, {
+                      method: "post",
+                      action: "./",
+                      encType: "application/json",
+                    });
+                  }}
+                >
                   <svg>
                     <use xlinkHref="#delete"></use>
                   </svg>
@@ -354,7 +379,7 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
               </div>
 
               <Link
-                to={"../lessons/0/quizzes/new"}
+                to={`../../../assessments/${lesson.assessment.id}/edit`}
                 relative="path"
                 className="edit_link"
               >
@@ -366,7 +391,19 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
                 </span>
               </Link>
 
-              <button>
+              <button
+                onClick={() => {
+                  const payload: CourseItemDeletionActionType = {
+                    intent: "DELETE_QUIZ",
+                    payload: { quizID: lesson.assessment.id.toString() },
+                  };
+                  submit(payload as any, {
+                    method: "post",
+                    action: "./",
+                    encType: "application/json",
+                  });
+                }}
+              >
                 <svg>
                   <use xlinkHref="#delete"></use>
                 </svg>
@@ -424,6 +461,11 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
   const { lessonCreationState } = useContext(
     LessonCreationContext
   ) as LessonCreationContextValueType;
+  const submit = useSubmit();
+  const courseID = useParams()["course_id"];
+
+  console.log("the lesson update state is ", lessonUpdateState);
+  console.log("the lesson creation<> state is ", lessonCreationState);
 
   return (
     <LessonUpdateProvider value={lessonUpdateContextValue}>
@@ -511,13 +553,41 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
 
       <div className="course_creation_cta_area">
         <button>cancel</button>
-        <button className="primary">save changes</button>
+        <button
+          className="primary"
+          onClick={() => {
+            const lessonData = serializeLessonStateForAction(
+              lessonCreationState.lessons,
+              +(courseID as string)
+            );
+            const lessonContentData = serializeLessonContentForAction(
+              lessonUpdateState.lessonContents
+            );
+            const lessonQuizData = serializeLessonQuizForAction(
+              lessonUpdateState.lessonQuizzes
+            );
+            const resPayload: LessonAdditionActionType = {
+              intent: "ADD_LESSONS",
+              payload: { lessonData, lessonContentData, lessonQuizData },
+            };
+
+            submit(resPayload as any, {
+              method: "post",
+              action: "./",
+              encType: "application/json",
+            });
+          }}
+        >
+          save changes
+        </button>
       </div>
     </LessonUpdateProvider>
   );
 });
 
 export const ExamEditArea: React.FC = React.memo(() => {
+  const submit = useSubmit();
+  const exam = { id: "0" };
   return (
     <>
       <div className="exam_edit_area">
@@ -543,7 +613,11 @@ export const ExamEditArea: React.FC = React.memo(() => {
           </li>
         </ul>
         <div className="exam_update_cta_area">
-          <Link to={"../exams/new"} relative="path" className="edit_link">
+          <Link
+            to={`../../../assessments/${exam.id}/edit`}
+            relative="path"
+            className="edit_link"
+          >
             edit exam{" "}
             <span>
               <svg>
@@ -551,7 +625,19 @@ export const ExamEditArea: React.FC = React.memo(() => {
               </svg>
             </span>
           </Link>
-          <button>
+          <button
+            onClick={() => {
+              const payload: CourseItemDeletionActionType = {
+                intent: "DELETE_EXAM",
+                payload: { examID: exam.id },
+              };
+              submit(payload as any, {
+                method: "post",
+                action: "./",
+                encType: "application/json",
+              });
+            }}
+          >
             delete exam
             <span>
               <svg>
@@ -579,6 +665,12 @@ export const CourseCreationArea: React.FC = React.memo(() => {
   }, [loadedCourse]);
   const [courseEditState, setCourseEditState] =
     useState<CourseEditStateType>(defaultCourse);
+
+  const [uploadImageState, setUploadImageState] = useState<
+    [string | null, string | null]
+  >([null, null]);
+
+  const submit = useSubmit();
 
   const courseEditStateHandler = useCallback(
     (
@@ -625,7 +717,7 @@ export const CourseCreationArea: React.FC = React.memo(() => {
           data={courseImageUpdateFormData}
           asInput
           onUploadHandler={(state) => {
-            return state;
+            setUploadImageState(state);
           }}
         />
 
@@ -657,7 +749,27 @@ export const CourseCreationArea: React.FC = React.memo(() => {
       </section>
       <div className="course_creation_cta_area">
         <button>cancel</button>
-        <button className="primary">save changes</button>
+        <button
+          className="primary"
+          onClick={() => {
+            const resCourseEditPayload = serializeCourseEditState(
+              courseEditState,
+              uploadImageState
+            );
+            const payload: CourseInfoEditActionType = {
+              intent: "UPDATE_INFO",
+              payload: resCourseEditPayload,
+            };
+
+            submit(payload as any, {
+              method: "post",
+              encType: "application/json",
+              action: "./",
+            });
+          }}
+        >
+          save changes
+        </button>
       </div>
     </>
   );
@@ -691,7 +803,6 @@ export const LessonAdditionArea: React.FC = () => {
   );
 };
 
-
 export const CourseEditPage: React.FC = () => {
   const contextData = useOutletContext() as { profile: CreatorProfileType };
   const { lessons: loadedLessons, course: loadedCourse } = useLoaderData<
@@ -710,7 +821,6 @@ export const CourseEditPage: React.FC = () => {
     () => ({ modalState, modalDispatch }),
     [modalState, modalDispatch]
   );
-  console.log("edit page rendering");
 
   void contextData; // BUGFIX: undefined because this is not nested under the dashboard route. we should use this later for verification of the creator (client side)
   return (
@@ -719,9 +829,13 @@ export const CourseEditPage: React.FC = () => {
       <section className="course_interaction_area">
         <h2 className="section_header">course lessons</h2>
         <div className="interaction_accordion">
-          {loadedLessons.map((lesson, idx) => (
-            <CourseEditAccordionEntry lesson={lesson} key={idx} />
-          ))}
+          {loadedLessons.length ? (
+            loadedLessons.map((lesson, idx) => (
+              <CourseEditAccordionEntry lesson={lesson} key={idx} />
+            ))
+          ) : (
+            <NoContent text="NO LESSONS FOR THIS COURSE" variant="courses" />
+          )}
         </div>
       </section>
 
@@ -749,3 +863,24 @@ export const ErrorBoundary: React.FC = () => {
 };
 
 export default CourseEditPage;
+
+export const action: ActionFunction = async ({ params, request }) => {
+  const reqJson = (await request.json()) as ActionButtonType<object>;
+  console.log("hitting the action for the course creation route");
+
+  switch (reqJson.intent as CourseEditActionIntentType) {
+    case "ADD_LESSONS": {
+      let payloadJson: LessonAdditionPayloadType =
+        reqJson.payload as LessonAdditionPayloadType;
+      console.log("preparing to send lesson addition payload: ");
+      console.table(payloadJson.lessonData);
+      console.table(payloadJson.lessonContentData);
+      console.table(payloadJson.lessonQuizData);
+      break;
+    }
+    default: {
+      console.table(reqJson);
+    }
+  }
+  return {};
+};
