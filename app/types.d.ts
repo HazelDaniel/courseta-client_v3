@@ -131,11 +131,12 @@ export interface AssessmentDataType {
   courses: CourseAssessmentType[];
 }
 
+export type LessonVariantType = "video" | "text";
 export interface LessonContentType {
   id: number;
   title: string;
   href: string;
-  type?: "video" | "text";
+  type?: LessonVariantType;
   duration?: number;
 }
 
@@ -290,6 +291,14 @@ export interface AssessmentEditStateType {
 export interface LessonContentAdditionStateType
   extends Partial<Omit<LessonContentType, "id">> {}
 
+export interface StateQuizType extends LessonAssessmentType {
+  lessonPosition: number;
+}
+
+export interface StateContentType extends Partial<LessonContentType> {
+  lessonPosition: number;
+}
+
 //SERIALIZERS
 
 export interface CourseCreationPayloadType
@@ -312,7 +321,7 @@ export interface CourseDeletionActionType
   intent: CoursesActionIntentType;
 }
 
-export type CourseEditActionIntentType = "UPDATE_INFO" | "DELETE_CONTENT" | "DELETE_QUIZ" | "DELETE_EXAM";
+export type CourseEditActionIntentType = "UPDATE_INFO" | "DELETE_CONTENT" | "DELETE_QUIZ" | "DELETE_EXAM" | "ADD_LESSONS";
 
 export interface CourseArchiveActionType
   extends ActionButtonType<{ courseID: number }> {}
@@ -324,4 +333,36 @@ export interface CourseInfoEditActionType extends ActionButtonType<Partial<Cours
 export interface CourseItemDeletionActionType
   extends ActionButtonType<{ contentID?: number, quizID?: string, examID?: string }> {
   intent: Exclude<CourseEditActionIntentType, "UPDATE_INFO">;
+}
+
+export interface LessonCreationPayloadType {
+	courseID: number;
+	title: string;
+	positionID: number;
+}
+
+export interface LessonContentCreationPayloadType {
+	title: string;
+	href: string;
+	contentType: LessonVariantType;
+	duration: number;
+	lessonPositionID: number;
+}
+
+export interface LessonQuizCreationPayloadType {
+	quizTitle: string;
+	description: string;
+	passScore: number;
+	lessonPositionID: number;
+}
+
+export interface LessonAdditionPayloadType {
+	lessonData: LessonCreationPayloadType[];
+	lessonContentData: LessonContentCreationPayloadType[];
+	lessonQuizData: LessonQuizCreationPayloadType[];
+}
+
+export interface LessonAdditionActionType
+  extends ActionButtonType<LessonAdditionPayloadType> {
+  intent: "ADD_LESSONS";
 }
