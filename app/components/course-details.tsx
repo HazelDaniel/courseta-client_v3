@@ -65,7 +65,6 @@ export const AssessmentForm: React.FC<{
         e.preventDefault();
         const formData = new FormData(e.currentTarget as HTMLFormElement);
         console.log(Object.fromEntries(formData));
-        console.log("form submitted");
       }}
     >
       <div className={assessmentStyles.accessment_wrapper}>

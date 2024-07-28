@@ -54,7 +54,6 @@ export function useUpdateLessonItemValue<
       itemType === "quiz"
         ? __updateQuiz(debouncedValue)
         : __updateContent(debouncedValue);
-    // console.log("debounced value is ", debouncedValue);
     if (Object.keys(debouncedValue).length)
       lessonUpdateDispatch(actionProducer);
   }, [debouncedValue, lessonUpdateDispatch]);

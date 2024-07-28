@@ -11,10 +11,6 @@ function calcHeaderVisible(location: Location) {
   const creatorsCoursesRegex = /^\/creators\/.*\/dashboard\/courses$/i;
   const CoursesRegex = /^\/courses((\/|\?)[^\d\/]*)?$/i;
 
-  console.log(
-    "courses regex did match ?",
-    CoursesRegex.test(location.pathname)
-  );
   const pathString = location.pathname;
 
   res =
@@ -31,7 +27,6 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const submit = useSubmit();
   const existingSearch = new URLSearchParams(location.search);
-  console.log(location.pathname);
 
   void dest;
   return (

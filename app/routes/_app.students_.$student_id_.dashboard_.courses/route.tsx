@@ -29,7 +29,6 @@ export const loader: LoaderFunction = (args) => {
     }
     return json(courseData);
   } catch (err) {
-    console.log("we hit this error route", err);
     throw new Response("not found", { status: 404 });
   }
 };

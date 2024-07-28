@@ -60,10 +60,8 @@ export const QuestionAdditionReducer = (
       let payload: AnswersAdditionPayloadType =
         action.payload as AnswersAdditionPayloadType;
       payload.answers = payload.answers.filter((el) => {
-        console.log(el);
         return Object.keys(el).length >= 3;
       }); // only answers having all their fields (or at least the required fields)
-      console.log("resulting payload answers is, ", payload.answers);
 
       if (!payload.answers.length) return state;
       else

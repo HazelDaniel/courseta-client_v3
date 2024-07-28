@@ -39,12 +39,6 @@ export const ModalReducer = (
       payloadKey = Object.keys(
         action.payload as Partial<typeof InitialModalState>
       )[0] as ModalTypes;
-      // console.log(
-      //   "payload value is ",
-      //   payloadValue,
-      //   " payload key is ",
-      //   payloadKey
-      // );
       if (payloadValue) {
         newState = { ...newState, [payloadKey]: true };
         if (isEqual(newState, state)) return state;

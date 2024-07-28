@@ -20,7 +20,9 @@ import styles from "~/styles/app-main.module.css";
 //   return [{ rel: "stylesheet", href: styles }, { rel: "stylesheet", href: wideCourseCardStyles }];
 // };
 
-const WelcomeBoard: React.FC<{ user: UserType | CreatorUserType }> = ({ user }) => {
+const WelcomeBoard: React.FC<{ user: UserType | CreatorUserType }> = ({
+  user,
+}) => {
   return (
     <div className={styles.welcome_board_styled}>
       <div className={styles.wp_left}>
@@ -42,7 +44,6 @@ const WelcomeBoard: React.FC<{ user: UserType | CreatorUserType }> = ({ user }) 
 const CurrentCourseSection: React.FC = () => {
   const courses = useAsyncValue();
   const navigate = useNavigate();
-  console.log("courses are : ", courses);
 
   return (
     <section className={styles.current_course_section_styled}>
@@ -117,6 +118,5 @@ export const AppMain: React.FC = () => {
 };
 
 export const Errorboundary: React.FC = () => {
-  console.log("hitting the error boundary instead");
   return <h2>an error occurred in the app main</h2>;
 };

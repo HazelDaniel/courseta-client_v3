@@ -22,7 +22,6 @@ export const RatingForm: React.FC<{
 }> = ({ variant, value, namespace }) => {
   const [currentPicked, setCurrentPicked] = useState(0);
   if (variant === "view") {
-    console.log(Math.round(value || 0));
     return (
       <div className={`rating${` ${variant}`}`}>
         <input

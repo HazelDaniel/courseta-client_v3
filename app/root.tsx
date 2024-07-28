@@ -50,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-      <svg style={{ display: "none !important" }} className="svg-sprite">
+        <svg style={{ display: "none !important" }} className="svg-sprite">
           <symbol id="analytics">
             <svg
               viewBox="0 0 16 16"

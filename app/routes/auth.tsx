@@ -222,7 +222,6 @@ type AuthResolveType = {
 export const action: ActionFunction = async (args) => {
   const { request } = args;
   const requestBody = await request.json();
-  // console.log("action getting hit by a ", request.method, "method");
   try {
     const response = await axios.post(
       `${BASE_URL}/auth/token`,
@@ -234,7 +233,6 @@ export const action: ActionFunction = async (args) => {
       }
     );
     if (response.status === 401) {
-      console.log(" response status is ", response.status);
       throw new Response("user not authenticated", { status: 401 });
     } else if (response.status === 200) {
       const body: AuthResolveType = await response.data;
@@ -253,12 +251,9 @@ export const action: ActionFunction = async (args) => {
   }
   // const formdata: FormData | null =
   //   request.method === "POST" ? await request.formData() : null;
-  // console.log("form data is ", formdata);
   // let searchTerm: string | null;
   // if (formdata) {
-  //   console.log(Object.fromEntries(formdata));
   //   searchTerm = formdata.get("search") as string;
-  //   console.log("search term is ", searchTerm);
   // }
   console.log(" request  body is ", requestBody);
   return json({});

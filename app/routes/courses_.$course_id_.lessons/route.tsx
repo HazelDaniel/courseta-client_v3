@@ -9,8 +9,6 @@ export const loader: LoaderFunction = ({ params }) => {
     (course) => course.id === +(courseID as string)
   )[0];
 
-  // console.log("hit the lessons loader");
-  // console.log("and course is ", course);
 
   return json({ course });
 };

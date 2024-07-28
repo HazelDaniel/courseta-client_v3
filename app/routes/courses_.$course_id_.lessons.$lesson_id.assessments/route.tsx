@@ -10,7 +10,6 @@ export const loader: LoaderFunction = ({ params }) => {
   let course: CourseDetailType;
   let lesson: Partial<CourseLessonType>;
 
-  console.log("hitting the quizzes loader");
 
   if (!linkedCourseID) {
     throw json(

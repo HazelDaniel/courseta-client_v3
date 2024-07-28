@@ -69,7 +69,6 @@ export const AnnouncementTabList: React.FC<{ data: AnnouncementGroupType }> = ({
 };
 
 export const AnnouncementTab: React.FC = () => {
-  console.log("rendering .announcement tab..");
   return (
     <div className={styles.announcement_tab_styled}>
       <div className={styles.at_top}>

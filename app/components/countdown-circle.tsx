@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "~/styles/countdown-circle.module.css";
 
 // export const links: LinksFunction = () => {
-  // return [{ rel: "stylesheet", href: styles }];
+// return [{ rel: "stylesheet", href: styles }];
 //   return [{ rel: "stylesheet", href: "/styles/countdown-circle.css" }];
 // };
 
@@ -38,7 +38,6 @@ const countProgressToTime: (
     progressText.innerText = `${progress_value}%`;
     void action;
     action(Math.round((duration - (progress_value / 100) * duration) / 10));
-    // console.log(initialDuration - duration);
     if (progress_value === +data) {
       clearInterval(progress_bar);
     }
@@ -55,9 +54,6 @@ export const CountdownCircle: React.FC<{
   const [mountCount, setMountCount] = useState(0);
 
   void countdownTime;
-
-  // console.log(countdownTime);
-  console.log("this should run on the client");
 
   useEffect(() => {
     if (progressRef && textRef && mountCount === 0) {

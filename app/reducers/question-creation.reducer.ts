@@ -50,13 +50,6 @@ export const QuestionCreationReducer = (
   action: QuestionCreationActionType
 ) => {
   let newState: QuestionCreationStateType;
-  console.log(
-    "we hit the question addition reducer with a state ",
-    state,
-    " and an action of ",
-    action.type,
-    " type"
-  );
 
   const payload: ItemAdditionPayloadType =
     action.payload as ItemAdditionPayloadType;

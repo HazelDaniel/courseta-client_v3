@@ -10,8 +10,6 @@ import { DashboardEditArea } from "./dashboard-edit-area";
 export const DashboardBody: React.FC<{
   profile: StudentProfileType | CreatorProfileType;
 }> = ({ profile }) => {
-  console.log("profile is ");
-  console.log(profile);
   const { role, avatar, createdAt, email, firstName, lastName, id } =
     profile.user;
   const currentRank =

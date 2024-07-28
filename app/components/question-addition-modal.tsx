@@ -160,10 +160,6 @@ export const QuestionAdditionModal: React.FC = () => {
 
   const [modalQuestion, setModalQuestion] =
     useState<QuestionModalStateType>(emptyQuestion);
-  // console.log(
-  //   "question addition modal rendering with new state",
-  //   modalQuestion
-  // );
 
   return (
     <div
