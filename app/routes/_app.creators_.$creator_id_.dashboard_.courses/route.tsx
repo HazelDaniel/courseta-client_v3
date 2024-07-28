@@ -1,8 +1,8 @@
-import { LoaderFunction } from "@remix-run/node";
-import { json, useLoaderData, useNavigate } from "@remix-run/react";
+import { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 import { courseData } from "~/data/course-list";
 import "~/styles/creators-courses.css";
-import { CourseEntryType } from "~/types";
+import { CourseDeletionActionType, CourseEntryType } from "~/types";
 
 export const loader: LoaderFunction = () => {
   const courses: CourseEntryType[] = courseData;
@@ -14,6 +14,7 @@ export const CreatorsCourses: React.FC = () => {
     courses: CourseEntryType[];
   };
   const navigate = useNavigate();
+  const submit = useSubmit();
 
   return (
     <section className="creator_courses_section">
@@ -65,25 +66,49 @@ export const CreatorsCourses: React.FC = () => {
                 <p className="date_text">
                   {new Date(course.updatedAt).toDateString()}
                 </p>
-                <p className="tags">{course.tags.join(", ")}</p>
+                <p className="tags">{course.tags.join(" ")}</p>
               </div>
               <div className="entry_right">
                 <span
                   onMouseDown={() => {
-                    if (course.archived)  return;
                     navigate(`./${course.id}/edit`);
                   }}
-                  >
+                >
                   <svg>
                     <use xlinkHref="#edit"></use>
                   </svg>
                 </span>
-                <span className="archive_button">
+                <span
+                  className="archive_button"
+                  onClick={() => {
+                    const payload: CourseDeletionActionType = {
+                      payload: { courseID: course.id },
+                      intent: !course.archived ? "ARCHIVE" : "UNARCHIVE",
+                    };
+                    submit(payload as any, {
+                      method: "post",
+                      action: "./",
+                      encType: "application/json",
+                    });
+                  }}
+                >
                   <svg>
                     <use xlinkHref="#archive"></use>
                   </svg>
                 </span>
-                <span>
+                <span
+                  onClick={() => {
+                    const payload: CourseDeletionActionType = {
+                      payload: { courseID: course.id },
+                      intent: "DELETE",
+                    };
+                    submit(payload as any, {
+                      method: "post",
+                      action: "./",
+                      encType: "application/json",
+                    });
+                  }}
+                >
                   <svg>
                     <use xlinkHref="#trash"></use>
                   </svg>
@@ -118,3 +143,10 @@ export const CreatorsCourses: React.FC = () => {
 };
 
 export default CreatorsCourses;
+
+export const action: ActionFunction = async ({ params, request }) => {
+  const reqJson = await request.json();
+  console.log("hitting the action for the course list route");
+  console.log("request form data is : ", reqJson);
+  return {};
+};
