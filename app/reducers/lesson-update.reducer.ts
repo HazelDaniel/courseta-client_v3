@@ -3,6 +3,8 @@ import {
   LessonContentFormType,
   LessonContentType,
   QuizFormType,
+  StateContentType,
+  StateQuizType,
 } from "~/types";
 import { isEqual } from "~/utils/comparison";
 const LessonUpdateActionTypes = {
@@ -14,14 +16,9 @@ const LessonUpdateActionTypes = {
 };
 
 export type LessonUpdateType = keyof typeof LessonUpdateActionTypes;
-interface StateContentType extends Partial<LessonContentType> {
-  lessonPosition: number;
-}
+
 interface ItemAdditionPayloadType {
   lessonPositionID: number;
-}
-interface StateQuizType extends LessonAssessmentType {
-  lessonPosition: number;
 }
 
 export interface LessonUpdateStateType {
@@ -53,13 +50,6 @@ export const LessonUpdateReducer = (
   action: LessonUpdateActionType
 ) => {
   let newState: LessonUpdateStateType;
-  // console.log(
-  //   "we hit the reducer with a state ",
-  //   state,
-  //   " and an action of ",
-  //   action.type,
-  //   " type"
-  // );
   const payload: ItemAdditionPayloadType =
     action.payload as ItemAdditionPayloadType;
   switch (action.type) {
@@ -96,7 +86,6 @@ export const LessonUpdateReducer = (
       if (
         emptyQuiz ||
         state.lessonQuizzes.filter((el) => {
-          console.log("found a matching quiz : ", el);
           return el.lessonPosition === payload.lessonPositionID;
         }).length
       )
@@ -122,7 +111,6 @@ export const LessonUpdateReducer = (
       const contentIndex = state.lessonContents.findIndex(
         (el) => el.id === payload.id
       );
-      // console.log("content index is ", contentIndex);
       const resultContent: StateContentType = {
         ...state.lessonContents[contentIndex],
         ...payload,
@@ -152,7 +140,6 @@ export const LessonUpdateReducer = (
       let payload: number = action.payload as number;
       if (state.position === action.payload) return state;
       newState = { ...state, position: payload };
-      // console.log("new state is ", newState);
       return newState;
     }
     default: {
