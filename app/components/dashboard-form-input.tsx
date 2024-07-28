@@ -144,8 +144,7 @@ export const DashboardFormInput: React.FC<{
 
     useEffect(() => {
       const handler = setTimeout(() => {
-        if (e && onChangeHandler)
-          onChangeHandler(e);
+        if (e && onChangeHandler) onChangeHandler(e);
       }, 1000);
 
       return () => {
@@ -166,7 +165,7 @@ export const DashboardFormInput: React.FC<{
     }
 
     return (
-      <Form action={action} className={`input_form ${variant}`}>
+      <Form action={action} method="post" className={`input_form ${variant}`}>
         <div className="input_form_top">
           {variant === "one-dual-button" || asInput ? null : (
             <>
@@ -190,7 +189,7 @@ export const DashboardFormInput: React.FC<{
                 {type === "textarea" ? (
                   <textarea
                     id={`${data.namespace}.${name}`}
-                    name={`${data.namespace}.${name}`}
+                    name={name as string}
                     disabled={willDisable}
                     maxLength={200}
                     cols={20}
@@ -208,7 +207,7 @@ export const DashboardFormInput: React.FC<{
                   <input
                     type={type}
                     id={`${data.namespace}.${name}`}
-                    name={`${data.namespace}.${name}`}
+                    name={name as string}
                     disabled={willDisable}
                     min={data.inputs[idx].min || 0}
                     max={data.inputs[idx].max || ""}
@@ -228,10 +227,20 @@ export const DashboardFormInput: React.FC<{
 
           {variant === "one-dual-button" && !asInput ? (
             <div className="dual_buttons">
-              <button className="input_button_secondary" disabled={willDisable}>
+              <button
+                className="input_button_secondary"
+                name="intent"
+                value={data.buttons[0].name || ""}
+                disabled={willDisable}
+              >
                 {data.buttons[0].text}
               </button>
-              <button className="input_button_primary" disabled={willDisable}>
+              <button
+                className="input_button_primary"
+                name={"intent"}
+                value={data.buttons[1].name || ""}
+                disabled={willDisable}
+              >
                 {data.buttons[1].text}
               </button>
             </div>
