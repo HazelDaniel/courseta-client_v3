@@ -132,6 +132,9 @@ export interface AssessmentDataType {
 }
 
 export type LessonVariantType = "video" | "text";
+
+export type AssessmentVariantType = "quiz" | "exam";
+
 export interface LessonContentType {
   id: number;
   title: string;
@@ -142,13 +145,15 @@ export interface LessonContentType {
 
 export interface LessonAssessmentType {
   id: number;
-  completed: boolean;
   questions: QuestionType[];
+  completed?: boolean;
   availablePoints: number;
   lostPoints?: number;
   description?: string;
   passScore?: number;
   title?: string;
+  assessmentType?: AssessmentVariantType;
+  parentID?: number;
 }
 
 export interface CourseExamType extends LessonAssessmentType {
@@ -157,6 +162,7 @@ export interface CourseExamType extends LessonAssessmentType {
   duration: number;
   description: string;
 }
+
 export interface CourseLessonType {
   id: number;
   title: string;
@@ -260,6 +266,7 @@ export interface StateAnswerType
   extends Partial<Omit<QuizAnswerType, "quizID">> {
   questionPosition: number;
   id: string;
+  loaded?: boolean;
 }
 
 export interface StateQuestionType
@@ -329,7 +336,8 @@ export type CourseEditActionIntentType =
   | "DELETE_CONTENT"
   | "DELETE_QUIZ"
   | "DELETE_EXAM"
-  | "ADD_LESSONS";
+  | "ADD_LESSONS"
+  | "ADD_LESSON_CONTENT";
 
 export interface CourseArchiveActionType
   extends ActionButtonType<{ courseID: number }> {}
@@ -378,4 +386,73 @@ export interface LessonAdditionPayloadType {
 export interface LessonAdditionActionType
   extends ActionButtonType<LessonAdditionPayloadType> {
   intent: "ADD_LESSONS";
+}
+
+export interface LessonContentAdditionPayloadType
+  extends Omit<LessonContentAdditionStateType, "type"> {
+  contentType: LessonVariantType;
+  lessonID: number;
+}
+
+export interface LessonContentCreationActionType
+  extends ActionButtonType<LessonContentAdditionPayloadType> {
+  intent: "ADD_LESSON_CONTENT";
+}
+
+export interface QuizCreationPayloadType
+  extends Pick<LessonAssessmentType, "description" | "passScore"> {
+  parentEntityID?: number;
+  quizTitle: string;
+}
+
+export type QuizCreationActionIntentType = "ADD_QUIZ";
+
+export interface QuizCreationActionType
+  extends ActionButtonType<QuizCreationPayloadType> {
+  intent: QuizCreationActionIntentType;
+}
+
+export type ExamCreationActionIntentType = "ADD_EXAM";
+
+export interface ExamCreationPayloadType extends AssessmentEditStateType {
+  parentEntityID?: number;
+}
+
+export interface ExamCreationActionType
+  extends ActionButtonType<ExamCreationPayloadType> {
+  intent: ExamCreationActionIntentType;
+}
+
+export type AssessmentEditActionIntentType = "UPDATE_EXAM" | "UPDATE_QUIZ";
+
+export interface QuestionAdditionPayloadType {
+  questionText: string;
+  points: number;
+  positionID: number;
+  assessmentID: string;
+  assessmentType: AssessmentVariantType;
+}
+
+export interface AnswerAdditionPayloadType {
+  answerText: string;
+  isCorrect: boolean;
+  questionPositionID: number;
+}
+
+export interface AssessmentEditPayloadType {
+  parentEntityID?: number;
+  questionDataList: QuestionAdditionPayloadType[];
+  answerDataList: AnswerAdditionPayloadType[];
+  trashQuestionIDList: number[];
+}
+
+export interface AssessmentEditActionType
+  extends ActionButtonType<AssessmentEditPayloadType> {
+  intent: AssessmentEditActionIntentType;
+}
+
+// COOKIES AND PAYLOAD
+export interface RedirectPayloadType {
+  location?: string;
+  replace?: boolean;
 }
