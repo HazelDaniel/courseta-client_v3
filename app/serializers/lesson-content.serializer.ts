@@ -1,4 +1,9 @@
-import { LessonContentCreationPayloadType, StateContentType } from "~/types";
+import {
+  LessonContentAdditionPayloadType,
+  LessonContentAdditionStateType,
+  LessonContentCreationPayloadType,
+  StateContentType,
+} from "~/types";
 
 export const serializeLessonContentForAction: (
   lessonContentStates: Partial<StateContentType>[]
@@ -16,4 +21,20 @@ export const serializeLessonContentForAction: (
   });
 
   return resContentsPayload;
+};
+
+export const serializeLessonContentForCreateAction: (
+  lessonContentState: LessonContentAdditionStateType,
+  lessonID: number
+) => LessonContentAdditionPayloadType = (lessonContentState, lessonID) => {
+  const { duration, href, title, type } = lessonContentState;
+  const resContentPayload = {
+    title,
+    href,
+    duration,
+    contentType: type || "text",
+    lessonID
+  };
+
+  return resContentPayload;
 };
