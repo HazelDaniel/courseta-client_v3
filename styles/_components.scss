@@ -122,6 +122,9 @@
   }
   button {
     font-size: 1.8rem;
+    &:disabled {
+      opacity: 0.5;
+    }
   }
   .input_form_top {
     width: max-content;
