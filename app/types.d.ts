@@ -231,11 +231,14 @@ export interface DefaultCourseFormDataType extends DefaultFormDataType {
   tags?: string;
   avatar_url?: string;
 }
-export interface DashboardCustomInputType {
+
+e;
+
+export interface DashboardCustomInputType<T extends string> {
   heading: string;
   namespace: string;
   form: {
-    intent: string;
+    intent: T;
     actions: string[];
     variant:
       | "one-uni-button"
@@ -309,7 +312,7 @@ export interface StateContentType extends Partial<LessonContentType> {
   lessonPosition: number;
 }
 
-//SERIALIZERS
+// SERIALIZER DATA TYPE
 
 export interface CourseCreationPayloadType
   extends Partial<{
@@ -450,6 +453,98 @@ export interface AssessmentEditActionType
   extends ActionButtonType<AssessmentEditPayloadType> {
   intent: AssessmentEditActionIntentType;
 }
+
+export type DashboardEditActionIntentType =
+  | "UPDATE_NAMES"
+  | "UPDATE_EMAIL"
+  | "UPDATE_PASSWORD"
+  | "UPDATE_AVATAR"
+  | "REQUEST_NEW_PASS";
+
+export interface DashboardNamesUpdateFormStateType {
+  intent: "UPDATE_NAMES";
+  firstName: string;
+  lastName: string;
+}
+
+export interface DashboardEmailUpdateFormStateType {
+  intent: "UPDATE_EMAIL";
+  email: string;
+}
+
+export interface DashboardPasswordUpdateFormStateType {
+  intent: "UPDATE_PASSWORD";
+  newPassword: string;
+  oldPassword: string;
+}
+
+export interface DashboardPassUpdateFormStateType {
+  intent: "REQUEST_NEW_PASS";
+}
+
+export interface DashboardAvatarUpdateFormStateType {
+  intent: "UPDATE_AVATAR";
+  oldAvatarID?: string;
+  newAvatar: string;
+}
+
+export interface DashboardNamesUpdateActionType
+  extends ActionButtonType<Omit<DashboardNamesUpdateFormStateType, "intent">> {
+  intent: "UPDATE_NAMES";
+}
+
+export interface DashboardEmailUpdateActionType
+  extends ActionButtonType<Omit<DashboardEmailUpdateFormStateType, "intent">> {
+  intent: "UPDATE_EMAIL";
+}
+
+export interface DashboardPasswordUpdateActionType
+  extends ActionButtonType<
+    Omit<DashboardPasswordUpdateFormStateType, "intent">
+  > {
+  intent: "UPDATE_PASSWORD";
+}
+
+export interface DashboardAvatarUpdateFormParsedType
+  extends Omit<DashboardAvatarUpdateFormStateType, "intent"> {
+  newAvatar: [string, string];
+}
+
+export interface DashboardAvatarUpdateActionType
+  extends ActionButtonType<DashboardAvatarUpdateFormParsedType> {
+  intent: "UPDATE_AVATAR";
+}
+
+export interface DashboardPassUpdateActionType
+  extends ActionButtonType<Omit<DashboardPassUpdateFormStateType, "intent">> {
+  intent: "UPDATE_PASS";
+}
+
+export type AuthUserIntentType = "SIGN_IN" | "SIGN_UP";
+
+export interface UserAuthType
+  extends Pick<UserType, "email" | "firstName" | "lastName" | "role"> {
+  password: string;
+  rememberMe?: "on";
+  creatorPass?: string;
+  asCreator?: "on";
+}
+
+export interface UserAuthPayloadType extends UserAuthType {
+  rememberMe?: boolean;
+  asCreator?: boolean;
+}
+
+export interface UserSigninActionType
+  extends ActionButtonType<UserAuthPayloadType> {
+  intent: "SIGN_IN";
+}
+
+export interface UserSignupActionType
+  extends ActionButtonType<UserAuthPayloadType> {
+  intent: "SIGN_UP";
+}
+
 
 // COOKIES AND PAYLOAD
 export interface RedirectPayloadType {
