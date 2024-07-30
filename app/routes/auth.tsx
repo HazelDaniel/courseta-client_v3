@@ -1,7 +1,6 @@
-import { Navigate } from "@remix-run/react";
+import { Navigate, useFetcher } from "@remix-run/react";
 import {
   ActionFunction,
-  Form,
   Link,
   json,
   redirect,
@@ -16,13 +15,24 @@ import { useSearchParams } from "@remix-run/react";
 import styles from "~/styles/auth.module.css";
 import axios from "axios";
 import { BASE_URL, updateInterceptorWithToken } from "~/config/base";
+import { ChangeEvent, useRef, useState } from "react";
+import {
+  AuthUserIntentType,
+  UserAuthPayloadType,
+  UserAuthType,
+  UserSigninActionType,
+  UserSignupActionType,
+} from "~/types";
+import { serializeAuthFormForAction } from "~/serializers/auth.serializer";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
 // };
 
 export const SignInForm: React.FC = () => {
-  const signInSubmit = useSubmit();
+  const [isCreatorStatus, setCreatorStatus] = useState<boolean>(false);
+  const { Form, submit } = useFetcher();
+  const formRef = useRef<HTMLFormElement>(null);
 
   if (AuthDao.isAuthenticated) {
     return <Navigate to={"/"} replace={true} />;
@@ -31,70 +41,153 @@ export const SignInForm: React.FC = () => {
     <Form
       className={styles.auth_form}
       method="post"
+      ref={formRef}
       onSubmit={(e: React.FormEvent) => {
+        if (!formRef.current) return;
         e.preventDefault();
-        const formData = new FormData(e.currentTarget as HTMLFormElement);
-        let email: string = (formData.get("email") as string) || "";
-        let password: string = (formData.get("password") as string) || "";
-        email = email.trim();
-        password = password.trim();
-        const res = { email, password };
-        signInSubmit(res, {
-          method: "POST",
+        const formData = new FormData(formRef.current as HTMLFormElement);
+        const res: UserAuthType = Object.fromEntries(formData.entries()) as any;
+        const payload = serializeAuthFormForAction(res);
+        const submitPayload: UserSigninActionType = {
+          intent: "SIGN_IN",
+          payload,
+        };
+        submit(submitPayload as any, {
+          method: "post",
+          action: "./",
           encType: "application/json",
         });
       }}
     >
       <div className={styles.input_wrapper}>
-        <label htmlFor="auth-email">Email</label>
-        <input type="email" name="email" id="auth-email" />
+        <label htmlFor="email">Email</label>
+        <input type="email" name={"email" as keyof UserAuthType} id="email" />
       </div>
 
       <div className={styles.input_wrapper}>
-        <label htmlFor="auth-password">Password</label>
-        <input type="password" name="password" id="auth-password" />
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          name={"password" as keyof UserAuthType}
+          id="password"
+        />
       </div>
+
+      <div className={`${styles.input_wrapper}`}>
+        <label htmlFor="rememberMe">Remember me</label>
+        <input
+          type="checkbox"
+          name={"rememberMe" as keyof UserAuthType}
+          id="rememberMe"
+        />
+      </div>
+
+      <div className={`${styles.input_wrapper}`}>
+        <label htmlFor="asCreator">login as creator</label>
+        <input
+          type="checkbox"
+          id="asCreator"
+          name={"asCreator" as keyof UserAuthType}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            if (e.currentTarget.checked) {
+              setCreatorStatus(true);
+              return;
+            }
+            setCreatorStatus(false);
+          }}
+        />
+      </div>
+
+      {isCreatorStatus ? (
+        <div className={styles.input_wrapper}>
+          <label htmlFor="creatorPass">Creator Pass</label>
+          <input
+            type="password"
+            name={"creatorPass" as keyof UserAuthType}
+            id="creatorPass"
+          />
+        </div>
+      ) : null}
+
       <button type="submit">SIGN IN</button>
     </Form>
   );
 };
 
 export const SignUpForm: React.FC = () => {
+  const { Form, submit } = useFetcher();
   if (AuthDao.isAuthenticated) {
     return <Navigate to={"/"} replace={true} />;
   }
+  const formRef = useRef<HTMLFormElement>(null);
   return (
-    <Form className={styles.auth_form}>
+    <Form
+      className={styles.auth_form}
+      method="post"
+      ref={formRef}
+      onSubmit={(e: React.FormEvent) => {
+        if (!formRef.current) return;
+        e.preventDefault();
+        const formData = new FormData(formRef.current as HTMLFormElement);
+        const res: UserAuthType = Object.fromEntries(formData.entries()) as any;
+        const payload = serializeAuthFormForAction(res);
+        const submitPayload: UserSignupActionType = {
+          intent: "SIGN_UP",
+          payload,
+        };
+        submit(submitPayload as any, {
+          method: "post",
+          action: "./",
+          encType: "application/json",
+        });
+      }}
+    >
       <div className={styles.input_wrapper}>
-        <label htmlFor="auth-first-name">First Name</label>
-        <input type="text" name="first_name" id="auth-first-name" />
+        <label htmlFor="firstName">First Name</label>
+        <input
+          type="text"
+          name={"firstName" as keyof UserAuthType}
+          id="firstName"
+        />
       </div>
 
       <div className={styles.input_wrapper}>
-        <label htmlFor="auth-last-name">Last Name</label>
-        <input type="text" name="last_name" id="auth-last-name" />
+        <label htmlFor="lastName">Last Name</label>
+        <input
+          type="text"
+          name={"lastName" as keyof UserAuthType}
+          id="lastName"
+        />
       </div>
 
       <div className={styles.input_wrapper}>
-        <label htmlFor="auth-email">Email</label>
-        <input type="email" name="email" id="auth-email" />
-      </div>
-
-      <div className={`${styles.input_wrapper} ${styles.breaker}`}>
-        <label htmlFor="auth-phone">Phone</label>
-        <input type="tel" name="phone" id="auth-phone" />
+        <label htmlFor="email">Email</label>
+        <input type="email" name={"email" as keyof UserAuthType} id="email" />
       </div>
 
       <div className={styles.input_wrapper}>
-        <label htmlFor="auth-password">Password</label>
-        <input type="password" name="password" id="auth-password" />
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          name={"password" as keyof UserAuthType}
+          id="password"
+        />
       </div>
       <div className={styles.input_wrapper}>
         <label htmlFor="auth-confirm-password">Confirm Password</label>
         <input
           type="password"
-          name="confirm_password"
+          name={"confirm_password" as keyof UserAuthType}
           id="auth-confirm-password"
+        />
+      </div>
+
+      <div className={`${styles.input_wrapper}`}>
+        <label htmlFor="asCreator">sign up as creator</label>
+        <input
+          type="checkbox"
+          name={"asCreator" as keyof UserAuthType}
+          id="asCreator"
         />
       </div>
 
@@ -218,44 +311,69 @@ type AuthResolveType = {
   access: string;
 };
 
-// TODO: don't forget to add form validation logic
 export const action: ActionFunction = async (args) => {
   const { request } = args;
-  const requestBody = await request.json();
-  try {
-    const response = await axios.post(
-      `${BASE_URL}/auth/token`,
-      JSON.stringify(requestBody),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+  const reqJson: { intent: AuthUserIntentType; payload: object } =
+    await request.json();
+  switch (reqJson.intent) {
+    case "SIGN_IN": {
+      let payloadJson: UserAuthPayloadType =
+        reqJson.payload as UserAuthPayloadType;
+      switch (payloadJson.role) {
+        case "student":
+          console.log("signing in with student credentials");
+          break;
+        default:
+          console.log("signing in with creator credentials");
       }
-    );
-    if (response.status === 401) {
-      throw new Response("user not authenticated", { status: 401 });
-    } else if (response.status === 200) {
-      const body: AuthResolveType = await response.data;
-      AuthDao.setAccessToken(body.access);
-      AuthDao.setRefreshToken(body.refresh);
-      updateInterceptorWithToken();
-      return redirect("/", { status: 200 });
-    } else {
-      throw response;
+      console.table(payloadJson);
+      break;
     }
-  } catch (err) {
-    console.error(
-      "an error occurred while trying to submit the authentication credentials",
-      err
-    );
+    case "SIGN_UP": {
+      let payloadJson: UserAuthPayloadType =
+        reqJson.payload as UserAuthPayloadType;
+      switch (payloadJson.role) {
+        case "student":
+          console.log("signing up with student credentials");
+          break;
+        default:
+          console.log("signing up with creator credentials");
+      }
+      console.table(payloadJson);
+      break;
+    }
+    default: {
+      break;
+    }
   }
-  // const formdata: FormData | null =
-  //   request.method === "POST" ? await request.formData() : null;
-  // let searchTerm: string | null;
-  // if (formdata) {
-  //   searchTerm = formdata.get("search") as string;
-  // }
-  console.log(" request  body is ", requestBody);
+  try {
+    // const response = await axios.post(
+    //   `${BASE_URL}/auth/token`,
+    //   JSON.stringify(requestBody),
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   }
+    // );
+    // if (response.status === 401) {
+    //   throw new Response("user not authenticated", { status: 401 });
+    // } else if (response.status === 200) {
+    //   const body: AuthResolveType = await response.data;
+    //   AuthDao.setAccessToken(body.access);
+    //   AuthDao.setRefreshToken(body.refresh);
+    //   updateInterceptorWithToken();
+    //   return redirect("/", { status: 200 });
+    // } else {
+    //   throw response;
+    // }
+  } catch (err) {
+    // console.error(
+    //   "an error occurred while trying to submit the authentication credentials",
+    //   err
+    // );
+  }
+
   return json({});
 };
 
