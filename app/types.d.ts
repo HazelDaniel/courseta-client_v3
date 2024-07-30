@@ -27,7 +27,7 @@ export interface CourseAttemptType {
 }
 
 export interface UserType {
-  avatar: { url: string; updatedAt: string; createdAt: string };
+  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
   firstName: string;
   lastName: string;
   email: string;
@@ -79,7 +79,6 @@ export interface QuestionType {
 }
 
 export interface CourseEntryType {
-  imageUrl: string;
   title: string;
   lessonCount: number;
   progress: number;
@@ -90,6 +89,7 @@ export interface CourseEntryType {
   updatedAt: string;
   tags: string[];
   archived?: boolean;
+  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
 }
 
 export type CourseListType = CourseEntryType[];
@@ -200,7 +200,7 @@ export interface CourseDetailType extends CourseEntryType {
 export interface CourseReviewType {
   studentEmail: string;
   studentID: string;
-  studentAvatarURL: string;
+  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
   reviewText: string;
   rating: number;
   dateCreated: string;
@@ -209,7 +209,8 @@ export interface CourseReviewType {
 export interface DBUserType extends Pick<UserType, "email" | "name"> {
   points: number;
   rank: string;
-  avatar: "string";
+  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
+  avatarID?: string;
 }
 
 export interface DefaultFormDataType {
