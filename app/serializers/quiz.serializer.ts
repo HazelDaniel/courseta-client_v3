@@ -1,4 +1,8 @@
-import { LessonQuizCreationPayloadType, StateQuizType } from "~/types";
+import {
+  LessonQuizCreationPayloadType,
+  QuizCreationPayloadType,
+  StateQuizType,
+} from "~/types";
 
 export const serializeLessonQuizForAction: (
   lessonQuizStates: Partial<StateQuizType>[]
@@ -15,4 +19,15 @@ export const serializeLessonQuizForAction: (
   });
 
   return resQuizzesPayload;
+};
+
+export const serializeQuizForCreateAction: (
+  lessonQuizState: Partial<StateQuizType>
+) => Omit<QuizCreationPayloadType, "parentEntityID"> = (quizState) => {
+  let resQuizPayload: Omit<QuizCreationPayloadType, "parentEntityID">;
+
+  const { description, passScore, title } = quizState;
+  resQuizPayload = { description, passScore, quizTitle: title as string };
+
+  return resQuizPayload;
 };
