@@ -196,10 +196,16 @@ export async function handleFileSelect(
 
   const file = input.files[0];
   try {
-    const [halfSizeImage, fullyCompressedImage] =
-      await processAndCompressImage(file);
+    if (file.size > 2000 * 1024) {
+      throw new Error("No files larger than 2MB are allowed!");
+    }
+
+    const [halfSizeImage, fullyCompressedImage] = await processAndCompressImage(
+      file
+    );
     handler([halfSizeImage, fullyCompressedImage]);
   } catch (error) {
     console.error("Error processing file:", error);
+    // TODO: this should throw and be caught in a component
   }
 }
