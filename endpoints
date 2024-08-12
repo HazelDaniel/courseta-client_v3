@@ -28,6 +28,7 @@ CREATORS:
 	course tags
 
 .. <> archive course 								POST api/v1/creators/:creator_id/courses/:course_id/archive
+.. <> unarchive course 								POST api/v1/creators/:creator_id/courses/:course_id/unarchive
 .. <> delete course 									DELETE api/v1/creators/:creator_id/courses/:course_id
 
 .. <> update course:  						PUT api/v1/creators/:creator_id/courses/:course_id/
