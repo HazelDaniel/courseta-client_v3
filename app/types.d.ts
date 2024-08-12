@@ -185,8 +185,22 @@ export interface LessonContentType {
   duration?: number;
 }
 
-export interface LessonAssessmentType {
+export interface LessonContentType2 {
   id: number;
+  title: string;
+  href: string;
+  contentType: LessonVariantType;
+  duration?: number;
+}
+
+export interface CreatorAssessmentEditViewType {
+  questions: QuestionType[];
+  assessmentType: AssessmentVariantType;
+  parentID: number;
+}
+
+export interface GenericAssessmentType {
+  id: string;
   questions: QuestionType[];
   completed?: boolean;
   availablePoints: number;
@@ -205,7 +219,7 @@ export interface LessonQuizType {
   description: string;
 }
 
-export interface CourseExamType extends LessonAssessmentType {
+export interface CourseExamType extends GenericAssessmentType {
   startDate: string;
   endDate: string;
   duration: number;
@@ -246,7 +260,7 @@ export interface CourseLessonType2 {
   id: number;
   title: string;
   duration: number;
-  contents: LessonContentType[];
+  contents: LessonContentType2[];
   quiz?: LessonQuizType;
   contentCount: number;
 }
@@ -399,7 +413,7 @@ export interface AssessmentEditStateType {
 export interface LessonContentAdditionStateType
   extends Partial<Omit<LessonContentType, "id">> {}
 
-export interface StateQuizType extends LessonAssessmentType {
+export interface StateQuizType extends GenericAssessmentType {
   lessonPosition: number;
 }
 
@@ -438,7 +452,7 @@ export interface ActionButtonType<T extends object> {
 
 export type CoursesActionIntentType = "DELETE" | "ARCHIVE" | "UNARCHIVE";
 
-export interface CreatorCoursesActionType 
+export interface CreatorCoursesActionType
   extends ActionButtonType<{ courseID: number }> {
   intent: CoursesActionIntentType;
 }
@@ -457,8 +471,8 @@ export type CourseEditActionIntentType =
 
 export interface CourseArchiveActionType
   extends ActionButtonType<{ courseID: number }> {
-    intent: "ARCHIVE" | "UNARCHIVE",
-  }
+  intent: "ARCHIVE" | "UNARCHIVE";
+}
 
 export interface CourseInfoEditActionType
   extends ActionButtonType<Partial<CourseEditPayloadType>> {
@@ -470,6 +484,8 @@ export interface CourseItemDeletionActionType
     contentID?: number;
     quizID?: string;
     examID?: string;
+    lessonID?: number;
+    courseID?: number;
   }> {
   intent: Exclude<CourseEditActionIntentType, "UPDATE_INFO">;
 }
@@ -691,10 +707,10 @@ export interface RedirectPayloadType {
 
 export interface ActionResponseType<T> {
   data: T;
-  error: string;
+  error: string | null;
 }
 
-// export interface LoaderResponseType<T> {
-//   data: T;
-//   error: string;
-// }
+export interface LoaderResponseType<T> {
+  data: T;
+  error: string;
+}
