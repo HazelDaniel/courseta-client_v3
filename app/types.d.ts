@@ -12,6 +12,21 @@ export interface AnnouncementGroupType {
 
 export type RankRange = 1 | 2 | 3 | 4 | 5 | 6;
 
+export type StudentRankType =
+  | "novice"
+  | "amateur"
+  | "senior"
+  | "professional"
+  | "master"
+  | "legendary";
+
+export interface ImageMetaType {
+  updated_at: string;
+  created_at: string;
+  id?: string;
+  mime_type?: string;
+}
+
 export interface RankType {
   level: RankRange;
   title: string;
@@ -27,7 +42,8 @@ export interface CourseAttemptType {
 }
 
 export interface UserType {
-  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
+  avatar: string;
+  avatarMeta: ImageMetaType;
   firstName: string;
   lastName: string;
   email: string;
@@ -38,10 +54,16 @@ export interface UserType {
 
 export interface CreatorUserType extends UserType {
   role: "creator";
-  creatorPass: string;
+  creatorPass?: string;
   averageCourseRating: number;
   courseReviewCount: number;
   courseCount: number;
+  studentCount: number;
+}
+
+export interface StudentUserType extends UserType {
+  rank: StudentRankType;
+  points: number;
 }
 
 export interface StudentProfileType {
@@ -89,7 +111,8 @@ export interface CourseEntryType {
   updatedAt: string;
   tags: string[];
   archived?: boolean;
-  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
+  avatar: string;
+  avatarMeta: ImageMetaType;
 }
 
 export type CourseListType = CourseEntryType[];
@@ -106,9 +129,21 @@ export interface CourseFilterType {
   options: CourseFilterOptionType[];
 }
 
-type PossibleAccessmentState<T> = T extends "generic"
-  ? "passed" | "failed"
-  : "passed" | "failed" | "no-attempt";
+type PossibleAccessmentState = "passed" | "failed";
+
+export interface ExamResultType {
+  status: PossibleAccessmentState;
+  courseID: string;
+  dateAttempted: string;
+  percentScore: number;
+}
+
+export interface QuizResultType extends ExamResultType {}
+
+export interface AssessmentReportType {
+  exams: ExamResultType[];
+  quizzes: QuizResultType[];
+}
 
 export interface CourseAssessmentType {
   status: PossibleAccessmentState<"generic">;
@@ -120,6 +155,13 @@ export interface ExamAssessmentType
   extends Omit<CourseAssessmentType, "courseID"> {
   status: PossibleAccessmentState<"exam">;
   examID: number;
+}
+
+export interface CourseAssessmentType {
+  status: PossibleAccessmentState;
+  courseID: string;
+  dateAttempted: string;
+  percentScore?: number;
 }
 
 export interface AssessmentDataType {
@@ -156,11 +198,38 @@ export interface LessonAssessmentType {
   parentID?: number;
 }
 
+export interface LessonQuizType {
+  id: string;
+  title: string;
+  totalPoints: number; // questions[] not added because they should be fetched independently
+  description: string;
+}
+
 export interface CourseExamType extends LessonAssessmentType {
   startDate: string;
   endDate: string;
   duration: number;
   description: string;
+}
+
+export interface CourseExamType2 {
+  startDate: string;
+  endDate: string;
+  duration: number;
+  description: string;
+  passScore: number;
+}
+
+export interface CourseExamDetailType extends CourseExamType2 {
+  totalPoints: number;
+  questionCount: number;
+  questions: QuestionType[];
+}
+
+export interface LessonQuizDetailType extends Omit<LessonQuizType, "id"> {
+  passScore: number;
+  questionCount: number;
+  questions: QuestionType[];
 }
 
 export interface CourseLessonType {
@@ -171,6 +240,15 @@ export interface CourseLessonType {
   assessment: LessonAssessmentType;
   courseTitle: string;
   duration: number;
+}
+
+export interface CourseLessonType2 {
+  id: number;
+  title: string;
+  duration: number;
+  contents: LessonContentType[];
+  quiz?: LessonQuizType;
+  contentCount: number;
 }
 
 export interface LessonContentFormType extends Omit<LessonContentType, "id"> {
@@ -200,16 +278,31 @@ export interface CourseDetailType extends CourseEntryType {
 export interface CourseReviewType {
   studentEmail: string;
   studentID: string;
-  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
+  avatar: string;
+  avatarMeta: ImageMetaType;
   reviewText: string;
   rating: number;
   dateCreated: string;
 }
 
+export interface CourseCreatorViewType {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  avatarMeta: ImageMetaType;
+  averageCourseRating: number;
+  courseCount: number;
+  studentCount: number;
+  courseReviewCount: number;
+}
+
 export interface DBUserType extends Pick<UserType, "email" | "name"> {
   points: number;
   rank: string;
-  avatar: { url?: string; updatedAt: string; createdAt: string; id: string };
+  avatar: string;
+  avatarMeta: ImageMetaType;
   avatarID?: string;
 }
 
@@ -260,6 +353,7 @@ export interface DashboardCustomInputType<T extends string> {
   images: {
     url: string;
     ref: Partial<React.Ref<HTMLImageElement>>;
+    id?: string;
   }[];
 }
 
@@ -315,6 +409,20 @@ export interface StateContentType extends Partial<LessonContentType> {
 
 // SERIALIZER DATA TYPE
 
+export interface ImageSearchPayloadType {
+  mimeType: string; //raw base64
+}
+
+export interface ImageUpdatePayloadType {
+  newAvatar: [string, string];
+  avatarMeta: ImageMetaType;
+}
+
+export interface ImageCreationPayloadType {
+  id: string;
+  imageUrl: string;
+}
+
 export interface CourseCreationPayloadType
   extends Partial<{
     info: Partial<CourseEditStateType>;
@@ -330,9 +438,13 @@ export interface ActionButtonType<T extends object> {
 
 export type CoursesActionIntentType = "DELETE" | "ARCHIVE" | "UNARCHIVE";
 
-export interface CourseDeletionActionType
+export interface CreatorCoursesActionType 
   extends ActionButtonType<{ courseID: number }> {
   intent: CoursesActionIntentType;
+}
+export interface CourseDeletionActionType
+  extends ActionButtonType<{ courseID: number }> {
+  intent: "DELETE";
 }
 
 export type CourseEditActionIntentType =
@@ -344,7 +456,9 @@ export type CourseEditActionIntentType =
   | "ADD_LESSON_CONTENT";
 
 export interface CourseArchiveActionType
-  extends ActionButtonType<{ courseID: number }> {}
+  extends ActionButtonType<{ courseID: number }> {
+    intent: "ARCHIVE" | "UNARCHIVE",
+  }
 
 export interface CourseInfoEditActionType
   extends ActionButtonType<Partial<CourseEditPayloadType>> {
@@ -509,6 +623,7 @@ export interface DashboardPasswordUpdateActionType
 export interface DashboardAvatarUpdateFormParsedType
   extends Omit<DashboardAvatarUpdateFormStateType, "intent"> {
   newAvatar: [string, string];
+  avatarMeta: Partial<ImageMetaType>;
 }
 
 export interface DashboardAvatarUpdateActionType
@@ -546,9 +661,40 @@ export interface UserSignupActionType
   intent: "SIGN_UP";
 }
 
+export interface StudentReviewPayloadType {
+  studentID?: string;
+  reviewText: string;
+  rating: number;
+}
+
+export interface StudentReviewActionType
+  extends ActionButtonType<StudentReviewPayloadType> {
+  intent: "REVIEW_COURSE";
+}
+
+export interface StudentEnrollPayloadType {
+  studentID?: string;
+}
+
+export interface StudentEnrollActionType
+  extends ActionButtonType<StudentEnrollPayloadType> {
+  intent: "REVIEW_COURSE";
+}
 
 // COOKIES AND PAYLOAD
 export interface RedirectPayloadType {
   location?: string;
   replace?: boolean;
 }
+
+// RESPONSES
+
+export interface ActionResponseType<T> {
+  data: T;
+  error: string;
+}
+
+// export interface LoaderResponseType<T> {
+//   data: T;
+//   error: string;
+// }
