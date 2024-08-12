@@ -10,6 +10,7 @@ import { AuthDao } from "app/dao/auth";
 
 import { LinksFunction } from "@remix-run/node";
 import styles from "~/styles/side-tab.module.css";
+import { UserRoleType } from "~/server.types";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
@@ -20,14 +21,14 @@ export const SideTab: React.FC = () => {
   const navigate = useNavigate();
 
   const rootContext = useOutletContext() as {
-    userID: string;
-    role: "student" | "creator";
+    user: { id: string; role: UserRoleType } | undefined;
   };
+  console.log("user entity is ", rootContext);
 
   const userEntity =
-    rootContext.role === "creator"
+    rootContext.user?.role === "creator"
       ? "creators"
-      : rootContext.role === "student"
+      : rootContext.user?.role === "student"
       ? "students"
       : "others";
 
@@ -45,7 +46,7 @@ export const SideTab: React.FC = () => {
                 </svg>
               </span>
               <NavLink
-                to={`/${userEntity}/${rootContext.userID}/dashboard`}
+                to={`/${userEntity}/${rootContext.user?.id}/dashboard`}
                 className={
                   /^\/(students|creators)\/.*\/dashboard(\/)?/i.test(
                     location.pathname
@@ -62,7 +63,7 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
-                  to={`/${userEntity}/${rootContext.userID}/dashboard/courses`}
+                  to={`/${userEntity}/${rootContext.user?.id}/dashboard/courses`}
                   className={
                     /^\/(students|creators)\/.*\/dashboard\/courses$/i.test(
                       location.pathname
@@ -79,7 +80,7 @@ export const SideTab: React.FC = () => {
                 <span className={styles.sub_nav_item}>
                   <span></span>{" "}
                   <Link
-                    to={`/${userEntity}/${rootContext.userID}/dashboard/assessment-results`}
+                    to={`/${userEntity}/${rootContext.user?.id}/dashboard/assessment-results`}
                     className={
                       /^\/(students|creators)\/.*\/dashboard\/assessment-results/i.test(
                         location.pathname
@@ -96,7 +97,7 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
-                  to={`/${userEntity}/${rootContext.userID}/dashboard/profile`}
+                  to={`/${userEntity}/${rootContext.user?.id}/dashboard/profile`}
                   className={
                     /^\/(students|creators)\/.*\/dashboard(\/)?$/i.test(
                       location.pathname
