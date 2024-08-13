@@ -9,6 +9,7 @@ export interface AnnouncementGroupType {
   announcementDate: string;
   announcements: AnnouncementItem[];
 }
+export type UserRoleType = "student" | "creator";
 
 export type RankRange = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -50,6 +51,12 @@ export interface UserType {
   role: "student";
   createdAt: string;
   id: string;
+}
+
+export interface SessionUserType {
+  id: string;
+  email: string;
+  role: UserRoleType;
 }
 
 export interface CreatorUserType extends UserType {
@@ -227,6 +234,7 @@ export interface CourseExamType extends GenericAssessmentType {
 }
 
 export interface CourseExamType2 {
+  id: string;
   startDate: string;
   endDate: string;
   duration: number;
@@ -450,12 +458,20 @@ export interface ActionButtonType<T extends object> {
   payload: T;
 }
 
+export type UserAuthIntentType = "LOGOUT";
+
+export interface UserAuthActionType
+  extends ActionButtonType<Omit<SessionUserType, "email">> {
+  intent: UserAuthIntentType;
+}
+
 export type CoursesActionIntentType = "DELETE" | "ARCHIVE" | "UNARCHIVE";
 
 export interface CreatorCoursesActionType
   extends ActionButtonType<{ courseID: number }> {
   intent: CoursesActionIntentType;
 }
+
 export interface CourseDeletionActionType
   extends ActionButtonType<{ courseID: number }> {
   intent: "DELETE";
@@ -467,7 +483,8 @@ export type CourseEditActionIntentType =
   | "DELETE_QUIZ"
   | "DELETE_EXAM"
   | "ADD_LESSONS"
-  | "ADD_LESSON_CONTENT";
+  | "ADD_LESSON_CONTENT"
+  | "DELETE_LESSON";
 
 export interface CourseArchiveActionType
   extends ActionButtonType<{ courseID: number }> {
