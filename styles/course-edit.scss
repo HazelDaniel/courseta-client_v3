@@ -59,6 +59,12 @@
           justify-content: center;
           margin-right: 10%;
         }
+        & > span {
+          margin-right: 5rem;
+          &:last-of-type {
+            margin-right: 10%;
+          }
+        }
         h3 {
           width: 30%;
           display: block;
@@ -76,8 +82,8 @@
           font-size: 1.8rem;
         }
         span {
-          width: 2rem;
-          height: 2rem;
+          width: 2.5rem;
+          height: 2.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -210,6 +216,8 @@
     align-items: center;
     text-transform: capitalize;
     --icon-color-here: var(--logo-color);
+    margin: 0 auto;
+    margin-top: var(--margin_M);
     span {
       margin-right: 2rem;
       height: 3rem;
@@ -256,7 +264,6 @@
           height: max-content !important;
           align-self: center;
         }
-
       }
       .input_wrapper {
         width: 100%;
@@ -304,7 +311,7 @@
   .content_addition_area {
     width: 100%;
     height: max-content;
-    min-height: 30rem;
+    min-height: 10rem;
     display: flex;
     flex-direction: column;
     gap: 8rem;
