@@ -61,9 +61,10 @@
   }
   overflow: hidden;
   padding: var(--padding_M);
-  background-color: var(--primary-color);
+  background-color: var(--text-color);
   border-top-right-radius: 1.5rem;
   border-top-left-radius: 1.5rem;
+  border-radius: 1.5rem;
   @media screen and (max-width: 800px) {
     margin-left: 0;
   }

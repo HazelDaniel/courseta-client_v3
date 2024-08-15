@@ -135,6 +135,7 @@
       align-items: center;
       .countdown_elapsed_area {
         width: 40rem;
+        min-width: max-content;
 
         display: flex;
         align-items: center;
