@@ -3,6 +3,7 @@ import { isEqual } from "~/utils/comparison";
 const LessonCreationActionTypes = {
   addLesson: "ADD_LESSON",
   updateTitle: "UPDATE_TITLE",
+  reset: "RESET",
 };
 
 export type LessonCreationType = keyof typeof LessonCreationActionTypes;
@@ -17,7 +18,9 @@ export const InitialLessonCreationState: LessonCreationStateType = {
 
 export interface LessonCreationActionType {
   type: keyof typeof LessonCreationActionTypes;
-  payload?: Partial<Pick<CourseLessonType, "title" | "id">>;
+  payload?:
+    | Partial<Pick<CourseLessonType, "title" | "id">>
+    | LessonCreationStateType;
 }
 
 export const LessonCreationReducer = (
@@ -52,6 +55,11 @@ export const LessonCreationReducer = (
       if (isEqual(state, newState)) return state;
       return newState;
     }
+    case LessonCreationActionTypes.reset: {
+      if (!state.lessons.length)
+        return state;
+      return { lessons: [] } as LessonCreationStateType;
+    }
     default: {
       return state;
     }
@@ -69,6 +77,15 @@ export const __updateTitle: (
 ) => LessonCreationActionType = (payload) => {
   return {
     type: LessonCreationActionTypes.updateTitle as keyof typeof LessonCreationActionTypes,
+    payload,
+  };
+};
+
+export const __reset: (
+  payload: LessonCreationStateType
+) => LessonCreationActionType = (payload) => {
+  return {
+    type: LessonCreationActionTypes.reset as keyof typeof LessonCreationActionTypes,
     payload,
   };
 };

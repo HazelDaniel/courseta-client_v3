@@ -1,5 +1,4 @@
 import {
-  LessonAssessmentType,
   LessonContentFormType,
   LessonContentType,
   QuizFormType,
@@ -13,6 +12,7 @@ const LessonUpdateActionTypes = {
   updateContent: "UPDATE_CONTENT",
   updateQuiz: "UPDATE_QUIZ",
   updatePosition: "UPDATE_POSITION",
+  reset: "RESET",
 };
 
 export type LessonUpdateType = keyof typeof LessonUpdateActionTypes;
@@ -23,14 +23,12 @@ interface ItemAdditionPayloadType {
 
 export interface LessonUpdateStateType {
   position?: number;
-  // lessonTitle: string;
   lessonQuizCount: number;
   lessonContents: Partial<StateContentType>[];
   lessonQuizzes: Partial<StateQuizType>[];
 }
 
 export const InitialLessonUpdateState: LessonUpdateStateType = {
-  // lessonTitle: "",
   lessonQuizCount: 0,
   lessonContents: [],
   lessonQuizzes: [],
@@ -42,7 +40,8 @@ export interface LessonUpdateActionType {
     | string
     | number
     | Partial<LessonContentFormType>
-    | Partial<QuizFormType>;
+    | Partial<QuizFormType>
+    | LessonUpdateStateType;
 }
 
 export const LessonUpdateReducer = (
@@ -96,7 +95,7 @@ export const LessonUpdateReducer = (
           lessonQuizzes: [
             ...state.lessonQuizzes,
             {
-              id: state.lessonQuizzes.length,
+              id: new Date().getTime().toString(),
               lessonPosition: payload.lessonPositionID,
             },
           ],
@@ -123,9 +122,9 @@ export const LessonUpdateReducer = (
     case LessonUpdateActionTypes.updateQuiz: {
       if (state.position === undefined) return state; // we need a lesson position
       newState = { ...state };
-      const payload = action.payload as StateQuizType;
+      const payload = action.payload as Omit<StateQuizType, "id"> & {id: string};
       const quizIndex = state.lessonQuizzes.findIndex(
-        (el) => el.id === payload.id
+        (el) => el.id === payload.id.toString()
       );
       const resultQuiz: StateQuizType = {
         ...state.lessonQuizzes[quizIndex],
@@ -141,6 +140,21 @@ export const LessonUpdateReducer = (
       if (state.position === action.payload) return state;
       newState = { ...state, position: payload };
       return newState;
+    }
+    case LessonUpdateActionTypes.reset: {
+      if (
+        !state.position &&
+        !state.lessonContents.length &&
+        !state.lessonQuizzes.length &&
+        !state.lessonQuizCount
+      ) {
+        return state;
+      }
+      return {
+        lessonContents: [],
+        lessonQuizCount: 0,
+        lessonQuizzes: [],
+      } as LessonUpdateStateType;
     }
     default: {
       return state;
@@ -164,6 +178,15 @@ export const __addQuiz: (
 ) => LessonUpdateActionType = (payload) => {
   return {
     type: LessonUpdateActionTypes.addQuiz as keyof typeof LessonUpdateActionTypes,
+    payload,
+  };
+};
+
+export const __reset: (
+  payload: LessonUpdateStateType
+) => LessonUpdateActionType = (payload) => {
+  return {
+    type: LessonUpdateActionTypes.reset as keyof typeof LessonUpdateActionTypes,
     payload,
   };
 };

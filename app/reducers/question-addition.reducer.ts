@@ -2,25 +2,16 @@
 const computeQuestionID: (state: QuestionAdditionStateType) => string = (
   state
 ) => {
-  if (state.questions.length > 0) {
-    return (
-      +(state.questions[state.questions.length - 1].id || "0") + 1
-    ).toString();
-  } else {
-    return `${state.questions.length}`;
-  }
+  return new Date().getTime().toString();
 };
 
-import {
-  QuestionType,
-  QuizAnswerType,
-  StateAnswerType,
-  StateQuestionType,
-} from "~/types";
+import { StateAnswerType, StateQuestionType } from "~/types";
 const QuestionAdditionActionTypes = {
   addQuestion: "ADD_QUESTION",
   addAnswers: "ADD_ANSWERS",
   trashQuestion: "TRASH_QUESTION",
+  clearDraft: "CLEAR_DRAFT",
+  reset: "RESET",
 };
 
 export type QuestionUpdateType = keyof typeof QuestionAdditionActionTypes;
@@ -36,17 +27,22 @@ export interface QuestionAdditionStateType {
   questions: Partial<StateQuestionType>[];
   answers: Partial<StateAnswerType>[];
   trashedQuestions: Partial<StateQuestionType>[];
+  draftQuestions: Partial<StateQuestionType>[];
 }
 
 export const InitialQuestionAdditionState: QuestionAdditionStateType = {
   answers: [],
   questions: [],
   trashedQuestions: [],
+  draftQuestions: [],
 };
 
 export interface QuestionAdditionActionType {
   type: keyof typeof QuestionAdditionActionTypes;
-  payload?: Partial<StateQuestionType> | AnswersAdditionPayloadType;
+  payload?:
+    | Partial<StateQuestionType>
+    | AnswersAdditionPayloadType
+    | typeof InitialQuestionAdditionState;
 }
 
 export const QuestionAdditionReducer = (
@@ -77,11 +73,13 @@ export const QuestionAdditionReducer = (
       newState = {
         ...state,
       };
-      newState.questions.push({
+      const resultQuestion = {
         id: computeQuestionID(state),
-        position: state.questions.length,
+        position: +computeQuestionID(state),
         ...payload,
-      });
+      };
+      newState.questions.push(resultQuestion);
+      if (!resultQuestion.loaded) newState.draftQuestions.push(resultQuestion);
       return newState;
     }
     case QuestionAdditionActionTypes.trashQuestion: {
@@ -101,9 +99,24 @@ export const QuestionAdditionReducer = (
             (question) => question.id !== trashResult.id
           ),
         ],
+        draftQuestions: [
+          ...state.questions.filter(
+            (question) => question.id !== trashResult.id && !question.loaded
+          ),
+        ],
       };
-      newState.trashedQuestions.push(trashResult);
+      if (trashResult.loaded) newState.trashedQuestions.push(trashResult);
       return newState;
+    }
+    case QuestionAdditionActionTypes.clearDraft: {
+      if (!state.draftQuestions.length) return state;
+      newState = { ...state, draftQuestions: [] };
+      return newState;
+    }
+    case QuestionAdditionActionTypes.reset: {
+      console.log("resetting the state");
+      console.log("with payload : ", action.payload);
+      return { ...action.payload as typeof InitialQuestionAdditionState };
     }
     default: {
       return state;
@@ -134,6 +147,21 @@ export const __trashQuestion: (
 ) => QuestionAdditionActionType = (payload) => {
   return {
     type: QuestionAdditionActionTypes.trashQuestion as keyof typeof QuestionAdditionActionTypes,
+    payload,
+  };
+};
+
+export const __clearDraft: () => QuestionAdditionActionType = () => {
+  return {
+    type: QuestionAdditionActionTypes.clearDraft as keyof typeof QuestionAdditionActionTypes,
+  };
+};
+
+export const __reset: (
+  payload: typeof InitialQuestionAdditionState
+) => QuestionAdditionActionType = (payload) => {
+  return {
+    type: QuestionAdditionActionTypes.reset as keyof typeof QuestionAdditionActionTypes,
     payload,
   };
 };
