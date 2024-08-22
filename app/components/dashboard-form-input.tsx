@@ -1,15 +1,14 @@
 import {
   DashboardCustomInputType,
-  DefaultDashboardFormDataType,
+  DashboardEditActionIntentType,
   DefaultFormDataType,
 } from "~/types";
 import "~/styles/dashboard-form-input.css";
-import { Form, useSearchParams } from "@remix-run/react";
+import { useFetcher, useSearchParams } from "@remix-run/react";
 
 import { ImageReplaceButton } from "./image-replace-button";
 import React, {
   ChangeEvent,
-  FormEvent,
   useEffect,
   useRef,
   useState,
@@ -39,7 +38,7 @@ export const InputGraphicWrapper: React.FC<{
 };
 
 export const GraphicInputForm: React.FC<{
-  data: DashboardCustomInputType;
+  data: DashboardCustomInputType<string>;
   willDisable: boolean;
   asInput?: boolean;
   onChangeHandler?: (e: ChangeEvent<HTMLElement>) => void;
@@ -47,6 +46,7 @@ export const GraphicInputForm: React.FC<{
 }> = ({ data, willDisable, asInput, onChangeHandler, onUploadHandler }) => {
   const [action] = data.form.actions;
   const { variant } = data.form;
+  const fetcher = useFetcher();
 
   const [imageState, setImageState] = useState<[string, string]>([
     data.images[0].url,
@@ -59,7 +59,7 @@ export const GraphicInputForm: React.FC<{
 
   return (
     <>
-      <Form
+      <fetcher.Form
         action={action}
         className={`graphic_input_form input_form ${variant}`}
       >
@@ -90,6 +90,11 @@ export const GraphicInputForm: React.FC<{
               disabled={willDisable}
               onClick={(e) => {
                 e.preventDefault();
+                const resFormData = new FormData();
+                resFormData.append("newAvatar", JSON.stringify(imageState));
+                resFormData.append("oldAvatarID", JSON.stringify(data.images[0].id || ""));
+                resFormData.append("intent", "UPDATE_AVATAR" as DashboardEditActionIntentType);
+                fetcher.submit(resFormData, {method: "post", action, encType: "application/x-www-form-urlencoded"});
               }}
             >
               {data.buttons[0].text}
@@ -105,7 +110,7 @@ export const GraphicInputForm: React.FC<{
             asInput={asInput}
           />
         </div>
-      </Form>
+      </fetcher.Form>
       <FileUploadFormModal
         inputType={data.inputs[0]?.type}
         setImageState={setImageState}
@@ -117,7 +122,7 @@ export const GraphicInputForm: React.FC<{
 };
 
 export const DashboardFormInput: React.FC<{
-  data: DashboardCustomInputType;
+  data: DashboardCustomInputType<string>;
   defaultData: DefaultFormDataType;
   checkMode?: boolean;
   asInput?: boolean;
@@ -136,11 +141,16 @@ export const DashboardFormInput: React.FC<{
     const { variant } = data.form;
     const [params] = useSearchParams();
     const mode = params.get("mode");
-    if (data.images[0])
+    if (data.images[0]) {
       data.images[0].url = defaultData[data.inputs[0].name] as string;
+      data.images[0].id = defaultData.avatarID as string;
+
+    }
+
 
     const willDisable = checkMode ? (mode === "edit" ? false : true) : false;
     const [e, setE] = useState<ChangeEvent<HTMLElement> | null>(null);
+    const {Form, state} = useFetcher();
 
     useEffect(() => {
       const handler = setTimeout(() => {
@@ -156,7 +166,7 @@ export const DashboardFormInput: React.FC<{
       return (
         <GraphicInputForm
           data={data}
-          willDisable={willDisable}
+          willDisable={willDisable || state === "submitting" || state === "loading"}
           asInput={asInput}
           onChangeHandler={onChangeHandler}
           onUploadHandler={onUploadHandler}
@@ -174,7 +184,7 @@ export const DashboardFormInput: React.FC<{
                 className="input_button_primary"
                 name="intent"
                 value={data.form.intent}
-                disabled={willDisable}
+                disabled={willDisable || state === "submitting" || state === "loading"}
               >
                 {data.buttons[0]?.text}
               </button>
@@ -190,7 +200,7 @@ export const DashboardFormInput: React.FC<{
                   <textarea
                     id={`${data.namespace}.${name}`}
                     name={name as string}
-                    disabled={willDisable}
+                    disabled={willDisable || state === "submitting" || state === "loading"}
                     maxLength={200}
                     cols={20}
                     rows={10}
@@ -208,7 +218,7 @@ export const DashboardFormInput: React.FC<{
                     type={type}
                     id={`${data.namespace}.${name}`}
                     name={name as string}
-                    disabled={willDisable}
+                    disabled={willDisable || state === "submitting" || state === "loading"}
                     min={data.inputs[idx].min || 0}
                     max={data.inputs[idx].max || ""}
                     defaultValue={`${
@@ -231,7 +241,7 @@ export const DashboardFormInput: React.FC<{
                 className="input_button_secondary"
                 name="intent"
                 value={data.buttons[0].name || ""}
-                disabled={willDisable}
+                disabled={willDisable || state === "submitting" || state === "loading"}
               >
                 {data.buttons[0].text}
               </button>
@@ -239,7 +249,7 @@ export const DashboardFormInput: React.FC<{
                 className="input_button_primary"
                 name={"intent"}
                 value={data.buttons[1].name || ""}
-                disabled={willDisable}
+                disabled={willDisable || state === "submitting" || state === "loading"}
               >
                 {data.buttons[1].text}
               </button>
