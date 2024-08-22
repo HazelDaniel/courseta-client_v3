@@ -2,13 +2,17 @@ import {
   AssessmentEditStateType,
   DashboardCustomInputType,
   DefaultFormDataType,
+  ExamCreationActionType,
+  QuizCreationActionType,
 } from "~/types";
 import { DashboardFormInput } from "./dashboard-form-input";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate, useSubmit } from "@remix-run/react";
 import "~/styles/assessment-addition.css";
 import { ChangeEvent, useCallback, useState } from "react";
+import { serializeQuizForCreateAction } from "~/serializers/quiz.serializer";
+import { serializeExamForCreateAction } from "~/serializers/exam.serializer";
 
-export const AssessmentTitleFormData: DashboardCustomInputType = {
+export const AssessmentTitleFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_title",
   form: {
@@ -21,7 +25,7 @@ export const AssessmentTitleFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const AssessmentPassScoreFormData: DashboardCustomInputType = {
+export const AssessmentPassScoreFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_pass_score",
   form: {
@@ -42,7 +46,7 @@ export const AssessmentPassScoreFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const AssessmentDurationFormData: DashboardCustomInputType = {
+export const AssessmentDurationFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_duration",
   form: {
@@ -61,7 +65,7 @@ export const AssessmentDurationFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const AssessmentStartDateFormData: DashboardCustomInputType = {
+export const AssessmentStartDateFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_start_date",
   form: {
@@ -80,7 +84,7 @@ export const AssessmentStartDateFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const AssessmentEndDateFormData: DashboardCustomInputType = {
+export const AssessmentEndDateFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_end_date",
   form: {
@@ -99,7 +103,7 @@ export const AssessmentEndDateFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const AssessmentDescriptionFormData: DashboardCustomInputType = {
+export const AssessmentDescriptionFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_description",
   form: {
@@ -121,7 +125,6 @@ export const AssessmentDescriptionFormData: DashboardCustomInputType = {
 export const AssessmentAdditionSection: React.FC<{
   variant: "exam" | "quiz";
 }> = ({ variant }) => {
-  const navigate = useNavigate();
   const [assessmentEditState, setAssessmentEditState] =
     useState<AssessmentEditStateType>({});
 
@@ -147,12 +150,12 @@ export const AssessmentAdditionSection: React.FC<{
     },
     []
   );
-
-  console.log("new assessment state is ", assessmentEditState);
+  const submit = useSubmit();
+  const navigate = useNavigate();
 
   return (
     <section className="quiz_addition_area">
-      <h2 className="section_header">Add quiz</h2>
+      <h2 className="section_header">Add {variant}</h2>
       <div className={`quiz_addition_body${` ${variant}`}`}>
         <DashboardFormInput
           defaultData={{} as DefaultFormDataType}
@@ -235,10 +238,42 @@ export const AssessmentAdditionSection: React.FC<{
       </div>
 
       <div className="assessment_creation_cta_area">
-        <button>cancel</button>
+        <button
+          onClick={() => {
+            navigate("..", { replace: true, relative: "route" });
+          }}
+        >
+          cancel
+        </button>
         <button
           className="primary"
-          onClick={() => navigate("/creators/0/dashboard/assessments/0/edit")}
+          onClick={() => {
+            if (variant === "quiz") {
+              const payload = serializeQuizForCreateAction(assessmentEditState);
+              const submitPayload: QuizCreationActionType = {
+                intent: "ADD_QUIZ",
+                payload,
+              };
+              submit(submitPayload as any, {
+                method: "post",
+                action: "./",
+                encType: "application/json",
+                navigate: false,
+              });
+            } else {
+              const payload = serializeExamForCreateAction(assessmentEditState);
+              const submitPayload: ExamCreationActionType = {
+                intent: "ADD_EXAM",
+                payload,
+              };
+              submit(submitPayload as any, {
+                method: "post",
+                action: "./",
+                encType: "application/json",
+                navigate: false,
+              });
+            }
+          }}
         >
           save changes
         </button>
