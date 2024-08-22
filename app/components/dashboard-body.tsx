@@ -1,19 +1,56 @@
-import { useSearchParams } from "@remix-run/react";
+import {
+  Await,
+  useLoaderData,
+  useSearchParams,
+  useAsyncError,
+} from "@remix-run/react";
 import { Link } from "react-router-dom";
-import { courseData } from "~/data/course-list";
 import { rankData } from "~/data/user-rank";
-import { CreatorProfileType, StudentProfileType } from "~/types";
+import {
+  CreatorProfileType,
+  CreatorUserType,
+  StudentProfileType,
+  StudentUserType,
+} from "~/types";
 import { CompletedRanks } from "./completed-ranks";
 import { StudentAttemptedCourses } from "./student-attempted-courses";
 import { DashboardEditArea } from "./dashboard-edit-area";
+import { Suspense } from "react";
+import { AxiosResponse } from "axios";
+import { ServerPayloadType, StudentCourseViewType } from "~/server.types";
+import { NoContent } from "./no-content";
+
+const UnfinishedCourseErrorElement: React.FC = () => {
+  const error = useAsyncError();
+  return <h2>error occurred fetching your unfinished courses!</h2>;
+};
 
 export const DashboardBody: React.FC<{
-  profile: StudentProfileType | CreatorProfileType;
+  profile: StudentUserType | CreatorUserType;
 }> = ({ profile }) => {
-  const { role, avatar, createdAt, email, firstName, lastName, id } =
-    profile.user;
+  const loadedStudentData = useLoaderData() as {
+    unfinishedCourses: Promise<
+      AxiosResponse<ServerPayloadType<StudentCourseViewType[]>, any>
+    >;
+  };
+
+  const {
+    role,
+    avatar,
+    createdAt,
+    email,
+    firstName,
+    lastName,
+    id,
+    avatarMeta,
+  } = profile;
   const currentRank =
-    role === "student" ? (profile as StudentProfileType).currentRank : -1;
+    (role === "student"
+      ? rankData.find((el) => el.title === (profile as StudentUserType).rank)
+          ?.level || -1
+      : -1) - 1;
+  console.log("current rank is ", currentRank);
+  console.log("loaded student data is ", loadedStudentData);
   const [currentParams, setParams] = useSearchParams();
   return (
     <>
@@ -31,8 +68,9 @@ export const DashboardBody: React.FC<{
         <div className="display_area_left">
           <div className="da_left_top">
             <img
-              src={avatar.url}
+              src={avatar || "/icons/user-icon.svg"}
               alt="the profile picture of the platform user"
+              loading="lazy"
             />
             <p className="da_profile_name_area">
               {firstName} {lastName} <span>~{email}~</span>
@@ -48,6 +86,7 @@ export const DashboardBody: React.FC<{
                       <img
                         src={rankData[currentRank].icon}
                         alt="image of a rank badge"
+                        loading="lazy"
                       />
                     </span>
                     {rankData[currentRank as number].title}
@@ -55,7 +94,11 @@ export const DashboardBody: React.FC<{
                 ) : null}
               </li>
               <li>
-                <p>{new Date(createdAt).toDateString()}</p>
+                <p>
+                  {new Date(
+                    (profile as CreatorUserType).createdAt
+                  ).toDateString()}
+                </p>
               </li>
             </ul>
           </div>
@@ -80,16 +123,19 @@ export const DashboardBody: React.FC<{
         <div className="profile_user_stat_area">
           <ul className="profile_user_stats">
             <li>
-              <h2>500k</h2> <p>students enrolled</p>
+              <h2>{(profile as CreatorUserType).studentCount}</h2>{" "}
+              <p>students enrolled</p>
             </li>
             <li>
-              <h2>150</h2> <p>courses</p>
+              <h2>{(profile as CreatorUserType).courseCount}</h2> <p>courses</p>
             </li>
             <li>
-              <h2>150</h2> <p>total reviews</p>
+              <h2>{(profile as CreatorUserType).courseReviewCount}</h2>{" "}
+              <p>total reviews</p>
             </li>
             <li>
-              <h2>4.5</h2> <p>average rating</p>
+              <h2>{(profile as CreatorUserType).averageCourseRating}</h2>{" "}
+              <p>average rating</p>
             </li>
           </ul>
         </div>
@@ -97,7 +143,28 @@ export const DashboardBody: React.FC<{
 
       {role === "student" ? <CompletedRanks rankValue={currentRank} /> : null}
       {role === "student" ? (
-        <StudentAttemptedCourses courses={courseData.slice(0, 3)} />
+        <Suspense
+          fallback={
+            <NoContent
+              text="No unfinished courses to display"
+              variant="course_outline"
+            />
+          }
+        >
+          <Await
+            resolve={(() => {
+              return loadedStudentData.unfinishedCourses;
+            })()}
+            errorElement={<UnfinishedCourseErrorElement />}
+          >
+            {(res) => {
+              console.log("data received is ", res);
+              return (
+                <StudentAttemptedCourses courses={res.data.payload || []} />
+              );
+            }}
+          </Await>
+        </Suspense>
       ) : null}
       <DashboardEditArea profile={profile} />
     </>
