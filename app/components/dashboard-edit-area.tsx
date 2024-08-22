@@ -1,31 +1,31 @@
 import { useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { CreatorProfileType, DashboardCustomInputType, StudentProfileType } from "~/types";
+import { CreatorProfileType, CreatorUserType, DashboardCustomInputType, DashboardEditActionIntentType, StudentProfileType, StudentUserType } from "~/types";
 import { DashboardFormInput } from "./dashboard-form-input";
 
 import "~/styles/dashboard-edit-area.css";
 
-export const namesUpdateFormData: DashboardCustomInputType = {
+export const namesUpdateFormData: DashboardCustomInputType<DashboardEditActionIntentType> = {
   heading: "update names",
   namespace: "update_names",
   form: {
-    intent: "update_names",
+    intent: "UPDATE_NAMES",
     actions: ["?index"],
     variant: "two-uni-button",
   },
   inputs: [
-    { name: "first_name", title: "first name", type: "text" },
-    { name: "last_name", title: "last name", type: "text" },
+    { name: "firstName", title: "first name", type: "text" },
+    { name: "lastName", title: "last name", type: "text" },
   ],
   buttons: [{ text: "save changes" }],
   images: [],
 };
 
-export const emailUpdateFormData: DashboardCustomInputType = {
+export const emailUpdateFormData: DashboardCustomInputType<DashboardEditActionIntentType> = {
   heading: "update email",
   namespace: "update_email",
   form: {
-    intent: "update_email",
+    intent: "UPDATE_EMAIL",
     actions: ["?index"],
     variant: "one-uni-button",
   },
@@ -34,56 +34,54 @@ export const emailUpdateFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const passWordUpdateFormData: DashboardCustomInputType = {
+export const passWordUpdateFormData: DashboardCustomInputType<DashboardEditActionIntentType> = {
   heading: "update password",
   namespace: "update_password",
   form: {
-    intent: "update_password",
+    intent: "UPDATE_PASSWORD",
     actions: ["?index"],
     variant: "two-uni-button",
   },
   inputs: [
-    { name: "old_password", title: "old password", type: "password" },
-    { name: "new_password", title: "new password", type: "password" },
+    { name: "oldPassword", title: "old password", type: "password" },
+    { name: "newPassword", title: "new password", type: "password" },
   ],
   buttons: [{ text: "save changes" }],
   images: [],
 };
 
-export const creatorPassUpdateFormData: DashboardCustomInputType = {
+export const creatorPassUpdateFormData: DashboardCustomInputType<DashboardEditActionIntentType> = {
   heading: "update creator pass",
   namespace: "update_creator_pass",
   form: {
-    intent: "submit",
+    intent: "REQUEST_NEW_PASS",
     actions: ["?index", "?index"],
     variant: "one-dual-button",
   },
-  inputs: [{ name: "creator_pass", title: "creator pass", type: "password" }],
-  buttons: [{ text: "request a new pass", name: "request_new" }, { text: "save changes" }],
+  inputs: [{ name: "creatorPass", title: "creator pass", type: "password" }],
+  buttons: [{ text: "request a new pass", name: "REQUEST_NEW_PASS" }, { text: "save changes" }],
   images: [],
 };
 
-export const avatarUpdateFormData: DashboardCustomInputType = {
+export const avatarUpdateFormData: DashboardCustomInputType<DashboardEditActionIntentType> = {
   heading: "update avatar",
   namespace: "update_avatar",
   form: {
-    intent: "update_avatar",
+    intent: "UPDATE_AVATAR",
     actions: ["?index"],
     variant: "one-graphic-button",
   },
-  inputs: [{ name: "avatar", title: "avatar", type: "file" }],
+  inputs: [{ name: "newAvatar", title: "avatar", type: "file" }],
   buttons: [{ text: "save changes" }, { text: "replace image" }],
   images: [{ url: "/illustrations/avatar1.jpg", ref: {} }],
 };
 
 export const DashboardEditArea: React.FC<{
-  profile: StudentProfileType | CreatorProfileType;
+  profile: StudentUserType | CreatorUserType;
 }> = ({ profile }) => {
   const [currentParams] = useSearchParams();
   const formInputParentRef = useRef<HTMLDivElement>(null);
-  const {
-    user: { avatar, firstName, lastName, email, role },
-  } = profile;
+  const { avatar, firstName, lastName, email, role } = profile;
 
   useEffect(() => {
     if (currentParams.get("mode") === "edit") {
@@ -100,13 +98,13 @@ export const DashboardEditArea: React.FC<{
       <DashboardFormInput
         data={namesUpdateFormData}
         key={namesUpdateFormData.namespace}
-        defaultData={{ first_name: firstName, last_name: lastName }}
+        defaultData={{firstName, lastName}}
         checkMode
       />
       <DashboardFormInput
         data={avatarUpdateFormData}
         key={avatarUpdateFormData.namespace}
-        defaultData={{ avatar: avatar.url }}
+        defaultData={{ newAvatar: avatar, avatarID: profile.avatarMeta.id }}
         checkMode
       />
       <DashboardFormInput
@@ -126,7 +124,7 @@ export const DashboardEditArea: React.FC<{
           data={creatorPassUpdateFormData}
           key={creatorPassUpdateFormData.namespace}
           defaultData={{
-            creator_pass: (profile as CreatorProfileType).user.creatorPass,
+            creatorPass: (profile as CreatorUserType).creatorPass,
           }}
           checkMode
         />
