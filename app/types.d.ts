@@ -32,7 +32,7 @@ export interface RankType {
   level: RankRange;
   title: string;
   icon: string;
-  xpRange: { max: number; min: number };
+  xpRange: { max: string | number; min: string | number };
 }
 
 export interface CourseAttemptType {
@@ -465,6 +465,11 @@ export interface UserAuthActionType
   intent: UserAuthIntentType;
 }
 
+export interface StudentCourseActionType
+  extends ActionButtonType<{ studentID: string }> {
+  intent: "ENROLL";
+}
+
 export type CoursesActionIntentType = "DELETE" | "ARCHIVE" | "UNARCHIVE";
 
 export interface CreatorCoursesActionType
@@ -602,6 +607,20 @@ export interface AssessmentEditActionType
   intent: AssessmentEditActionIntentType;
 }
 
+export interface AssessmentSubmissionPayloadType {
+  questionIDList: number[];
+  answerList: { question_id: number; answer_id: number }[];
+  submissionTime?: string;
+  assessmentType: AssessmentVariantType;
+}
+
+export type AssessmentSubmissionIntentType = "SUBMIT";
+
+export interface AssessmentSubmissionActionType
+  extends ActionButtonType<AssessmentSubmissionPayloadType> {
+  intent: AssessmentSubmissionIntentType;
+}
+
 export type DashboardEditActionIntentType =
   | "UPDATE_NAMES"
   | "UPDATE_EMAIL"
@@ -695,7 +714,7 @@ export interface UserSignupActionType
 }
 
 export interface StudentReviewPayloadType {
-  studentID?: string;
+  studentID: string;
   reviewText: string;
   rating: number;
 }
@@ -706,12 +725,12 @@ export interface StudentReviewActionType
 }
 
 export interface StudentEnrollPayloadType {
-  studentID?: string;
+  studentID: string;
 }
 
 export interface StudentEnrollActionType
   extends ActionButtonType<StudentEnrollPayloadType> {
-  intent: "REVIEW_COURSE";
+  intent: "ENROLL" | "UNENROLL";
 }
 
 // COOKIES AND PAYLOAD
