@@ -1,6 +1,7 @@
 import {
-  Form,
   Outlet,
+  useFetcher,
+  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
@@ -8,13 +9,20 @@ import {
 } from "@remix-run/react";
 import { courseDataDetailed } from "~/data/course-list";
 import {
+  AssessmentSubmissionActionType,
+  AssessmentVariantType,
   CourseDetailType,
   CourseExamType,
-  LessonAssessmentType,
+  CourseExamType2,
+  CourseLessonType,
+  CourseLessonType2,
+  GenericAssessmentType,
+  LessonQuizType,
+  QuestionType,
 } from "~/types";
 import { NotFound } from "./not-found";
 import { convertSecondsToHms } from "~/utils/conversion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { CourseAccordion } from "./course-accordion";
 import { Logo } from "./logo";
 import { Quiz } from "./quiz";
@@ -26,10 +34,21 @@ import assessmentFormStyles from "~styles/assessment-form.module.css";
 import courseAccordionStyles from "~/styles/course-accordion.module.css";
 import CountdownCircle from "./countdown-circle";
 import { useGetLinkedResourceKeys } from "~/hooks/use-get-linked-resource-keys";
+import { CourseDetailViewType, SessionUserType } from "~/server.types";
+import { NoContent } from "./no-content";
+import {
+  AssessmentSubmissionReducer,
+  AssessmentSubmissionStateType,
+  InitialAssessmentSubmissionState,
+  __addAnswer,
+  __removeAnswer,
+  __reset,
+} from "~/reducers/assessment-submission.reducer";
+import { serializeSubmissionStateForAction } from "~/serializers/submission.serializer";
 
-export const CourseSideTab: React.FC<{ course: CourseDetailType | null }> = ({
-  course,
-}) => {
+export const CourseSideTab: React.FC<{
+  course: CourseDetailViewType | null;
+}> = ({ course }) => {
   if (!course) {
     return null;
   }
@@ -47,77 +66,126 @@ export const CourseSideTab: React.FC<{ course: CourseDetailType | null }> = ({
 };
 
 export const AssessmentForm: React.FC<{
-  assessment: LessonAssessmentType;
-}> = ({ assessment }) => {
+  variant: AssessmentVariantType;
+}> = ({ variant }) => {
   const formRef = useRef<HTMLFormElement | null>(null);
+  const { Form, submit } = useFetcher();
+  const params = useParams();
   const location = useLocation();
+  const loadedQuizResult = useLoaderData() as {
+    quiz: LessonQuizType | null;
+    questions: QuestionType[];
+    user: SessionUserType | null;
+  };
+  const loadedExamResult = useLoaderData() as {
+    exam: CourseExamType2;
+    questions: QuestionType[];
+    user: SessionUserType | null;
+  };
+  const currentUser = loadedExamResult?.user || loadedQuizResult?.user;
+  let assessment: LessonQuizType | CourseExamType2 | null;
+  let questions: QuestionType[];
+
+  if (variant === "quiz") {
+    assessment = loadedQuizResult.quiz;
+    questions = loadedQuizResult.questions;
+  } else {
+    assessment = loadedExamResult.exam;
+    questions = loadedExamResult.questions;
+  }
+  const assessmentID =
+    variant === "exam"
+      ? params["exam_id"]
+      : variant === "quiz"
+      ? params["assessment_id"]
+      : "";
+  if (!assessment) return <NotFound />;
+  const [selectionState, selectionDispatch] = useReducer(
+    AssessmentSubmissionReducer,
+    InitialAssessmentSubmissionState
+  );
+
+  console.log("answer selection state is ", selectionState);
+
+  // useEffect(() => {
+  //   if (formRef.current) {
+  //     formRef.current.reset();
+  //   }
+  // }, [location, formRef]);
 
   useEffect(() => {
-    if (formRef.current) {
-      formRef.current.reset();
-    }
-  }, [location.pathname, formRef]);
+    // console.log("we are mounting once");
+    selectionDispatch(__reset());
+  }, [location]);
 
   return (
-    <Form
-      ref={formRef}
+    <form
+      // ref={formRef}
       onSubmit={(e: React.FormEvent) => {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget as HTMLFormElement);
-        console.log(Object.fromEntries(formData));
+        if (!currentUser || currentUser.role === "creator") return;
+        const payload = serializeSubmissionStateForAction(
+          selectionState as AssessmentSubmissionStateType,
+          assessmentID as string,
+          variant
+        );
+        const submitPayload: AssessmentSubmissionActionType = {
+          intent: "SUBMIT",
+          payload,
+        };
+        submit(submitPayload as any, {
+          action: "./",
+          method: "post",
+          encType: "application/json",
+        });
       }}
     >
       <div className={assessmentStyles.accessment_wrapper}>
-        {assessment.questions.length ? (
-          assessment.questions.map((entry, idx) => {
+        {questions.length ? (
+          questions.map((entry, idx) => {
             return (
               <Quiz
                 value={entry}
                 key={idx}
                 key_={idx + 1}
-                assessmentID={assessment.id}
+                assessmentID={assessmentID as string}
+                variant={variant}
+                onSelectHandler={(answer) => {
+                  selectionDispatch(
+                    __addAnswer({ ...answer, questionType: "single" })
+                  );
+                }}
+                onUnSelectHandler={(answer) => {
+                  selectionDispatch(
+                    __removeAnswer({ ...answer, questionType: "single" })
+                  );
+                }}
               />
             );
           })
         ) : (
-          <div className={styles.no_content}>
-            <span>
-              <svg
-                version="1.1"
-                id="Layer_1"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                viewBox="0 0 512 512"
-                xmlSpace="preserve"
-              >
-                <g>
-                  <g>
-                    <path
-                      d="M507.494,426.066L282.864,53.537c-5.677-9.415-15.87-15.172-26.865-15.172c-10.995,0-21.188,5.756-26.865,15.172
-                  L4.506,426.066c-5.842,9.689-6.015,21.774-0.451,31.625c5.564,9.852,16.001,15.944,27.315,15.944h449.259
-                  c11.314,0,21.751-6.093,27.315-15.944C513.508,447.839,513.336,435.755,507.494,426.066z M256.167,167.227
-                  c12.901,0,23.817,7.278,23.817,20.178c0,39.363-4.631,95.929-4.631,135.292c0,10.255-11.247,14.554-19.186,14.554
-                  c-10.584,0-19.516-4.3-19.516-14.554c0-39.363-4.63-95.929-4.63-135.292C232.021,174.505,242.605,167.227,256.167,167.227z
-                  M256.498,411.018c-14.554,0-25.471-11.908-25.471-25.47c0-13.893,10.916-25.47,25.471-25.47c13.562,0,25.14,11.577,25.14,25.47
-                  C281.638,399.11,270.06,411.018,256.498,411.018z"
-                    />
-                  </g>
-                </g>
-              </svg>
-            </span>
-            no assessment to show!
-          </div>
+          <NoContent
+            text="no assessment questions to show!"
+            variant="courses"
+          />
         )}
       </div>
 
-      {assessment.questions.length ? (
+      {questions.length ? (
         <div className={assessmentStyles.quiz_cta_area}>
-          <button className={assessmentStyles.button} type="submit">
+          <button
+            className={assessmentStyles.button}
+            type="submit"
+            disabled={!currentUser || currentUser.role === "creator"}
+            onClick={() => {
+              if (!currentUser || currentUser.role === "creator") return;
+            }}
+          >
             SUBMIT
           </button>
         </div>
       ) : null}
-    </Form>
+    </form>
   );
 };
 
@@ -126,9 +194,7 @@ export const AssessmentCountdown: React.FC<{ duration: number }> = ({
 }) => {
   const [countdownTime, setCountdownTime] = useState(duration);
   const countdownRef = useRef(null);
-  const calcCountdownTime = useCallback(() => {
-    return convertSecondsToHms(countdownTime);
-  }, [countdownTime]);
+  const calcCountdownTime = () => convertSecondsToHms(countdownTime);
 
   const calcDuration = useCallback(() => {
     return convertSecondsToHms(duration);
@@ -137,9 +203,9 @@ export const AssessmentCountdown: React.FC<{ duration: number }> = ({
   return (
     <>
       <CountdownCircle
-        duration={20}
+        duration={duration}
         setCountdownTime={setCountdownTime}
-        countdownTime={countdownTime}
+        countdownTime={duration}
       />
 
       <ul className={assessmentStyles.countdown_elapsed_area}>
@@ -183,16 +249,23 @@ export const BackToCourseCTA: React.FC = () => {
 };
 
 export const AssessmentBody: React.FC<{
-  assessment: LessonAssessmentType | CourseExamType | null;
-}> = ({ assessment }) => {
-  const [isLinkedResource] = useGetLinkedResourceKeys();
+  // assessment: GenericAssessmentType | CourseExamType | null;
+  variant: AssessmentVariantType;
+}> = ({ variant }) => {
+  const loadedQuizResult = useLoaderData() as {
+    quiz: LessonQuizType | null;
+  };
+  const loadedExamResult = useLoaderData() as {
+    exam: CourseExamType2;
+  };
+  let assessment: LessonQuizType | CourseExamType2 | null = null;
 
-  if (!assessment && isLinkedResource) return <NotFound />;
-  if (!isLinkedResource) {
-    // assessmentID = +(params["assessment_id"] as string);
-    assessment = courseDataDetailed[0].lessons[0]
-      .assessment as LessonAssessmentType;
+  if (variant === "quiz") {
+    assessment = loadedQuizResult.quiz;
+  } else {
+    assessment = loadedExamResult.exam;
   }
+  if (!assessment && variant === "quiz") return <NotFound />;
 
   return (
     <>
@@ -209,36 +282,39 @@ export const AssessmentBody: React.FC<{
         <BackToCourseCTA />
       </div>
 
-      {!isLinkedResource ? (
+      {variant === "exam" ? (
         <div className={assessmentStyles.accessment_countdown_area}>
           <div className={assessmentStyles.countdown_area_left}>
-            <p>{!isLinkedResource ? `Examination` : "Quiz"}</p>
+            <p>{variant === "exam" ? `Examination` : "Quiz"}</p>
           </div>
           <div className={assessmentStyles.countdown_area_right}>
-            <AssessmentCountdown duration={100} />
+            <AssessmentCountdown
+              duration={(assessment as CourseExamType2).duration}
+            />
           </div>
         </div>
       ) : null}
 
       <div className={assessmentStyles.accessment_description_area}>
         <p>
-          {!isLinkedResource ? (
-            <i>{(assessment as CourseExamType).description}</i>
+          {variant === "exam" ? (
+            <i>{(assessment as CourseExamType | null)?.description}</i>
           ) : (
             <i>
-              This quiz tests your basic understanding of the current lesson
+              {assessment?.description ||
+                "This quiz tests your basic understanding of the current lesson"}
             </i>
           )}
         </p>
       </div>
-      <AssessmentForm assessment={assessment as LessonAssessmentType} />
+      <AssessmentForm variant={variant} />
     </>
   );
 };
 
 export const CourseDetails: React.FC = () => {
-  const res = useRouteLoaderData("routes/courses_.$course_id_.lessons") as {
-    course: CourseDetailType;
+  const res = useLoaderData() as {
+    course: CourseDetailViewType;
   };
 
   const { course } = res;
