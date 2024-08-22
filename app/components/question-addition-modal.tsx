@@ -22,7 +22,7 @@ import {
   __addQuestion,
 } from "~/reducers/question-addition.reducer";
 
-export const AnswerAdditionFormData: DashboardCustomInputType = {
+export const AnswerAdditionFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_answer",
   form: {
@@ -146,17 +146,16 @@ export const QuestionAdditionModal: React.FC = () => {
     ModalContext
   ) as ModalContextValueType;
 
-  const { questionAdditionState ,questionAdditionDispatch } = useContext(
+  const { questionAdditionState, questionAdditionDispatch } = useContext(
     questionAdditionContext
   ) as QuestionAdditionContextValueType;
-  const emptyQuestion = useMemo(
-    () =>
-      ({
-        question: { points: 0, position:  questionAdditionState.questions.length},
-        answers: [],
-      } as QuestionModalStateType),
-    []
-  );
+  const emptyQuestion = {
+    question: {
+      points: 0,
+      position: new Date().getTime(),
+    },
+    answers: [],
+  } as QuestionModalStateType;
 
   const [modalQuestion, setModalQuestion] =
     useState<QuestionModalStateType>(emptyQuestion);
@@ -226,7 +225,18 @@ export const QuestionAdditionModal: React.FC = () => {
         </ul>
       </div>
       <div className="question_addition_modal_bottom">
-        <button> Cancel </button>
+        <button
+          onClick={() => {
+            setModalQuestion({
+              ...emptyQuestion,
+              question: { points: 0, position: new Date().getTime() },
+            });
+            modalDispatch(__hideModal("questionAdditionModal"));
+          }}
+        >
+          {" "}
+          Cancel{" "}
+        </button>
         <button
           onClick={() => {
             if (
@@ -234,7 +244,10 @@ export const QuestionAdditionModal: React.FC = () => {
               modalQuestion.answers.filter((e) => !e.text).length
             )
               return;
-            setModalQuestion(emptyQuestion);
+            setModalQuestion({
+              ...emptyQuestion,
+              question: { points: 0, position: new Date().getTime() },
+            });
             questionAdditionDispatch(__addQuestion(modalQuestion.question));
             questionAdditionDispatch(
               __addAnswers({ answers: modalQuestion.answers })
