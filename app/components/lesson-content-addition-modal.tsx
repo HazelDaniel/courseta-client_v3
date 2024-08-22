@@ -9,16 +9,28 @@ import React, {
 } from "react";
 import { ModalContext, ModalContextValueType } from "~/contexts/modal.context";
 import { __hideModal } from "~/reducers/modal.reducer";
-import { useLocation, useSearchParams } from "@remix-run/react";
-import { LessonContentAdditionStateType } from "~/types";
+import {
+  useLocation,
+  useNavigate,
+  useSearchParams,
+  useSubmit,
+} from "@remix-run/react";
+import {
+  LessonAdditionActionType,
+  LessonContentAdditionPayloadType,
+  LessonContentAdditionStateType,
+  LessonContentCreationActionType,
+} from "~/types";
+import { serializeLessonContentForCreateAction } from "~/serializers/lesson-content.serializer";
 
 export const LessonContentAdditionModal: React.FC = React.memo(() => {
   const { modalState, modalDispatch } = useContext(
     ModalContext
   ) as ModalContextValueType;
   const location = useLocation();
-  const lessonID = useMemo<number>(
-    () => +(location.hash || ".").split(".")[1],
+  const navigate = useNavigate();
+  const lessonID = useMemo<string>(
+    () => (location.hash || ".").split(".")[1],
     [location.hash]
   );
   const [contentAdditionState, setContentAdditionState] =
@@ -57,7 +69,13 @@ export const LessonContentAdditionModal: React.FC = React.memo(() => {
     []
   );
 
-  if (!lessonID) return null;
+  const submit = useSubmit();
+  if (Number.isNaN(+lessonID) || !lessonID.length) {
+    return null;
+  }
+
+  // console.log("the lesson content addition state is ");
+  // console.log(contentAdditionState);
 
   return (
     <div
@@ -99,9 +117,37 @@ export const LessonContentAdditionModal: React.FC = React.memo(() => {
         </ul>
       </div>
       <div className="lesson_content_addition_modal_bottom">
-        <button> Cancel </button>
-        <button>Continue</button>
+        <button
+          onClick={() => {
+            navigate(".", { replace: true });
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => {
+            const payload = serializeLessonContentForCreateAction(
+              contentAdditionState,
+              +lessonID
+            );
+            const submitPayload: LessonContentCreationActionType = {
+              intent: "ADD_LESSON_CONTENT",
+              payload,
+            };
+            submit(submitPayload as any, {
+              method: "post",
+              action: "./",
+              encType: "application/json",
+              navigate: false,
+            });
+            navigate(".", { replace: true });
+          }}
+        >
+          Continue
+        </button>
       </div>
     </div>
   );
 });
+
+export default LessonContentAdditionModal;
