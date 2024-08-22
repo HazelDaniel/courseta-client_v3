@@ -19,8 +19,13 @@ export const RatingForm: React.FC<{
   variant: "view" | "edit";
   value?: number;
   namespace?: string;
-}> = ({ variant, value, namespace }) => {
+  onChangeHandler?: (x: number) => void;
+}> = ({ variant, value, namespace, onChangeHandler }) => {
   const [currentPicked, setCurrentPicked] = useState(0);
+  useEffect(() => {
+    if (onChangeHandler) onChangeHandler(currentPicked);
+  }, [currentPicked]);
+
   if (variant === "view") {
     return (
       <div className={`rating${` ${variant}`}`}>
@@ -75,7 +80,7 @@ export const RatingForm: React.FC<{
         name="rating"
         value="5"
         checked={currentPicked === 5}
-        onChange={(e) => handleCheck(e, setCurrentPicked, 5)}
+        onChange={(e) => handleCheck(e, setCurrentPicked, 5) }
       />
       <label htmlFor="star5">★</label>
       <input
