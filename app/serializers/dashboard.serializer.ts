@@ -59,6 +59,7 @@ export const serializeAvatarUpdateFormInAction: (
     payload: {
       newAvatar: JSON.parse(newAvatar) as [string, string],
       oldAvatarID,
+      avatarMeta: {id: oldAvatarID}
     },
   } as DashboardAvatarUpdateActionType;
 };
