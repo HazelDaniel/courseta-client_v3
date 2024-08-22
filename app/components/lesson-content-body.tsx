@@ -8,6 +8,8 @@ export const LessonContentBody: React.FC<{
   contentID: number;
   lesson: CourseLessonType;
 }> = ({ contentID, lesson }) => {
+  // console.log("lesson contents are ", lesson);
+  // return null;
   const [content] = lesson.contents.filter((content) => {
     return content.id === contentID;
   });
@@ -21,7 +23,12 @@ export const LessonContentBody: React.FC<{
           <span>title: </span>
           <p>{`${content.title}`}</p>
         </div>
-        <iframe src={content.href} frameBorder="0"></iframe>
+        <iframe
+          src={content.href.replace("youtube.com/watch", "youtube.com/embed")}
+          frameBorder="0"
+          ng-show="showvideo"
+          allowFullScreen
+        ></iframe>
       </div>
     );
   } else {
