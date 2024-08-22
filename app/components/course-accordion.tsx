@@ -1,7 +1,12 @@
-import { useLocation, useParams } from "@remix-run/react";
+import {
+  useLoaderData,
+  useLocation,
+  useParams,
+  useRouteLoaderData,
+} from "@remix-run/react";
 import { useCallback, useContext, useMemo, useReducer } from "react";
 import { Link } from "react-router-dom";
-import { CourseDetailType, CourseLessonType } from "~/types";
+import { CourseDetailType, CourseLessonType, CourseLessonType2 } from "~/types";
 import { convertSecondsToHms } from "~/utils/conversion";
 import { NoContent } from "./no-content";
 
@@ -17,6 +22,7 @@ import {
   AccordionContextValueType,
   AccordionProvider,
 } from "~/contexts/accordion-context";
+import { CourseDetailViewType } from "~/server.types";
 
 export const CourseContentIcon: React.FC<{
   type: "video" | "text" | "quiz";
@@ -58,7 +64,7 @@ export const CourseContentIcon: React.FC<{
 };
 
 const CourseLessonLayout: React.FC<{
-  lesson: CourseLessonType;
+  lesson: CourseLessonType2;
   variant: "outline" | "details";
   position: number;
 }> = ({ lesson, variant, position }) => {
@@ -146,7 +152,7 @@ const CourseLessonLayout: React.FC<{
               key={content.id}
             >
               <span className={styles.content_icon_wrapper}>
-                <CourseContentIcon type={content.type || "text"} />
+                <CourseContentIcon type={content.contentType || "text"} />
               </span>
               <Link
                 className={styles.accordion_content_text}
@@ -158,7 +164,7 @@ const CourseLessonLayout: React.FC<{
           );
         })}
 
-        {!lesson.assessment.completed ? (
+        {lesson.quiz ? (
           <li
             className={
               +lessonIDParam === lesson.id
@@ -171,12 +177,12 @@ const CourseLessonLayout: React.FC<{
             </span>
             <Link
               className={styles.accordion_content_text}
-              to={`/courses/${courseID}/lessons/${lesson.id}/assessments/${lesson.assessment.id}`}
+              to={`/courses/${courseID}/lessons/${lesson.id}/assessments/${lesson.quiz?.id}`}
             >
               {`Quiz: ${lesson.title}`}
             </Link>
             <div className={styles.accordion_content_badge}>
-              <p>{lesson.assessment.availablePoints}xp</p>
+              <p>{lesson.quiz?.totalPoints}xp</p>
               <svg
                 viewBox="0 0 12 14"
                 fill="none"
@@ -197,8 +203,15 @@ const CourseLessonLayout: React.FC<{
 
 export const CourseAccordion: React.FC<{
   variant: "outline" | "details";
-  course: CourseDetailType;
+  course: CourseDetailViewType;
 }> = ({ variant, course }) => {
+  let loadedResult = useLoaderData() as { lessons: CourseLessonType2[] };
+  loadedResult =
+    loadedResult ||
+    (useRouteLoaderData("routes/_app.courses_.$course_id") as {
+      lessons: CourseLessonType2[];
+    });
+  const lessons = loadedResult?.lessons || [];
   const [accordionState, accordionDispatch] = useReducer(
     AccordionReducer,
     InitialAccordionState
@@ -223,12 +236,12 @@ export const CourseAccordion: React.FC<{
             : ""
         }`}
       >
-        {course.lessons.length >= 1 && course.lessonCount >= 1 ? (
-          course.lessons.map((lesson, idx) => {
-            lesson = { ...lesson, courseTitle: course.title };
+        {lessons.length >= 1 && course.lessonCount >= 1 ? (
+          lessons.map((lesson, idx) => {
+            lesson = { ...lesson };
             return (
               <CourseLessonLayout
-                lesson={lesson as CourseLessonType}
+                lesson={lesson as CourseLessonType2}
                 variant={variant}
                 key={lesson.id}
                 position={idx}
@@ -238,7 +251,7 @@ export const CourseAccordion: React.FC<{
         ) : (
           <NoContent
             text="No Lessons For This Course"
-            variant={"course_outline"}
+            variant={variant !== "outline" ? "others" : "course_outline"}
           />
         )}
       </div>
