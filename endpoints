@@ -2,6 +2,7 @@
 CREATORS:
 
 .. <> user courses 								GET api/v1/creators/:creator_id/courses/
+.. <> user top courses 						GET api/v1/creators/:creator_id/courses/top
 
 .. <> course edit									GET /api/v1/creators/:creator_id/courses/:course_id/edit
 
