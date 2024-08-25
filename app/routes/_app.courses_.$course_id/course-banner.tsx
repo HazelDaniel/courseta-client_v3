@@ -3,24 +3,25 @@ import { CourseEntryType } from "~/types";
 import { convertSecondsToHms } from "~/utils/conversion";
 
 import styles from "~/styles/course-banner.module.css";
+import { CourseDetailViewType } from "~/server.types";
 // import { LinksFunction } from "@remix-run/node";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
 // };
 
-export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
+export const CourseBanner: React.FC<{ course: CourseDetailViewType }> = ({
   course,
 }) => {
   const courseDurationString = useCallback(() => {
-    const { hours, minutes, seconds } = convertSecondsToHms(course.duration);
+    const { hours, minutes, seconds } = convertSecondsToHms(course.courseLength);
     return `${hours}hr ${minutes}min ${seconds}s`;
-  }, [course.duration]);
+  }, [course.courseLength]);
 
   return (
     <div className={styles.course_banner_styled}>
       <img
-        src={course.imageUrl}
+        src={course.avatar}
         alt="the course banner image"
         className={styles.banner_image}
       />
@@ -33,7 +34,7 @@ export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
               <use xlinkHref="#levels"></use>
             </svg>
           </span>
-          <p>Beginners</p>
+          <p>All Levels</p>
         </div>
 
         <div className={styles.stat_part}>
@@ -52,11 +53,11 @@ export const CourseBanner: React.FC<{ course: CourseEntryType }> = ({
             </svg>
           </span>
           <p>
-            4.2 {"\u0009"} {"\u0009"} (244)
+            {course.averageRating} {"\u0009"} {"\u0009"} ({course.reviewCount})
           </p>
         </div>
       </div>
-      <button className={styles.course_banner_cta}>enroll</button>
+      <span className={styles.course_banner_cta}>{course.isEnrolled ? "enrolled" : "not enrolled"}</span>
     </div>
   );
 };
