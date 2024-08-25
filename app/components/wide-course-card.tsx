@@ -3,18 +3,20 @@ import type { CourseEntryType } from "~/types";
 import { Link } from "react-router-dom";
 
 import styles from "~/styles/wide-course-card.module.css";
+import { StudentCourseViewType } from "~/server.types";
 
 export const WideCourseCard: React.FC<{
-  entry: CourseEntryType;
+  entry: StudentCourseViewType;
 }> = ({ entry }) => {
   return (
     <div className={`${styles.wide_course_card_styled} ${styles.course_card}`}>
       <div className={styles.card_left}>
         <img
-          src={entry.imageUrl}
+          src={entry.avatar}
           alt="a thumbnail image of a course on an edtech platform"
+          loading="lazy"
         />
-        <Link to={`/courses/${entry.id}`}></Link>
+        <Link to={`/courses/${entry.courseID}`}></Link>
       </div>
       <div className={styles.card_right}>
         <h3>{entry.lessonCount} lessons</h3>
