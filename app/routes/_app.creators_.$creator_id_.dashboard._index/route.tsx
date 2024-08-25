@@ -1,16 +1,20 @@
-import { ActionFunction } from "@remix-run/node";
+import { ActionFunction, json } from "@remix-run/node";
 import { useOutletContext } from "@remix-run/react";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { useMemo, useReducer } from "react";
+import { jsonWithError } from "remix-toast";
 import { DashboardBody } from "~/components/dashboard-body";
+import { v3Config } from "~/config/base";
 import { ModalProvider } from "~/contexts/modal.context";
 import { InitialModalState, ModalReducer } from "~/reducers/modal.reducer";
+import { DashBoardActionWrapper } from "~/shared-actions.server";
 
 // import "~/styles/profile.module.css";
 import "~/styles/profile.css";
-import { CreatorProfileType } from "~/types";
+import { CreatorUserType } from "~/types";
 
 export const DashboardIndex: React.FC = () => {
-  const { profile } = useOutletContext() as { profile: CreatorProfileType };
+  const { profile } = useOutletContext() as { profile: CreatorUserType };
   const [modalState, modalDispatch] = useReducer(
     ModalReducer,
     InitialModalState
@@ -29,11 +33,19 @@ export const DashboardIndex: React.FC = () => {
 
 export default DashboardIndex;
 
-export const action: ActionFunction = async ({ request, params }) => {
-  console.log("hit the dashboard action");
-  const formData = await request.formData();
-  console.log(formData.get("intent"));
-  console.log(Array.from(formData.keys()));
-  console.log(Array.from(formData.values()));
-  return null;
+export const action: ActionFunction = async (args) => {
+  try {
+    return await DashBoardActionWrapper("creator", args);
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      return jsonWithError(
+        null,
+        err.response?.data.message || "couldn't proceed with action!"
+      );
+    }
+    return jsonWithError(
+      null,
+      (err as any).message || "couldn't proceed with action!"
+    );
+  }
 };
