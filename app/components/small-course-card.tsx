@@ -4,8 +4,10 @@ import { useEffect, useRef } from "react";
 import { LinksFunction } from "@remix-run/node";
 import smallCourseCardStyles from "~/styles/small-course-card.module.css";
 import countdownCircleStyles from "~/styles/countdown-circle.module.css";
+import { CourseViewType, StudentCourseViewType } from "~/server.types";
+import { ClientOnly } from "remix-utils/client-only";
 
-export const StaticProgress: React.FC<{ entry: CourseEntryType }> = ({
+export const StaticProgress: React.FC<{ entry: StudentCourseViewType }> = ({
   entry,
 }) => {
   const progressRef = useRef<SVGCircleElement>(null);
@@ -59,22 +61,28 @@ export const StaticProgress: React.FC<{ entry: CourseEntryType }> = ({
 };
 
 export const SmallCourseCard: React.FC<{
-  entry: CourseEntryType;
+  entry: CourseViewType | StudentCourseViewType;
   withCTA: boolean;
   variant: "home" | "others";
-}> = ({ entry, withCTA, variant }) => {
+}> = ({ entry, withCTA, variant  }) => {
   const navigate = useNavigate();
-  return (
-    <li
-      className={`${smallCourseCardStyles.small_course_card_styled} ${smallCourseCardStyles.course_card_wrapper} ${smallCourseCardStyles[variant]}`}
+
+    return <li
+    className={`${smallCourseCardStyles.small_course_card_styled} ${smallCourseCardStyles.course_card_wrapper} ${smallCourseCardStyles[variant]}`}
     >
+
       <div className={smallCourseCardStyles.course_card_small}>
+    <ClientOnly>
+      {() =>
+      <>
+
         <div className={smallCourseCardStyles.top}>
           <img
-            src={entry.imageUrl}
+            src={entry.avatar}
             alt="image representing a course card in a list of courses"
+            loading="lazy"
           />
-          {!withCTA ? <Link to={`/courses/${entry.id}`}></Link> : null}
+          {!withCTA ? <Link to={`/courses/${entry.courseID}`}></Link> : null}
         </div>
         <div className={smallCourseCardStyles.bottom}>
           <p className={smallCourseCardStyles.card_bottom_text}>
@@ -84,7 +92,7 @@ export const SmallCourseCard: React.FC<{
             <div
               className={smallCourseCardStyles.course_circle_progress_wrapper}
             >
-              <StaticProgress entry={entry} />
+                <StaticProgress entry={entry as StudentCourseViewType} />
             </div>
           ) : null}
           <div className={smallCourseCardStyles.course_info_cta_area}>
@@ -92,8 +100,7 @@ export const SmallCourseCard: React.FC<{
             {withCTA ? (
               <button
                 onClick={() => {
-                  console.log("some button is clicked");
-                  navigate(`/courses/${entry.id}`);
+                  navigate(`/courses/${entry.courseID}`);
                 }}
               >
                 View course
@@ -101,7 +108,10 @@ export const SmallCourseCard: React.FC<{
             ) : null}
           </div>
         </div>
+      </>
+    }
+    </ClientOnly>
       </div>
+
     </li>
-  );
 };
