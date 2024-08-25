@@ -1,5 +1,6 @@
 import { createCookieSessionStorage } from "@remix-run/node";
 import { config } from "dotenv";
+import { createToastUtilsWithCustomSession, setToastCookieOptions } from "remix-toast";
 config();
 
 export type SessionData = {
@@ -8,11 +9,10 @@ export type SessionData = {
 };
 
 export type SessionFlashData = {
-  "X-Remix-Location"?: string;
-  "X-Remix-Replace"?: boolean;
+  [props: string]: any;
 };
 
-export const { getSession, commitSession } = createCookieSessionStorage<
+export const session = createCookieSessionStorage<
   SessionData,
   SessionFlashData
 >({
@@ -23,3 +23,25 @@ export const { getSession, commitSession } = createCookieSessionStorage<
     httpOnly: true,
   },
 });
+
+setToastCookieOptions({ 
+  secrets:
+    process.env.NODE_ENV === "production"
+
+      ? [process.env.SESSION_SECRET || ""]
+      : ["secret"]
+});
+export const {getSession, commitSession} = session;
+
+export const {
+  getToast,
+  redirectWithToast, 
+  redirectWithSuccess, 
+  redirectWithError, 
+  redirectWithInfo, 
+  redirectWithWarning, 
+  jsonWithSuccess, 
+  jsonWithError, 
+  jsonWithInfo, 
+  jsonWithWarning ,
+} = createToastUtilsWithCustomSession(session);
