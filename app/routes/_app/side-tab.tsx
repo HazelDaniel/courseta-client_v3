@@ -4,33 +4,67 @@ import {
   useLocation,
   useNavigate,
   useOutletContext,
+  useSubmit,
 } from "@remix-run/react";
 import { Logo } from "~/components/logo";
-import { AuthDao } from "app/dao/auth";
 
 import { LinksFunction } from "@remix-run/node";
 import styles from "~/styles/side-tab.module.css";
-import { UserRoleType } from "~/server.types";
+import { SessionUserType, UserRoleType } from "~/server.types";
+import { UserAuthActionType } from "~/types";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
 // };
 
+const AuthControlButton: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useOutletContext() as {
+    user: SessionUserType | undefined;
+  };
+  const submit = useSubmit();
+
+  return (
+    <button
+      onClick={() => {
+        if (user) {
+          const payload: UserAuthActionType = {
+            intent: "LOGOUT",
+            payload: { id: user.id, role: user.role },
+          };
+          submit(payload as any, {
+            action: "/",
+            encType: "application/json",
+            navigate: false,
+            method: "post",
+          });
+          return;
+        }
+        navigate("/auth?type=sign_in", { replace: true });
+      }}
+    >
+      {user ? "LOGOUT" : "LOGIN"}
+      <span>
+        <svg>
+          {user ? (
+            <use xlinkHref="#logout"></use>
+          ) : (
+            <use xlinkHref="#login"></use>
+          )}
+        </svg>
+      </span>
+    </button>
+  );
+};
+
 export const SideTab: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   const rootContext = useOutletContext() as {
     user: { id: string; role: UserRoleType } | undefined;
   };
-  console.log("user entity is ", rootContext);
 
-  const userEntity =
-    rootContext.user?.role === "creator"
-      ? "creators"
-      : rootContext.user?.role === "student"
-      ? "students"
-      : "others";
+  const userEntity = rootContext.user?.role + "s";
 
   return (
     <nav className={styles.side_tab_styled}>
@@ -89,7 +123,7 @@ export const SideTab: React.FC = () => {
                         : ""
                     }
                   >
-                    assessments
+                    assessment results
                   </Link>
                 </span>
               ) : null}
@@ -146,32 +180,14 @@ export const SideTab: React.FC = () => {
                   location.pathname === "/activities" ? styles.active : ""
                 }
               >
-                Activities
+                Communities
               </Link>
             </div>
           </li>
         </ul>
 
         <div className={styles.side_tab_cta_div}>
-          <button
-            onMouseDown={() => {
-              if (AuthDao.isAuthenticated) {
-                AuthDao.revokeTokens();
-              }
-              navigate("/auth?type=sign_in");
-            }}
-          >
-            {AuthDao.isAuthenticated ? "LOGOUT" : "LOGIN"}
-            <span>
-              <svg>
-                {AuthDao.isAuthenticated ? (
-                  <use xlinkHref="#logout"></use>
-                ) : (
-                  <use xlinkHref="#login"></use>
-                )}
-              </svg>
-            </span>
-          </button>
+          <AuthControlButton />
         </div>
 
         <div className={styles.side_tab_notif_box}>
