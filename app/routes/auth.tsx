@@ -1,42 +1,77 @@
-import { Navigate, useFetcher } from "@remix-run/react";
-import {
-  ActionFunction,
-  Link,
-  json,
-  redirect,
-  useLocation,
-  useSubmit,
-} from "react-router-dom";
+import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
+import { ActionFunction } from "react-router-dom";
 import { Logo } from "~/components/logo";
-import { AuthDao } from "~/dao/auth";
-import { useSearchParams } from "@remix-run/react";
+import {
+  useSearchParams,
+  useLocation,
+  json,
+  Link,
+  useOutletContext,
+} from "@remix-run/react";
 
 // import { LinksFunction } from "@remix-run/node";
 import styles from "~/styles/auth.module.css";
 import axios from "axios";
-import { BASE_URL, updateInterceptorWithToken } from "~/config/base";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
+  ActionResponseType,
   AuthUserIntentType,
+  RedirectPayloadType,
   UserAuthPayloadType,
   UserAuthType,
   UserSigninActionType,
   UserSignupActionType,
 } from "~/types";
 import { serializeAuthFormForAction } from "~/serializers/auth.serializer";
+import { v3Config } from "~/config/base";
+import { commitSession, getSession } from "~/cookie.server";
+import { redirectWithSuccess } from "remix-toast";
+import { ServerPayloadType } from "~/server.types";
+import { LoaderFunction, redirect } from "@remix-run/node";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
 // };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  const successMessage = session.get("X-Signup-Message");
+  const mutationReplaceCondition = session.get("X-Remix-Replace");
+  console.log("request url is ", request.url);
+
+  const isSigninSuccess = !!successMessage;
+  const sessionResult = await commitSession(session);
+
+  if (isSigninSuccess) {
+    return json(
+      {
+        redirectPayload: {
+          location: "./?type=login",
+          replace: mutationReplaceCondition,
+        },
+      },
+      {
+        headers: {
+          "Set-Cookie": sessionResult,
+        },
+      }
+    );
+  }
+  return json(
+    { redirectPayload: {} },
+    {
+      headers: {
+        "Set-Cookie": sessionResult,
+      },
+    }
+  );
+};
+
 export const SignInForm: React.FC = () => {
   const [isCreatorStatus, setCreatorStatus] = useState<boolean>(false);
-  const { Form, submit } = useFetcher();
+  const { Form, submit } = useFetcher({ key: "sign-in-fetcher" });
   const formRef = useRef<HTMLFormElement>(null);
 
-  if (AuthDao.isAuthenticated) {
-    return <Navigate to={"/"} replace={true} />;
-  }
   return (
     <Form
       className={styles.auth_form}
@@ -115,10 +150,26 @@ export const SignInForm: React.FC = () => {
 };
 
 export const SignUpForm: React.FC = () => {
-  const { Form, submit } = useFetcher();
-  if (AuthDao.isAuthenticated) {
-    return <Navigate to={"/"} replace={true} />;
-  }
+  const { Form, submit } = useFetcher({ key: "sign-up-fetcher" });
+  const { redirectPayload }: { redirectPayload: RedirectPayloadType } =
+    useLoaderData<typeof loader>() as { redirectPayload: RedirectPayloadType };
+  const [paramsState, setParamsState] = useSearchParams();
+  const rootContext = useOutletContext() as ServerPayloadType<null>;
+  const actionData = useActionData<
+    typeof action
+  >() as UserAuthPayloadType | null;
+
+  useEffect(() => {
+    if (redirectPayload.replace && redirectPayload.location) {
+      const destParams = new URLSearchParams();
+      destParams.set("type", "sign_in");
+      setParamsState(destParams, { replace: true });
+    }
+  }, [redirectPayload]);
+  // const navigate = useNavigate();
+  // if (AuthDao.isAuthenticated) {
+  //   return <Navigate to={"/"} replace={true} />;
+  // }
   const formRef = useRef<HTMLFormElement>(null);
   return (
     <Form
@@ -306,13 +357,9 @@ export const Auth: React.FC = () => {
   );
 };
 
-type AuthResolveType = {
-  refresh: string;
-  access: string;
-};
-
 export const action: ActionFunction = async (args) => {
   const { request } = args;
+  const session = await getSession(request.headers.get("Cookie"));
   const reqJson: { intent: AuthUserIntentType; payload: object } =
     await request.json();
   switch (reqJson.intent) {
@@ -321,57 +368,127 @@ export const action: ActionFunction = async (args) => {
         reqJson.payload as UserAuthPayloadType;
       switch (payloadJson.role) {
         case "student":
-          console.log("signing in with student credentials");
-          break;
-        default:
-          console.log("signing in with creator credentials");
+          const studentLoginRequest = await axios.post(
+            `${v3Config.apiUrl}/students/auth/login`,
+            payloadJson
+          );
+          const responsePayload: ServerPayloadType<null> =
+            studentLoginRequest.data;
+          const cookieHeader =
+            studentLoginRequest.headers["set-cookie"] ||
+            studentLoginRequest.headers["Set-Cookie"];
+          if (responsePayload.user) {
+            return redirectWithSuccess(
+              `/${responsePayload.user.role}s/${responsePayload.user.id}/dashboard`,
+              {
+                message: "signed in successfully!",
+              },
+              {
+                headers: {
+                  "Set-Cookie": `${cookieHeader}`,
+                },
+              }
+            );
+          } else {
+            const signinActionResponse: ActionResponseType<null> = {
+              data: null,
+              error:
+                responsePayload.message || "sign in failed!. please try again.",
+            };
+            return json(signinActionResponse);
+          }
+        default: {
+          const creatorLoginRequest = await axios.post(
+            `${v3Config.apiUrl}/creators/auth/login`,
+            payloadJson
+          );
+          const responsePayload: ServerPayloadType<null> =
+            creatorLoginRequest.data;
+          const cookieHeader =
+            creatorLoginRequest.headers["set-cookie"] ||
+            creatorLoginRequest.headers["Set-Cookie"];
+          if (responsePayload.user) {
+            throw redirect(
+              `/${responsePayload.user.role}s/${responsePayload.user.id}/dashboard`,
+              {
+                headers: {
+                  "Set-Cookie": `${cookieHeader}`,
+                },
+              }
+            );
+          } else {
+            const signinActionResponse: ActionResponseType<null> = {
+              data: null,
+              error:
+                responsePayload.message || "sign in failed!. please try again.",
+            };
+            return json(signinActionResponse);
+          }
+        }
       }
-      console.table(payloadJson);
       break;
     }
     case "SIGN_UP": {
       let payloadJson: UserAuthPayloadType =
         reqJson.payload as UserAuthPayloadType;
       switch (payloadJson.role) {
-        case "student":
-          console.log("signing up with student credentials");
-          break;
+        case "student": {
+          const studentSignupRequest = await axios.post(
+            `${v3Config.apiUrl}/students/auth/signup`,
+            payloadJson
+          );
+          const responsePayload: ServerPayloadType<null> =
+            studentSignupRequest.data;
+          if (studentSignupRequest.status === 201) {
+            session.flash("X-Signup-Message", `${responsePayload.message}`);
+            session.flash("X-Remix-Replace", true);
+            const signupActionResponse: ActionResponseType<null> = {
+              data: null,
+              error: null,
+            };
+            return json(signupActionResponse, {
+              headers: {
+                "Set-Cookie": await commitSession(session),
+              },
+            });
+          }
+          const signupActionResponse: ActionResponseType<null> = {
+            data: null,
+            error:
+              responsePayload.message || "sign up failed!. please try again.",
+          };
+          return json(signupActionResponse);
+        }
         default:
-          console.log("signing up with creator credentials");
+          const creatorSignupRequest = await axios.post(
+            `${v3Config.apiUrl}/creators/auth/signup`,
+            payloadJson
+          );
+          const responsePayload: ServerPayloadType<null> =
+            creatorSignupRequest.data;
+          if (creatorSignupRequest.status === 201) {
+            session.flash("X-Signup-Message", `${responsePayload.message}`);
+            session.flash("X-Remix-Replace", true);
+            const signupActionResponse: ActionResponseType<null> = {
+              data: null,
+              error: null,
+            };
+            return json(signupActionResponse, {
+              headers: {
+                "Set-Cookie": await commitSession(session),
+              },
+            });
+          }
+          const signupActionResponse: ActionResponseType<null> = {
+            data: null,
+            error:
+              responsePayload.message || "sign up failed!. please try again.",
+          };
+          return json(signupActionResponse);
       }
       console.table(payloadJson);
       break;
     }
-    default: {
-      break;
-    }
-  }
-  try {
-    // const response = await axios.post(
-    //   `${BASE_URL}/auth/token`,
-    //   JSON.stringify(requestBody),
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   }
-    // );
-    // if (response.status === 401) {
-    //   throw new Response("user not authenticated", { status: 401 });
-    // } else if (response.status === 200) {
-    //   const body: AuthResolveType = await response.data;
-    //   AuthDao.setAccessToken(body.access);
-    //   AuthDao.setRefreshToken(body.refresh);
-    //   updateInterceptorWithToken();
-    //   return redirect("/", { status: 200 });
-    // } else {
-    //   throw response;
-    // }
-  } catch (err) {
-    // console.error(
-    //   "an error occurred while trying to submit the authentication credentials",
-    //   err
-    // );
   }
 
   return json({});
