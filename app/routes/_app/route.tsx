@@ -1,15 +1,11 @@
 import {
-  Navigate,
   Outlet,
   isRouteErrorResponse,
-  useLoaderData,
   useLocation,
   useRouteError,
-  useRouteLoaderData,
 } from "@remix-run/react";
 import { Header } from "./header";
 import { SideTab } from "./side-tab";
-import { AuthType } from "~/types";
 
 import styles from "~/styles/root-wrapper.module.css";
 import { NotFound } from "~/components/not-found";
@@ -32,12 +28,6 @@ export const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
       ? "no-side-tab"
       : "side-tab");
 
-  const loaderData: AuthType = useRouteLoaderData("root") as AuthType;
-
-  if (!loaderData.token) {
-    return <Navigate to={"/auth?type=sign_in"} />;
-  }
-
   return (
     <div id="app">
       {(() => {
@@ -57,7 +47,7 @@ export const App: React.FC<{ variant?: "side-tab" | "no-side-tab" }> = ({
             : styles.root_wrapper_styled
         }
       >
-        <Header variant={variant} user={loaderData.user} />
+        <Header variant={variant} />
         <Outlet />
       </div>
     </div>
@@ -72,6 +62,7 @@ export const ErrorBoundary: React.FC = () => {
         return <NotFound />;
     }
   } else {
+    console.log(error);
     return <h2>something went wrong! {(error as Error)?.message}</h2>;
   }
 };
