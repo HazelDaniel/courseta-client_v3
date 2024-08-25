@@ -6,8 +6,8 @@ export const rankData: RankType[] = [
     title: "novice",
     icon: `/icons/badge-l1.png`,
     xpRange: {
-      max: 0,
-      min: 900,
+      max: 199,
+      min: 0,
     },
   },
   {
@@ -15,8 +15,8 @@ export const rankData: RankType[] = [
     title: "amateur",
     icon: `/icons/badge-l2.png`,
     xpRange: {
-      max: 0,
-      min: 900,
+      max: 999,
+      min: 200,
     },
   },
   {
@@ -24,8 +24,8 @@ export const rankData: RankType[] = [
     title: "senior",
     icon: `/icons/badge-l3.png`,
     xpRange: {
-      max: 0,
-      min: 900,
+      max: 9999,
+      min: 1000,
     },
   },
   {
@@ -33,8 +33,8 @@ export const rankData: RankType[] = [
     title: "professional",
     icon: `/icons/badge-l4.png`,
     xpRange: {
-      max: 0,
-      min: 900,
+      max: "149.9K",
+      min: "10K",
     },
   },
   {
@@ -42,8 +42,8 @@ export const rankData: RankType[] = [
     title: "master",
     icon: `/icons/badge-l5.png`,
     xpRange: {
-      max: 0,
-      min: 900,
+      max: "2.99M",
+      min: "150K",
     },
   },
   {
@@ -51,8 +51,8 @@ export const rankData: RankType[] = [
     title: "legendary",
     icon: `/icons/badge-l6.png`,
     xpRange: {
-      max: 0,
-      min: 900,
+      max: "...",
+      min: "3M",
     },
   },
 ];

@@ -1,6 +1,6 @@
-import { CourseExamType, LessonAssessmentType } from "~/types";
+import { CourseExamType, GenericAssessmentType } from "~/types";
 
-export const AssessmentListData: (LessonAssessmentType | CourseExamType)[] = [
+export const AssessmentListData: (GenericAssessmentType | CourseExamType)[] = [
   {
     id: 10,
     availablePoints: 280,
@@ -165,20 +165,20 @@ export const AssessmentListData: (LessonAssessmentType | CourseExamType)[] = [
     parentID: 0,
     questions: [
       {
-        id: "ex1",
+        id: "1",
         question: "Explain the concept of variables.",
         points: 20,
         options: [
           {
             correct: true,
             text: "A storage location paired with an associated symbolic name.",
-            quizID: "ex1",
+            quizID: "1",
             id: "exopt1",
           },
           {
             correct: false,
             text: "A function",
-            quizID: "ex1",
+            quizID: "1",
             id: "exopt2",
           },
         ],

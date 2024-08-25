@@ -3,10 +3,10 @@ import { CreatorProfileType, StudentProfileType } from "~/types";
 export const studentsData: StudentProfileType[] = [
   {
     user: {
-      avatar: {
-        url: "/illustrations/avatar1.jpg",
-        updatedAt: "2023-07-01T12:00:00Z",
-        createdAt: "2022-07-01T12:00:00Z",
+      avatar: "/illustrations/avatar1.jpg",
+      avatarMeta: {
+        updated_at: "2023-07-01T12:00:00Z",
+        created_at: "2022-07-01T12:00:00Z",
       },
       firstName: "Alice",
       lastName: "Smith",
@@ -39,10 +39,10 @@ export const studentsData: StudentProfileType[] = [
   },
   {
     user: {
-      avatar: {
-        url: "https://example.com/avatar2.jpg",
-        updatedAt: "2023-07-01T12:00:00Z",
-        createdAt: "2022-07-01T12:00:00Z",
+      avatar: "https://example.com/avatar2.jpg",
+      avatarMeta: {
+        updated_at: "2023-07-01T12:00:00Z",
+        created_at: "2022-07-01T12:00:00Z",
       },
       firstName: "Bob",
       lastName: "Johnson",
@@ -79,10 +79,10 @@ export const studentsData: StudentProfileType[] = [
 export let creatorsData: CreatorProfileType[] = [
   {
     user: {
-      avatar: {
-        url: "/illustrations/person-admin.png",
-        updatedAt: "2023-07-01T12:00:00Z",
-        createdAt: "2022-07-01T12:00:00Z",
+      avatar: "/illustrations/person-admin.png",
+      avatarMeta: {
+        updated_at: "2023-07-01T12:00:00Z",
+        created_at: "2022-07-01T12:00:00Z",
       },
       firstName: "Charlie",
       lastName: "Brown",
@@ -98,10 +98,10 @@ export let creatorsData: CreatorProfileType[] = [
   },
   {
     user: {
-      avatar: {
-        url: "https://example.com/avatar4.jpg",
-        updatedAt: "2023-07-01T12:00:00Z",
-        createdAt: "2022-07-01T12:00:00Z",
+      avatar: "/illustrations/person-admin.png",
+      avatarMeta: {
+        updated_at: "2023-07-01T12:00:00Z",
+        created_at: "2022-07-01T12:00:00Z",
       },
       firstName: "Diana",
       lastName: "Prince",

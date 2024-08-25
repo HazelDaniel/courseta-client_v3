@@ -4,7 +4,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
   {
     id: 1,
     title: "Lesson 1: Introduction - Welcome and Course Overview",
-    completed: false,
     duration: 1000008,
     contents: [
       {
@@ -15,7 +14,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
     ],
     assessment: {
       id: 1,
-      completed: false,
       availablePoints: 200,
       questions: [
         {
@@ -50,7 +48,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
   {
     id: 2,
     title: "Lesson 2: Foundational Concepts - Building the Blocks",
-    completed: true,
     duration: 1000808,
     contents: [
       {
@@ -61,7 +58,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
     ],
     assessment: {
       id: 2,
-      completed: true,
       availablePoints: 250,
       questions: [
         // Add questions following the same structure here
@@ -72,7 +68,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
   {
     id: 3,
     title: "Lesson 3: Core Principles - Deepening Your Understanding",
-    completed: false,
     duration: 1020808,
     contents: [
       {
@@ -83,7 +78,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
     ],
     assessment: {
       id: 3,
-      completed: false,
       availablePoints: 150,
       questions: [
         // Add questions following the same structure here
@@ -94,7 +88,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
   {
     id: 10,
     title: "Lesson 10: Putting It All Together - Practical Applications",
-    completed: false,
     duration: 1020801,
     contents: [
       {
@@ -105,7 +98,6 @@ export const courseLessons: Partial<CourseLessonType>[] = [
     ],
     assessment: {
       id: 10,
-      completed: false,
       availablePoints: 120,
       questions: [
         // Add questions following the same structure here
