@@ -6,35 +6,52 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   json,
+  redirect,
   useLoaderData,
+  useNavigation,
   useRouteError,
 } from "@remix-run/react";
 
-import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { AuthType } from "./types";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
+import {
+  ActionResponseType,
+  AuthType,
+  GlobalToastType,
+  SessionUserType,
+  UserAuthActionType,
+} from "./types";
 import "~/styles/root.css";
 import { creatorsData, studentsData } from "./data/users";
+import axios, { AxiosResponse } from "axios";
+import { v3Config } from "./config/base";
+import { ServerPayloadType } from "./server.types";
+import { NotFound } from "./components/not-found";
+import { getToast } from "remix-toast";
+import { toast as raiseToast, Toaster } from "sonner";
+import { useEffect, useState } from "react";
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   try {
     const { request } = args;
-    void request;
-    const res: Partial<AuthType> = {};
-    // const authToken = AuthDao.getAccessToken;
-    // res.token = authToken || null;
-    // if (authToken) {
-    //   const response = await axios.get(`${BASE_URL}/auth/me`);
-    //   if (response.status === 200) {
-    //     const user: DBUserType = response.data;
-    //     res.user = transformUserProfile(user);
-    //   }
-    // }
-    res.token = "kjlfklsjfsdfs";
-    res.user = creatorsData[0].user;
-    // res.user = studentsData[0].user;
-    // console.log("response from root is ", res);
-    return json(res as AuthType);
+    const { toast, headers } = await getToast(request);
+    console.log("the toast received is ", toast);
+    const cookieHeader = request.headers.get("Cookie");
+    const userRequest = await axios.get(`${v3Config.apiUrl}/users/current`, {
+      headers: {
+        Cookie: cookieHeader,
+      },
+    });
+    let globalUser: ServerPayloadType<null>["user"];
+    if (userRequest.status === 200)
+      globalUser = (userRequest.data as ServerPayloadType<null>)?.user;
+    else globalUser = undefined;
+    return json({ user: globalUser, toast }, { headers });
   } catch (err) {
+    console.error(err);
     throw new Response("internal server error", { status: 500 });
   }
 };
@@ -628,6 +645,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </svg>
 
         {children}
+
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            className: "toast_container",
+          }}
+        />
         <ScrollRestoration
           getKey={({ pathname }) => {
             return pathname;
@@ -640,15 +664,50 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const data = useLoaderData<typeof loader>() as AuthType;
-  return (
-    <Outlet context={{ userID: data?.user?.id, role: data?.user?.role }} />
-  );
+  const data = useLoaderData<typeof loader>() as {
+    user: SessionUserType;
+    toast: GlobalToastType;
+  };
+  const { toast } = data;
+  const [toastID] = useState<number>(89080970878);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (navigation.state === "loading") {
+      raiseToast.message("loading...", {
+        duration: Infinity,
+        position: "top-center",
+        dismissible: true,
+        id: toastID,
+      });
+      return;
+    }
+    if (navigation.state === "idle") {
+      raiseToast.dismiss(toastID);
+    }
+  }, [navigation, toastID]);
+
+  useEffect(() => {
+    if (toast) {
+      if (toast.type === "info")
+        raiseToast.message(toast.message, {
+          duration: toast.message.length * 65,
+          description: toast.description,
+        });
+      else
+        raiseToast[toast.type](toast.message, {
+          duration: toast.message.length * 50,
+          description: toast.description,
+        });
+    }
+  }, [toast]);
+
+  return <Outlet context={data} />;
 }
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  console.error(error);
+  const isFamiliarError = isRouteErrorResponse(error);
   return (
     <html>
       <head>
@@ -657,10 +716,60 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body>
-        {/* <NotFound /> */}
-        <center>something went wrong! {(error as Error).message}</center>
+        {isFamiliarError && error.status === 404 ? (
+          <NotFound />
+        ) : (
+          <center>
+            something went wrong! {(error as Error).message}
+            {JSON.stringify(error as any)}
+          </center>
+        )}
+
         <Scripts />
       </body>
     </html>
   );
 }
+
+export const action: ActionFunction = async ({ request }) => {
+  try {
+    const reqJson = (await request.json()) as UserAuthActionType;
+    const cookieHeader = request.headers.get("Cookie");
+    let requestURL: string;
+    let actionRequest: AxiosResponse<ServerPayloadType<any>, any>;
+
+    switch (reqJson.intent) {
+      case "LOGOUT": {
+        const { id, role } = reqJson.payload;
+        if (role === "creator")
+          requestURL = `${v3Config.apiUrl}/creators/${id}/logout`;
+        else requestURL = `${v3Config.apiUrl}/students/${id}/logout`;
+        actionRequest = await axios.post(requestURL, null, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 200) break;
+        console.log("the ", role, " has logged out...");
+        throw redirect("/auth?type=sign_in");
+      }
+    }
+    if (actionRequest.status - 500 >= 0)
+      throw json({ error: "something went wrong" }, 500);
+    else
+      return json({
+        data: null,
+        error: `couldn't proceed with action. REASON: ${actionRequest.data.message}`,
+      } as ActionResponseType<null>);
+  } catch (err) {
+    if (err instanceof Response && err.status >= 300 && err.status < 400)
+      throw err;
+    throw json(
+      {
+        error:
+          err instanceof Error ? err.message : "could not proceed with action",
+      },
+      500
+    );
+  }
+};
