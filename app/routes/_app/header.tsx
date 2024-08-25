@@ -1,9 +1,15 @@
 import { Form, Link, Location, useLocation, useSubmit } from "react-router-dom";
 import { useRef } from "react";
-import { CreatorUserType, UserType } from "~/types";
+import {
+  CreatorUserType,
+  SessionUserType,
+  UserRoleType,
+  UserType,
+} from "~/types";
 import { useOutletContext } from "@remix-run/react";
 
 import styles from "~/styles/header.module.css";
+import { ServerPayloadType } from "~/server.types";
 
 function calcHeaderVisible(location: Location) {
   let res: boolean = true;
@@ -35,9 +41,9 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
       onChange={(e: React.FormEvent) => {
         e.preventDefault();
         if (!searchInputRef.current) return;
-        void e;
+        return;
         submit(
-          { search: searchInputRef.current.value.trim() },
+          { search: searchInputRef.current?.value.trim() || "" },
           {
             action: location.pathname,
             encType: "application/x-www-form-urlencoded",
@@ -69,21 +75,16 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
 
 export const Header: React.FC<{
   variant: "side-tab" | "no-side-tab";
-  user: UserType | CreatorUserType;
-}> = ({ variant, user }) => {
+}> = ({ variant }) => {
   const location = useLocation();
   const isVisible = calcHeaderVisible(location);
-  const rootContext = useOutletContext() as {
-    userID: string;
-    role: "student" | "creator";
+  // console.log("root context is ", rootContext);
+
+  const {user} = useOutletContext() as {
+    user: SessionUserType | undefined;
   };
 
-  const userEntity =
-    rootContext.role === "creator"
-      ? "creators"
-      : rootContext.role === "student"
-      ? "students"
-      : "others";
+  const userEntity = user ? user.role + "s" : undefined;
 
   return (
     <header
@@ -111,19 +112,16 @@ export const Header: React.FC<{
         </span>
         <div className={styles.profile_summary_area}>
           <span className={styles.summary_area_text}>{`${
-            user.email.split("@")[0]
+            user ? user.email.split("@")[0] : "anon"
           }`}</span>
           <div className={styles.profile_image_div}>
             <img
-              src={
-                user.avatar?.url?.length
-                  ? user.avatar?.url
-                  : "icons/user-icon.svg"
-              }
+              src={user ? "/illustrations/user_icon.svg" : "/illustrations/user_icon.svg"} // WE'LL FETCH FROM CACHE
               alt="avatar image of the user of the courseta platform"
               className={styles.summary_area_image}
+              loading="lazy"
             />
-            <Link to={`/${userEntity}/${user.id}/dashboard`}></Link>
+            {user ? <Link to={`/${userEntity}/${user.id}/dashboard`}></Link> : null}
           </div>
         </div>
       </div>
