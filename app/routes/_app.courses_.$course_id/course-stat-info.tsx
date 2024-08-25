@@ -1,4 +1,11 @@
+import { useNavigate, useRouteLoaderData, useSubmit } from "@remix-run/react";
+import { CourseDetailViewType, SessionUserType } from "~/server.types";
 import styles from "~/styles/course-stat-info.module.css";
+import {
+  CourseCreatorViewType,
+  StudentEnrollActionType,
+  StudentEnrollPayloadType,
+} from "~/types";
 // import { LinksFunction } from "@remix-run/node";
 
 // export const links: LinksFunction = () => {
@@ -6,6 +13,16 @@ import styles from "~/styles/course-stat-info.module.css";
 // };
 
 export const CourseStatInfo: React.FC = () => {
+  const loadedResult = useRouteLoaderData(
+    "routes/_app.courses_.$course_id"
+  ) as {
+    creator: CourseCreatorViewType;
+    course: CourseDetailViewType;
+    user: SessionUserType;
+  };
+  const { creator, course, user } = loadedResult;
+  const navigate = useNavigate();
+  const submit = useSubmit();
   return (
     <aside className={styles.course_stat_info_styled}>
       <div className={styles.course_stat_info_area}>
@@ -14,16 +31,16 @@ export const CourseStatInfo: React.FC = () => {
             <ul className={styles.stat_info_list}>
               <li>
                 <p>Last update</p>
-                <span>02/04/23</span>
+                <span>{new Date(course.updatedAt).toLocaleDateString()}</span>
               </li>
 
               <li>
                 <p>Members Enrolled</p>
-                <span>993,201</span>
+                <span>{course.studentCount}</span>
               </li>
               <li>
                 <p>Duration</p>
-                <span>3h 25min 30s</span>
+                <span>{course.courseLength}s</span>
               </li>
             </ul>
             <div className={styles.stat_info_share_area}>
@@ -47,8 +64,40 @@ export const CourseStatInfo: React.FC = () => {
           <div className={styles.stat_info_bottom}></div>
         </div>
         <div className={styles.course_cta_area}>
-          <button className={styles.course_cta}>Enroll Now</button>
-          <button className={`${styles.course_cta} ${styles.secondary}`}>
+          <button
+            className={styles.course_cta}
+            disabled={user && user.role === "creator"}
+            onClick={() => {
+              if (!user) {
+                navigate("/auth?type=sign_in");
+                return;
+              }
+              if (user.role === "creator") return;
+              const payload = {
+                studentID: user.id,
+              } as StudentEnrollPayloadType;
+              const resPayload = {
+                intent: !course.isEnrolled ? "ENROLL": "UNENROLL",
+                payload,
+              } as StudentEnrollActionType;
+
+              submit(resPayload as any, {
+                action: "./?index",
+                method: "POST",
+                encType: "application/json",
+                navigate: false,
+              });
+
+            }}
+          >
+            {course.isEnrolled ? "Unenroll" : "Enroll Now"}
+          </button>
+          <button
+            className={`${styles.course_cta} ${styles.secondary}`}
+            onClick={() => {
+              navigate("./reviews", { state: { focusReviewBox: true } });
+            }}
+          >
             Review Course
           </button>
         </div>
@@ -66,21 +115,23 @@ export const CourseStatInfo: React.FC = () => {
           </div>
           <div className={styles.middle}>
             <div className={styles.creator_name_title_area}>
-              <h2 className={styles.creator_name}>Courseta Edtech</h2>
-              <p className={styles.creator_title}> gamified edtech platform</p>
+              <h2 className={styles.creator_name}>
+                {creator.firstName} {creator.lastName}
+              </h2>
+              <p className={styles.creator_title}> Courseta edtech platform</p>
             </div>
             <div className={styles.creator_avatar_area}>
               <img
-                src="/logo.svg"
+                src={creator.avatar}
                 alt="avatar image of a course creator on the courseta platform"
                 loading="lazy"
               />
             </div>
           </div>
           <div className={styles.bottom}>
-            <p>60 courses</p>
+            <p>{creator.courseCount} courses</p>
             <span></span>
-            <p>500 enrolled</p>
+            <p>{creator.studentCount} enrolled</p>
           </div>
         </div>
         <div className={styles.author_stat_ratings_area}>
@@ -99,7 +150,10 @@ export const CourseStatInfo: React.FC = () => {
               </svg>
             </span>
 
-            <p>4.2 (244 Ratings)</p>
+            <p>
+              {creator.averageCourseRating} ({creator.courseReviewCount}{" "}
+              Ratings)
+            </p>
           </div>
         </div>
       </div>
