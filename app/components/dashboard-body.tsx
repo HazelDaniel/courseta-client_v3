@@ -68,7 +68,7 @@ export const DashboardBody: React.FC<{
         <div className="display_area_left">
           <div className="da_left_top">
             <img
-              src={avatar || "/icons/user-icon.svg"}
+              src={avatar || "/illustrations/user_icon.svg"}
               alt="the profile picture of the platform user"
               loading="lazy"
             />
@@ -158,7 +158,6 @@ export const DashboardBody: React.FC<{
             errorElement={<UnfinishedCourseErrorElement />}
           >
             {(res) => {
-              console.log("data received is ", res);
               return (
                 <StudentAttemptedCourses courses={res.data.payload || []} />
               );
