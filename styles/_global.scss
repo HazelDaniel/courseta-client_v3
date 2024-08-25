@@ -84,6 +84,25 @@ body > script {
   margin-bottom: 10rem;
   font-size: 2.2rem;
 }
+.toast_container {
+  border-right: 1rem solid var(--label-color);
+}
+
+.courses_edit_toast {
+  display: flex;
+  button {
+    width: 12rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: fix-content;
+    margin-left: 0.3rem;
+    padding: 1rem;
+    border-radius: .5rem;
+    border: .2rem solid var(--label-color);
+  }
+}
 // img {
 //   display: none !important;
 // }

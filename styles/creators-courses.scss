@@ -4,6 +4,7 @@
   width: 95%;
   margin: 0 auto;
   --uniform-horizontal-gap: 6vw;
+  @include adjustTopMargin();
   .section_title {
     font-weight: 500;
   }

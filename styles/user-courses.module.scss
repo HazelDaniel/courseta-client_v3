@@ -4,6 +4,7 @@
 .user_courses_styled {
   width: 100%;
   height: max-content;
+  @include adjustTopMargin();
   /* ${debug}; */
   overflow: hidden;
   display: flex;
@@ -38,6 +39,7 @@
     justify-content: flex-start;
     height: max-content;
     gap: 20rem;
+
     .courses_list_container {
       width: 100%;
       height: max-content;
@@ -57,6 +59,7 @@
   }
   .navigation_ctas {
     @extend .table_navigation;
+    margin-top: 30rem;
     --icon-color-here: var(--text-color);
   }
 }

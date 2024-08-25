@@ -101,7 +101,12 @@
         justify-content: flex-start;
         padding: 5%;
         gap: 2rem;
-        background: var(--aside-tab-bg);
+        background: linear-gradient(
+          to bottom left,
+          var(--aside-tab-bg) 2%,
+          transparent,
+          var(--aside-tab-bg)
+        );
         .ati_badge {
           align-self: flex-start;
           font-size: 1.3rem;

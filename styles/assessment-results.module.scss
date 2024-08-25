@@ -1,3 +1,4 @@
+@import "_functions";
 .assessment_result_styled {
   width: 100%;
   height: max-content;
@@ -22,6 +23,7 @@
     flex-direction: column;
     gap: 30rem;
     position: relative;
+    @include adjustTopMargin();
     &::before {
       width: 0.3rem;
       position: absolute;

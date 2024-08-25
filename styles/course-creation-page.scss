@@ -9,6 +9,7 @@
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
+  @include adjustTopMargin();
   .input_form_top {
     display: none !important;
   }

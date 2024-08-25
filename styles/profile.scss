@@ -1,9 +1,9 @@
 @import "_functions";
 .banner_styled {
-  width: 100%;
-  // background-color: var(--text-color);
+  width: 98%;
   height: 30rem;
   margin-top: -1rem;
+  @include adjustTopMargin();
   border-radius: 1.3rem;
   position: relative;
   z-index: 1;
@@ -189,9 +189,3 @@
     }
   }
 }
-
-
-
-
-
-

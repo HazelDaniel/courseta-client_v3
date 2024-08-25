@@ -1,12 +1,15 @@
 @import "_functions";
 @import "_components";
 
-p,h2,h3 {
+p,
+h2,
+h3 {
   color: var(--text-color);
 }
 .assessment_edit_body {
   width: 95%;
   margin: 0 auto;
+  @include adjustTopMargin();
   .section_header {
     @extend ._section_header;
     text-transform: capitalize;

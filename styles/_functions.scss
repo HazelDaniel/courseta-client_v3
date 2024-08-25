@@ -3,6 +3,42 @@
   background-color: #5e5f602b;
 }
 
+@mixin adjustTopMargin() {
+  margin-top: calc(1.5 * var(--margin_XL));
+}
+
+@mixin makeBlinkableSkeleton() {
+  height: var(--skeleton-height-here);
+  width: var(--skeleton-width-here);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+
+  animation-name: blink;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  animation-fill-mode: both;
+
+  & > span {
+    display: block;
+    height: 10rem;
+    width: 100%;
+    margin-bottom: 3rem;
+    background: var(--background-end);
+  }
+
+  @keyframes blink {
+    from {
+      background: var(--background-start);
+    }
+    to {
+      background: var(--background-end);
+    }
+  }
+}
+
 @mixin courseAccordionStyle() {
   height: max-content;
   width: 100%;

@@ -56,7 +56,7 @@
           }
           a {
             font-size: 1.8rem;
-            color: black;
+            color: var(--text-color);
             &.active::before {
               position: absolute;
               content: "";
@@ -68,6 +68,9 @@
               border-radius: 0.5rem;
               transform: scaleX(1.05);
               background-color: var(--active-text-bg);
+              background: linear-gradient(to bottom, var(--active-text-bg) 20%, var(--bg-color) 30%, var(--active-text-bg));
+              box-shadow: 1px 0px 2px var(--label-color);
+              z-index: -1;
             }
           }
         }

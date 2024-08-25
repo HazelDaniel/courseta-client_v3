@@ -4,6 +4,7 @@
 .quiz_addition_area {
   width: 95%;
   margin: 0 auto;
+  @include adjustTopMargin();
   .section_header {
     text-decoration: dashed;
     outline: 1px solid var(--label-color);
