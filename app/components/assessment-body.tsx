@@ -1,5 +1,5 @@
 import { useLocation, useParams } from "@remix-run/react";
-import { LessonAssessmentType } from "~/types";
+import { GenericAssessmentType } from "~/types";
 import {
   AssessmentCountdown,
   AssessmentForm,
@@ -10,7 +10,7 @@ import { NotFound } from "./not-found";
 import { useGetLinkedResourceKeys } from "~/hooks/use-get-linked-resource-keys";
 
 export const AssessmentBody: React.FC<{
-  assessment: LessonAssessmentType | null;
+  assessment: GenericAssessmentType | null;
 }> = ({ assessment }) => {
   const [isLinkedResource] = useGetLinkedResourceKeys();
 
@@ -18,7 +18,7 @@ export const AssessmentBody: React.FC<{
   if (!isLinkedResource) {
     // assessmentID = +(params["assessment_id"] as string);
     assessment = courseDataDetailed[0].lessons[0]
-      .assessment as LessonAssessmentType;
+      .assessment as GenericAssessmentType;
   }
 
   return (
@@ -53,12 +53,13 @@ export const AssessmentBody: React.FC<{
             <i>This exam tests your foundation in the previous courses taken</i>
           ) : (
             <i>
-              This quiz tests your basic understanding of the current lesson
+              {assessment?.description ||
+                "This quiz tests your basic understanding of the current lesson"}
             </i>
           )}
         </p>
       </div>
-      <AssessmentForm assessment={assessment as LessonAssessmentType} />
+      <AssessmentForm variant={isLinkedResource ? "quiz" : "exam"}/>
     </>
   );
 };
