@@ -6,14 +6,17 @@ import { CourseStatInfo } from "./course-stat-info";
 
 import styles from "~/styles/course-info.module.css";
 import { Link, Outlet, useLocation } from "@remix-run/react";
+import { CourseDetailViewType } from "~/server.types";
 
-export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
+export const CourseInfo: React.FC<{ course: CourseDetailViewType }> = ({
   course,
 }) => {
   const courseDurationString = useCallback(() => {
-    const { hours, minutes, seconds } = convertSecondsToHms(course.duration);
+    const { hours, minutes, seconds } = convertSecondsToHms(
+      course.courseLength
+    );
     return `${hours}hr ${minutes}min ${seconds}s`;
-  }, [course.duration]);
+  }, [course.courseLength]);
 
   const { pathname } = useLocation();
 
@@ -48,17 +51,15 @@ export const CourseInfo: React.FC<{ course: CourseDetailType }> = ({
                     : ""
                 }
               >
-                <span>Reviews (980)</span>
+                <span>Reviews ({course.reviewCount})</span>
               </Link>
             </li>
             <li>
-              <Link
-                to={`/courses/${course.id}/exams/${
-                  course.exam ? course.exam.id : -1
-                }`}
-              >
-                <span>Exam Link</span>
-              </Link>
+              { course.examID ? 
+                <Link to={`/courses/${course.courseID}/exams/${course.examID}`} prefetch="viewport">
+                  <span>Exam Link</span>
+                </Link> : null
+              }
             </li>
           </ul>
 
