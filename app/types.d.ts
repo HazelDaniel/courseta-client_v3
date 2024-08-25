@@ -21,6 +21,14 @@ export type StudentRankType =
   | "master"
   | "legendary";
 
+export type GlobalToastType =
+  | {
+      message: string;
+      type: "info" | "error" | "warning" | "success";
+      description?: string;
+    }
+  | undefined;
+
 export interface ImageMetaType {
   updated_at: string;
   created_at: string;
@@ -240,11 +248,13 @@ export interface CourseExamType2 {
   duration: number;
   description: string;
   passScore: number;
+  ready: boolean;
 }
 
 export interface CourseExamDetailType extends CourseExamType2 {
   totalPoints: number;
   questionCount: number;
+  ready: boolean;
   questions: QuestionType[];
 }
 
