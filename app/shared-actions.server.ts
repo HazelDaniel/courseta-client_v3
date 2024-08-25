@@ -18,6 +18,7 @@ import {
   serializePasswordUpdateFormInAction,
 } from "./serializers/dashboard.serializer";
 import { UserRoleType } from "./server.types";
+import { jsonWithSuccess } from "remix-toast";
 
 export const DashBoardActionWrapper: (
   role: UserRoleType,
@@ -44,20 +45,17 @@ export const DashBoardActionWrapper: (
             headers: { Cookie: cookieHeader },
           });
           if (profileUpdateRequest.status !== 200) break;
-          // on success action
-          break;
+          return jsonWithSuccess(null, "names updated successfully!");
         }
         case "UPDATE_AVATAR": {
           const { payload } = serializeAvatarUpdateFormInAction(
             resData as DashboardAvatarUpdateFormStateType
           );
-          // console.log("the payload is ", payload);
           profileUpdateRequest = await axios.put(updateRequestURL, payload, {
             headers: { Cookie: cookieHeader },
           });
           if (profileUpdateRequest.status !== 200) break;
-          // on success action
-          break;
+          return jsonWithSuccess(null, "image updated successfully!");
         }
         case "UPDATE_EMAIL": {
           const { payload } = serializeEmailUpdateFormInAction(
@@ -67,8 +65,7 @@ export const DashBoardActionWrapper: (
             headers: { Cookie: cookieHeader },
           });
           if (profileUpdateRequest.status !== 200) break;
-          // on success action
-          break;
+          return jsonWithSuccess(null, "email updated successfully!");
         }
         case "REQUEST_NEW_PASS": {
           const { payload } = serializePassUpdateFormInAction(
@@ -78,8 +75,7 @@ export const DashBoardActionWrapper: (
             headers: { Cookie: cookieHeader },
           });
           if (profileUpdateRequest.status !== 200) break;
-          // on success action
-          break;
+          return jsonWithSuccess(null, "creator pass updated successfully!");
         }
         case "UPDATE_PASSWORD": {
           const { payload } = serializePasswordUpdateFormInAction(
@@ -89,8 +85,7 @@ export const DashBoardActionWrapper: (
             headers: { Cookie: cookieHeader },
           });
           if (profileUpdateRequest.status !== 200) break;
-          // on success action
-          break;
+          return jsonWithSuccess(null, "password updated successfully!");
         }
       }
       if (profileUpdateRequest.status !== 200) {
@@ -109,8 +104,7 @@ export const DashBoardActionWrapper: (
       }
       return null;
     } catch (err) {
-      console.error((err as any).message);
-      return null;
+      throw err;
     }
   };
   return action(args);
