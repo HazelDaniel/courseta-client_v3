@@ -55,7 +55,7 @@ export interface AssessmentSubmissionActionType {
 }
 
 export const AssessmentSubmissionReducer = (
-  state = InitialAssessmentSubmissionState,
+  state: AssessmentSubmissionStateType = InitialAssessmentSubmissionState,
   action: AssessmentSubmissionActionType
 ) => {
   let newState: AssessmentSubmissionStateType;
