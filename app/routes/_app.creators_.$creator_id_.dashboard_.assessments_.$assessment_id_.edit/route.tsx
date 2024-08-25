@@ -1,7 +1,26 @@
-import { LoaderFunction, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import React, { useContext, useMemo, useReducer, useState } from "react";
+import {
+  ActionFunction,
+  LoaderFunction,
+  json,
+  redirect,
+} from "@remix-run/node";
+import {
+  useLoaderData,
+  useNavigate,
+  useParams,
+  useSubmit,
+} from "@remix-run/react";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
+import { jsonWithError, jsonWithSuccess } from "remix-toast";
 import { QuestionAdditionModal } from "~/components/question-addition-modal";
+import { v3Config } from "~/config/base";
 import {
   ModalContext,
   ModalContextValueType,
@@ -12,23 +31,89 @@ import {
   QuestionAdditionProvider,
   questionAdditionContext,
 } from "~/contexts/question-addition.context";
-import { questionData } from "~/data/accessment";
 import {
   InitialModalState,
   ModalReducer,
   __showModal,
 } from "~/reducers/modal.reducer";
 import {
-  InitialQuestionAdditionState,
   QuestionAdditionReducer,
   QuestionAdditionStateType,
+  __clearDraft,
+  __reset,
   __trashQuestion,
 } from "~/reducers/question-addition.reducer";
+import { serializeAnswersForAction } from "~/serializers/answer.serializer";
+import {
+  serializeQuestionsForAction,
+  serializeTrashQuestionsForAction,
+} from "~/serializers/question.serializer";
+import { ServerPayloadType } from "~/server.types";
 import "~/styles/assessment-update.css";
-import { QuestionType, StateAnswerType, StateQuestionType } from "~/types";
+import {
+  ActionButtonType,
+  ActionResponseType,
+  AssessmentEditActionIntentType,
+  AssessmentEditActionType,
+  AssessmentEditPayloadType,
+  CourseExamType,
+  CourseLessonType,
+  CreatorAssessmentEditViewType,
+  GenericAssessmentType,
+  LoaderResponseType,
+  QuestionType,
+  StateAnswerType,
+  StateQuestionType,
+} from "~/types";
 
-export const loader: LoaderFunction = () => {
-  return json({ questions: questionData });
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const { assessment_id: assessmentID, creator_id: creatorID } = params;
+  const cookieHeader = request.headers.get("Cookie");
+  try {
+    if (!assessmentID || !creatorID)
+      throw json({ error: "no IDs in the request url" }, { status: 400 });
+    const requestQuestions: AxiosResponse<
+      ServerPayloadType<CreatorAssessmentEditViewType>,
+      any
+    > = await axios.get(
+      `${v3Config.apiUrl}/creators/${creatorID}/assessments/${assessmentID}/edit`,
+      {
+        headers: {
+          Cookie: cookieHeader,
+        },
+      }
+    );
+
+    if (requestQuestions.status !== 200) {
+      if (requestQuestions.status - 500 >= 0)
+        throw json(
+          {
+            data: null,
+            error: "an error occurred while fetching assessment data.",
+          } as LoaderResponseType<null>,
+          500
+        );
+      throw redirect("/auth?type=sign_in");
+    }
+    return json({
+      assessment: {
+        id: assessmentID,
+        questions: requestQuestions.data.payload?.questions || [],
+        assessmentType: requestQuestions.data.payload?.assessmentType,
+        parentID: requestQuestions.data.payload?.parentID,
+      } as CreatorAssessmentEditViewType,
+    });
+  } catch (err) {
+    if (err instanceof Response) {
+      console.error(err);
+      throw err;
+    }
+    console.error((err as Error).message);
+    throw json(
+      { error: (err as Error)?.message || "An unexpected error occurred" },
+      { status: 500, statusText: "Internal Server Error" }
+    );
+  }
 };
 const AddQuestionButton: React.FC = () => {
   const { modalDispatch } = useContext(ModalContext) as ModalContextValueType;
@@ -63,7 +148,7 @@ export const QuestionUpdateEntry: React.FC<{
   variant: "draft" | "full";
 }> = ({ question, variant }) => {
   const [isOpened, setOpened] = useState<boolean>(false);
-  const { questionAdditionDispatch } = useContext(
+  const { questionAdditionState, questionAdditionDispatch } = useContext(
     questionAdditionContext
   ) as QuestionAdditionContextValueType;
   return (
@@ -75,9 +160,9 @@ export const QuestionUpdateEntry: React.FC<{
         </div>
         <div className="entry_right">
           <span
-            onClick={() =>
-              questionAdditionDispatch(__trashQuestion({ id: question.id }))
-            }
+            onClick={() => {
+              questionAdditionDispatch(__trashQuestion({ id: question.id }));
+            }}
           >
             <svg>
               <use xlinkHref="#trash"></use>
@@ -115,7 +200,7 @@ export const QuestionUpdateEntry: React.FC<{
 
 export const AssessmentEditTable: React.FC = React.memo(() => {
   const loadedResult = useLoaderData<typeof loader>() as {
-    questions: QuestionType[];
+    assessment: CreatorAssessmentEditViewType;
   };
   const { questionAdditionState } = useContext(
     questionAdditionContext
@@ -128,7 +213,7 @@ export const AssessmentEditTable: React.FC = React.memo(() => {
 
   return (
     <ul className="assessment_table_body">
-      {loadedResult.questions
+      {loadedResult.assessment.questions
         .filter((question) => !trashed.has(question.id))
         .map((question) => {
           return (
@@ -150,17 +235,15 @@ export const AssessmentDraftEditTable: React.FC = React.memo(() => {
 
   return (
     <ul className="assessment_table_body">
-      {questionAdditionState.questions
-        .filter((e) => !e.loaded)
-        .map((question) => {
-          return (
-            <QuestionUpdateEntry
-              question={question}
-              key={"draft" + question.id}
-              variant={"draft"}
-            />
-          );
-        })}
+      {questionAdditionState.draftQuestions.map((question) => {
+        return (
+          <QuestionUpdateEntry
+            question={question}
+            key={"draft" + question.id}
+            variant={"draft"}
+          />
+        );
+      })}
     </ul>
   );
 });
@@ -180,10 +263,70 @@ export const AssessmentTableHead: React.FC = React.memo(() => {
 });
 
 export const AssessmentEditCtaArea: React.FC = React.memo(() => {
+  const navigate = useNavigate();
+  const { creator_id: creatorID, assessment_id: assessmentID } = useParams();
+  const { questionAdditionState } = useContext(
+    questionAdditionContext
+  ) as QuestionAdditionContextValueType;
+  const submit = useSubmit();
+  let loadedResult: { assessment: CreatorAssessmentEditViewType } =
+    useLoaderData<typeof loader>();
+  const { assessment } = loadedResult;
+
   return (
     <div className="assessment_edit_cta_area">
-      <button>cancel</button>
-      <button className="primary">save changes</button>
+      <button
+        onClick={() => {
+          navigate(`/creators/${creatorID}/dashboard/courses`, {
+            replace: true,
+          });
+        }}
+      >
+        cancel
+      </button>
+      <button
+        className="primary"
+        onClick={() => {
+          const questionDataList = serializeQuestionsForAction(
+            questionAdditionState.draftQuestions,
+            assessmentID as string,
+            assessment.assessmentType || "quiz"
+          );
+          const answerDataList = serializeAnswersForAction(
+            questionAdditionState.answers
+          );
+          const trashQuestionIDList = serializeTrashQuestionsForAction(
+            questionAdditionState.trashedQuestions
+          );
+          const payload = {
+            answerDataList,
+            questionDataList,
+            trashQuestionIDList,
+            parentEntityID: assessment.parentID,
+          } as AssessmentEditPayloadType;
+
+          const submitPayload: AssessmentEditActionType = {
+            intent:
+              assessment.assessmentType === "exam"
+                ? "UPDATE_EXAM"
+                : "UPDATE_QUIZ",
+            payload,
+          };
+
+          submit(submitPayload as any, {
+            method: "post",
+            action: "./",
+            encType: "application/json",
+            navigate: false,
+            fetcherKey: "assessment-update"
+          });
+
+          // window?.location.reload(); // BUGFIX: for some reasons, revalidation is not triggering context reset. so i just rawdog it. let me know if you find a better way
+          // in hind signt . this is anti-pattern please re-write
+        }}
+      >
+        save changes
+      </button>
     </div>
   );
 });
@@ -212,19 +355,21 @@ export const AssessmentTableNavigation: React.FC = React.memo(() => {
   );
 });
 
-export const AssessmentEditArea: React.FC = React.memo(() => {
+export const AssessmentEditArea: React.FC = () => {
   const loadedResult = useLoaderData<typeof loader>() as {
-    questions: QuestionType[];
+    assessment: CreatorAssessmentEditViewType;
   };
+  console.log("edit area rendering...");
+
   const transformedQuestions: StateQuestionType[] = useMemo(
     () =>
-      loadedResult.questions.map((el, idx) => {
+      loadedResult.assessment.questions.map((el, idx) => {
         const { id, points, question } = el;
         return {
-          position: idx,
+          position: +id,
           question,
           points,
-          id: id,
+          id,
           loaded: true,
         } as StateQuestionType;
       }),
@@ -233,7 +378,7 @@ export const AssessmentEditArea: React.FC = React.memo(() => {
 
   const transformedAnswers: StateAnswerType[] = useMemo(
     () =>
-      loadedResult.questions.reduce((acc, curr) => {
+      loadedResult.assessment.questions.reduce((acc, curr) => {
         const answerArr = curr.options.map((el) => {
           const { correct, id, text } = el;
           return {
@@ -241,6 +386,7 @@ export const AssessmentEditArea: React.FC = React.memo(() => {
             id,
             text,
             questionPosition: +curr.id,
+            loaded: true,
           } as StateAnswerType;
         });
         let resAcc = [...acc, ...(answerArr as StateAnswerType[])];
@@ -255,8 +401,10 @@ export const AssessmentEditArea: React.FC = React.memo(() => {
       answers: transformedAnswers,
       questions: transformedQuestions,
       trashedQuestions: [],
+      draftQuestions: [],
     } as QuestionAdditionStateType
   );
+
   const questionAdditionContextValue = useMemo(
     () => ({
       questionAdditionState: questionState,
@@ -265,6 +413,21 @@ export const AssessmentEditArea: React.FC = React.memo(() => {
     [questionState, questionDispatch]
   );
 
+  useEffect(() => {
+    questionDispatch(
+      __reset({
+        answers: transformedAnswers,
+        questions: transformedQuestions,
+        trashedQuestions: [],
+        draftQuestions: [],
+      } as QuestionAdditionStateType)
+    );
+  }, [loadedResult, transformedAnswers, transformedQuestions]);
+
+  // BUGFIX: there's a mismatch here. fix it
+  console.log("transformed questions are ", transformedQuestions);
+  console.log("while loaded questions are ", loadedResult.assessment.questions);
+  console.log("and questions state is ", questionState);
 
   return (
     <div className="edit_area">
@@ -280,7 +443,7 @@ export const AssessmentEditArea: React.FC = React.memo(() => {
       <AssessmentTableNavigation />
     </div>
   );
-});
+};
 
 export const AssessmentEditPage: React.FC = () => {
   const [modalState, modalDispatch] = useReducer(
@@ -304,3 +467,45 @@ export const AssessmentEditPage: React.FC = () => {
 };
 
 export default AssessmentEditPage;
+
+export const action: ActionFunction = async ({ params, request }) => {
+  const reqJson = (await request.json()) as ActionButtonType<object>;
+  const { creator_id: creatorID, assessment_id: assessmentID } = params;
+  const cookieHeader = request.headers.get("Cookie");
+  let requestURL: string;
+  let actionRequest: AxiosResponse<ServerPayloadType<any>, any>;
+  try {
+    switch (reqJson.intent as AssessmentEditActionIntentType) {
+      case "UPDATE_EXAM":
+      case "UPDATE_QUIZ": {
+        let payloadJson: AssessmentEditPayloadType =
+          reqJson.payload as AssessmentEditPayloadType;
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/assessments/${assessmentID}/`;
+        actionRequest = await axios.put(requestURL, payloadJson, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 201) break;
+        return jsonWithSuccess(null, actionRequest.data.message || "assessment updated successfully!")
+      }
+    }
+    if (actionRequest.status - 500 >= 0)
+      throw json({ error: "something went wrong" }, 500);
+    else
+      return json({
+        data: null,
+        error: `couldn't proceed with action. REASON: ${actionRequest.data.message}`,
+      } as ActionResponseType<null>);
+  } catch (err) {
+    if (err instanceof AxiosError)
+      return jsonWithError(null, "could not proceed with action! REASON: " + (`${err.response?.data.message}` || "unknown"))
+    throw json(
+      {
+        error:
+          err instanceof Error ? err.message : "could not proceed with action",
+      },
+      500
+    );
+  }
+};
