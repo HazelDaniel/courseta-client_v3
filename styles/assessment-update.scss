@@ -180,3 +180,24 @@ h3 {
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+.assessment_table_body .assessment_table_entry {
+  .entry_main {
+    p {
+      &:last-of-type {
+        margin-left: 4rem;
+      }
+    }
+  }
+  .entry_detail {
+    overflow: hidden;
+    .answer_detail {
+      width: 80vw !important;
+      min-width: unset !important;
+      text-wrap: wrap;
+    }
+  }
+}
+}

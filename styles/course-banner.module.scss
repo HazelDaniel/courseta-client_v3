@@ -100,3 +100,11 @@
     color: var(--bg-color);
   }
 }
+
+// MOBILE_VIEW
+@media screen and (max-width: 800px) {
+  .course_banner_styled {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

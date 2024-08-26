@@ -222,3 +222,11 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 800px) {
+  .average_score_area {
+    flex-direction: column;
+
+  }
+}

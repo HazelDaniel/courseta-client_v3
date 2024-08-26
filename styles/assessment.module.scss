@@ -236,3 +236,114 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .options_area {
+    padding: 2rem 1rem;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+
+    .option {
+      height: max-content;
+      padding: 1rem 0;
+      gap: 1rem;
+
+      label {
+        font-size: 1.6rem;
+      }
+    }
+  }
+
+  .course_assessment_area_styled {
+    width: 100%;
+    padding: var(--padding_M);
+    gap: 3rem;
+
+    .accessment_cta_area {
+      height: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+
+      button {
+        width: calc(50% - 0.5rem);
+        height: 4rem;
+        font-size: 1rem;
+
+        span {
+          margin-right: var(--margin_XS);
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+      }
+    }
+
+    .accessment_countdown_area {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2rem;
+
+      .countdown_area_left > p {
+        font-size: 2.4rem;
+      }
+
+      .countdown_area_right {
+        width: 100%;
+
+        .countdown_elapsed_area {
+          width: 100%;
+          flex-wrap: wrap;
+          height: auto;
+          gap: 1rem;
+          li {
+            font-size: 1.3rem;
+
+            &:first-of-type {
+              width: 100%;
+            }
+
+            span {
+              font-size: 1.6rem;
+            }
+          }
+        }
+      }
+    }
+
+    .accessment_description_area {
+      gap: 3rem;
+      margin-top: var(--margin_M);
+
+      p {
+        font-size: 1.8rem;
+      }
+    }
+
+    form {
+      gap: 3rem;
+    }
+
+    .accessment_wrapper {
+      gap: 2rem;
+      margin-bottom: var(--padding_M);
+
+      .no_content {
+        font-size: 2.4rem;
+      }
+
+      & > span {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .quiz_cta_area {
+    button {
+      height: 4.5rem;
+      width: 100%;
+      font-size: 1.8rem;
+    }
+  }
+}

@@ -174,3 +174,85 @@
     }
   }
 }
+
+// MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .header_searchbox_styled {
+    width: 100%;
+    height: 4rem;
+    
+    & > input {
+      width: 75%;
+      padding: 0.8rem;
+    }
+    
+    .search_icon {
+      width: 25%;
+      
+      svg {
+        transform: scale(0.5);
+      }
+      
+      input:focus-visible + svg,
+      input:focus + svg {
+        transform: scale(0.35);
+      }
+    }
+  }
+  
+  .header_styled {
+    height: 9rem;
+    width: 100%;
+    padding: var(--padding_S);
+    border-radius: 0;
+    
+    &.shrink {
+      width: 100%;
+      margin-left: 0;
+    }
+    
+    .header_left {
+      height: 4rem;
+    }
+    
+    .header_right {
+      width: auto;
+      margin-right: var(--margin_M);
+      height: 4rem;
+      
+      .notif_icon_area {
+        width: 4rem;
+        min-width: 6rem;
+        
+        .notif_icon_shadow {
+          width: 4rem;
+          height: 4rem;
+        }
+        
+        svg {
+          width: 4rem;
+          height: 4rem;
+          transform: scale(0.7);
+        }
+      }
+      
+      .profile_summary_area {
+        span {
+          font-size: 1.6rem;
+          margin-left: 2rem;
+          margin-right: var(--margin_XS);
+        }
+        
+        .profile_image_div {
+          min-width: 4rem;
+          margin-left: 2rem;
+          
+          img {
+            width: 4rem;
+            height: 4rem;
+          }
+        }
+      }
+    }
+  }
+}

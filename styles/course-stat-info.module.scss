@@ -299,3 +299,12 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 800px) {
+  .creator_stat_info_area {
+    width: 97% !important;
+    margin: 0 auto;
+    margin-right: 1rem;
+  }
+}

@@ -94,3 +94,31 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 800px) {
+  .quiz_addition_body {
+    flex-direction: column !important;
+    width: 99vw !important;
+    .input_form {
+      --input-wrapper-width-here: 80rem;
+      --input-child-height-here: 5rem;
+      min-width: 80vw;
+      width: 80vw;
+      margin-left: 0rem !important;
+      margin-right: auto;
+      padding: unset !important;
+      gap: unset !important;
+      .input_form_bottom {
+        width: 100vw;
+        margin: unset;
+        .input_wrapper {
+          width: 90vw !important;
+          max-width: unset;
+          margin-right: 2rem;
+          left: 0;
+        }
+      }
+    }
+  }
+}

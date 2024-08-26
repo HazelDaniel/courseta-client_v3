@@ -84,3 +84,14 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .content_addition_box form .radio_options {
+    gap: unset;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-bottom: 2rem;
+  }
+}

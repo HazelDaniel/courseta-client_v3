@@ -220,3 +220,109 @@
     }
   }
 }
+
+// MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .course_info_styled {
+    padding-left: var(--padding_S);
+    margin-bottom: 8rem;
+
+    .course_desc_title {
+      font-size: 2.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .course_desc {
+      font-size: 1.6rem;
+      width: 100%;
+      margin-bottom: var(--margin_L);
+    }
+
+    .course_info_area {
+      width: 100%;
+      gap: 2rem;
+
+      .area_left {
+        gap: 2rem;
+
+        .horizontal_file_tab {
+          height: auto;
+          gap: 1rem;
+          padding-bottom: 1rem;
+
+          li {
+            width: calc(50% - 0.5rem);
+            height: 4rem;
+
+            a {
+              font-size: 1.6rem;
+            }
+          }
+        }
+
+        .course_outline_area {
+          padding: 1rem;
+          gap: 2rem;
+
+          .coa_top {
+            flex-direction: column;
+            height: auto;
+            align-items: flex-start;
+
+            &_left {
+              width: 6rem;
+              height: 6rem;
+
+              div {
+                width: 6rem;
+                height: 6rem;
+
+                span {
+                  width: 1.5rem;
+                  height: 1.5rem;
+                }
+              }
+            }
+
+            &_right {
+              width: 100%;
+
+              .reviews_pagination_area {
+                position: static;
+                width: 100%;
+                justify-content: flex-start;
+                margin-top: 1rem;
+
+                p {
+                  font-size: 1.6rem;
+                }
+
+                .reviews_pagination {
+                  width: auto;
+                  margin-left: auto;
+                }
+              }
+
+              h2 {
+                font-size: 2rem;
+              }
+
+              .course_outline_stat_div {
+                flex-wrap: wrap;
+                p {
+                  font-size: 1.2rem;
+                }
+              }
+            }
+          }
+
+          .coa_bottom {
+            margin-bottom: 4rem;
+            padding-bottom: var(--padding_S);
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+}

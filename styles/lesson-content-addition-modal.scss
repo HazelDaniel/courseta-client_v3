@@ -80,3 +80,15 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .lesson_content_addition_modal {
+    margin-top: 5rem;
+    width: 100%;
+    padding: var(--padding_S);
+    &_middle {
+      margin: unset;
+    }
+  }
+}

@@ -10,3 +10,36 @@
   flex-basis: 50%;
   justify-content: space-evenly;
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 800px) {
+.dashboard_form_input_area {
+  width: 100%;
+  overflow: hidden;
+  min-height: 180vh !important;
+  padding: 7rem 0;
+
+
+  .input_form {
+    --input-wrapper-width-here: 80rem;
+    --input-child-height-here: 5rem;
+    gap: 3rem;
+    min-width: 80vw;
+    width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+    &.one-dual-button {
+      width: 85%;
+      .dual_buttons {
+        flex-wrap: wrap;
+        height: 100%;
+      }
+    }
+
+    .input_form_bottom .input_wrapper {
+      width: 100%;
+    }
+  }
+
+}
+}

@@ -82,3 +82,11 @@
   }
 
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+.wide_course_card_styled {
+  width: 90%;
+  margin: 0 auto;
+}
+}

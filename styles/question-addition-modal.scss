@@ -130,3 +130,29 @@
 .input_form {
   @extend ._input_form;
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .question_addition_modal {
+    margin-top: 5rem;
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    .input_form {
+      width: 90vw;
+      max-width: 100vw;
+      overflow: hidden !important;
+      min-width: 80vw !important;
+      min-height: 20rem;
+      margin-top: 2rem;
+      &_top {
+        display: none;
+      }
+      .input_wrapper {
+        min-width: 90vw !important;
+        width: 80%;
+        max-width: 80vw !important;
+      }
+    }
+  }
+}

@@ -63,3 +63,32 @@
     --icon-color-here: var(--text-color);
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .user_courses_styled {
+    @include adjustTopMargin();
+    padding: var(--padding_XS) var(--padding_S);
+    & > h2 {
+      font-size: 1.8rem;
+      margin-left: 0;
+      text-align: center;
+      margin-bottom: var(--margin_M);
+    }
+    
+    .courses_top {
+      gap: 3rem;
+    }
+    
+    .courses_bottom {
+      gap: 10rem;
+      
+      .courses_list_container {
+        grid-template-columns: 90vw;
+        grid-auto-rows: 40rem;
+      }
+    }
+    
+
+  }
+}

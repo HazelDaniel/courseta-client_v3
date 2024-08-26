@@ -409,3 +409,111 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+  .interaction_accordion {
+    overflow-x: auto !important;
+    .accordion_section {
+      .accordion_head {
+        background-color: var(--bg-color);
+        justify-content: flex-start;
+        border-bottom-right-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        h3 {
+          font-size: 1.8rem !important;
+          margin-left: 1rem !important;
+          position: relative;
+          padding: unset !important;
+          &::before {
+            position: absolute;
+            content: "...";
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            display: block;
+            right: 0;
+          }
+        }
+        p {
+          font-size: 1.2rem !important;
+        }
+        span {
+          cursor: pointer;
+          &.course_item_add_cta {
+            margin-right: 5rem !important;
+            z-index: 2;
+            position: relative !important;
+            &:has(.item_addition_prompt_box.hidden) {
+              z-index: 0;
+            }
+            .item_addition_prompt_box {
+              top: 590% !important;
+              left: -970% !important;
+              width: 35rem !important;
+              z-index: 3 !important;
+            }
+          }
+        }
+      }
+      .accordion_details {
+        overflow-x: auto !important;
+        z-index: 1 !important;
+        li {
+          width: 120% !important;
+          padding: 0 1rem;
+          &:last-of-type {
+            padding: 0 5rem;
+            .accordion_content_badge {
+              display: none !important;
+            }
+          }
+          p {
+            font-size: 1.5rem !important;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            width: 50%;
+            min-width: 40%;
+          }
+          .accordion_content_badge {
+            p {
+              font-size: 1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .course_creation_area .input_form {
+    --input-wrapper-width-here: 80rem;
+    --input-child-height-here: 5rem;
+    gap: 3rem;
+    min-width: 80vw;
+    width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+    &:first-of-type {
+      margin-bottom: unset;
+    }
+
+    .input_form_bottom .input_wrapper {
+      width: 100%;
+    }
+  }
+
+  .lesson_addition_top {
+    .input_form {
+      width: 90vw;
+      max-width: 100vw;
+      overflow: hidden !important;
+      min-width: 90vw !important;
+      .input_wrapper {
+        min-width: 90vw !important;
+        width: 80%;
+        max-width: 80vw !important;
+      }
+    }
+  }
+}

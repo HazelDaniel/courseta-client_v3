@@ -98,3 +98,14 @@
     }
   }
 }
+
+//MOBILE_VIEW
+@media screen and (max-width: 767px) {
+
+.small_course_card_styled {
+  max-width: unset !important;
+  .course_card_small {
+    width: 100%;
+  }
+}
+}
