@@ -67,6 +67,10 @@ export interface SessionUserType {
   role: UserRoleType;
 }
 
+export interface AuthUserType extends SessionUserType {
+  avatarMeta: ImageMetaType;
+}
+
 export interface CreatorUserType extends UserType {
   role: "creator";
   creatorPass?: string;
