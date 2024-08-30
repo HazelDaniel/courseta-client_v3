@@ -49,14 +49,44 @@ import { serializeSubmissionStateForAction } from "~/serializers/submission.seri
 export const CourseSideTab: React.FC<{
   course: CourseDetailViewType | null;
 }> = ({ course }) => {
+  const [expanded, expand] = useState(false);
   if (!course) {
     return null;
   }
 
   return (
-    <aside className={styles.course_side_tab_styled}>
+    <aside 
+      className={`${
+        !expanded
+          ? styles.course_side_tab_styled
+          : styles.course_side_tab_styled + " " + styles.expanded
+      }`}
+    >
       <Logo />
+      <div
+        className={expanded ? styles["course_side_tab_toggler"] + " " + styles.flipped :  styles["course_side_tab_toggler"]}
+        onClick={() => expand((prev) => !prev)}
+      >
+        <svg viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M15 8L8 1L1 8"
+            stroke="#CAC8C8"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
 
+        <svg viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M1 1L8 8L15 1"
+            stroke="#CAC8C8"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
       <div className={styles.course_side_tab_body}>
         <p>{course.title}</p>
         <CourseAccordion variant="details" course={course} />
