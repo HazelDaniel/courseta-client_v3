@@ -1,5 +1,6 @@
-import { ActionFunction } from "@remix-run/node";
-import { useOutletContext, useSubmit } from "@remix-run/react";
+import { ActionFunction, json, redirect } from "@remix-run/node";
+import { useNavigate, useOutletContext, useSubmit } from "@remix-run/react";
+import axios, { AxiosResponse } from "axios";
 import React, {
   ChangeEvent,
   useCallback,
@@ -8,11 +9,14 @@ import React, {
   useState,
 } from "react";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
+import { v3Config } from "~/config/base";
 import { ModalProvider } from "~/contexts/modal.context";
 import { InitialModalState, ModalReducer } from "~/reducers/modal.reducer";
 import { serializeCourseCreationState } from "~/serializers/course.serializer";
+import { ServerPayloadType } from "~/server.types";
 import "~/styles/course-creation-page.css";
 import {
+  ActionResponseType,
   CourseCreationPayloadType,
   CourseEditStateType,
   DashboardCustomInputType,
@@ -21,7 +25,7 @@ import {
   DefaultFormDataType,
 } from "~/types";
 
-export const courseTitleUpdateFormData: DashboardCustomInputType = {
+export const courseTitleUpdateFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "update_title",
   form: {
@@ -34,20 +38,21 @@ export const courseTitleUpdateFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const courseDescriptionUpdateFormData: DashboardCustomInputType = {
-  heading: "",
-  namespace: "update_description",
-  form: {
-    intent: "update_description",
-    actions: ["/save"],
-    variant: "none",
-  },
-  inputs: [{ name: "description", title: "description", type: "textarea" }],
-  buttons: [],
-  images: [],
-};
+export const courseDescriptionUpdateFormData: DashboardCustomInputType<string> =
+  {
+    heading: "",
+    namespace: "update_description",
+    form: {
+      intent: "update_description",
+      actions: ["/save"],
+      variant: "none",
+    },
+    inputs: [{ name: "description", title: "description", type: "textarea" }],
+    buttons: [],
+    images: [],
+  };
 
-export const courseImageUpdateFormData: DashboardCustomInputType = {
+export const courseImageUpdateFormData: DashboardCustomInputType<string> = {
   heading: "update_image",
   namespace: "update_image",
   form: {
@@ -60,7 +65,7 @@ export const courseImageUpdateFormData: DashboardCustomInputType = {
   images: [{ url: "/images/computer-networks.jpg", ref: {} }],
 };
 
-export const courseTagsUpdateFormData: DashboardCustomInputType = {
+export const courseTagsUpdateFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "update_tags",
   form: {
@@ -86,6 +91,7 @@ export const CourseCreationArea: React.FC = React.memo(() => {
   >([null, null]);
 
   const submit = useSubmit();
+  const navigate = useNavigate();
 
   const courseCreationStateHandler = useCallback(
     (
@@ -154,7 +160,11 @@ export const CourseCreationArea: React.FC = React.memo(() => {
       </div>
 
       <div className="course_creation_cta_area">
-        <button>cancel</button>
+        <button
+          onClick={() => navigate("../", { relative: "path", replace: true })}
+        >
+          cancel
+        </button>
         <button
           className="primary"
           onClick={() => {
@@ -167,6 +177,7 @@ export const CourseCreationArea: React.FC = React.memo(() => {
               method: "post",
               encType: "application/json",
               action: "./",
+              navigate: false,
             });
           }}
         >
@@ -197,8 +208,40 @@ export const CourseCreationPage: React.FC = () => {
 export default CourseCreationPage;
 
 export const action: ActionFunction = async ({ params, request }) => {
-  const reqJson = await request.json();
-  console.log("hitting the action for the course creation route");
-  console.log("request form data is : ", reqJson);
-  return {};
+  try {
+    const { creator_id: creatorID } = params;
+    const reqJson: CourseCreationPayloadType = await request.json();
+    const cookieHeader = request.headers.get("Cookie");
+    let creationRequestURL: string = `${v3Config.apiUrl}/creators/${creatorID}/courses`;
+    const creationRequest: AxiosResponse<
+      ServerPayloadType<number>,
+      any
+    > = await axios.post(creationRequestURL, reqJson, {
+      headers: {
+        Cookie: cookieHeader,
+      },
+    });
+
+    if (creationRequest.status !== 201) {
+      if (creationRequest.status - 500 >= 0)
+        throw json(
+          { error: "something went wrong while creating the course" },
+          500
+        );
+      return json({
+        data: null,
+        error: `could not create your course.`,
+      } as ActionResponseType<null>);
+    }
+    throw redirect(
+      `/creators/${creatorID}/dashboard/courses/${creationRequest.data.payload}/edit`
+    );
+  } catch (err) {
+    if (err instanceof Response && err.status >= 300 && err.status < 400)
+      throw err;
+    throw json(
+      { error: err instanceof Error ? err.message : "could not create course" },
+      500
+    );
+  }
 };

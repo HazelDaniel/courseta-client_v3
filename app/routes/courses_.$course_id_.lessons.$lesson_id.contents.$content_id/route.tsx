@@ -2,6 +2,8 @@ import { LoaderFunction, json } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useLoaderData,
+  useOutletContext,
+  useParams,
   useRouteError,
   useRouteLoaderData,
 } from "@remix-run/react";
@@ -16,14 +18,10 @@ export const loader: LoaderFunction = ({ params }) => {
 };
 
 export const LessonContentPage: React.FC = () => {
-  const res = useRouteLoaderData(
-    "routes/courses_.$course_id_.lessons.$lesson_id.contents"
-  ) as { lesson: CourseLessonType; contentID: string };
-
-  const resContent = useLoaderData<typeof loader>();
-
+  const { content_id: contentID, lesson_id: lessonID } = useParams();
+  const res = useOutletContext() as { lesson: CourseLessonType };
   return (
-    <LessonContentBody lesson={res.lesson} contentID={resContent.contentID} />
+    <LessonContentBody lesson={res.lesson} contentID={+(contentID as string)} />
   );
 };
 
@@ -37,7 +35,11 @@ export const ErrorBoundary: React.FC = () => {
         return <h2>error fetching lesson content. {error.data.error}</h2>;
     }
   } else {
-    return <h2>something went wrong! {(error as Error)?.message}</h2>;
+    return (
+      <h2>
+        something went wrong! {(error as Error)?.message} {error as any}
+      </h2>
+    );
   }
 };
 

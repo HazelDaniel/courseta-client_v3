@@ -1,47 +1,22 @@
 import { LoaderFunction } from "@remix-run/node";
-import { Outlet, json } from "@remix-run/react";
+import { Outlet, json, useParams, useRouteLoaderData } from "@remix-run/react";
+import { NotFound } from "~/components/not-found";
 import { courseDataDetailed } from "~/data/course-list";
-import { CourseDetailType, CourseLessonType } from "~/types";
+import { CourseDetailType, CourseLessonType, CourseLessonType2 } from "~/types";
 
 export const loader: LoaderFunction = ({ params }) => {
-  const linkedCourseID = params["course_id"];
-  const linkedLessonID = params["lesson_id"];
-  const contentID = params["content_id"] || "0";
-  let course: CourseDetailType;
-  let lesson: Partial<CourseLessonType>;
-
-  if (!linkedCourseID) {
-    throw json(
-      { error: "no course id provided for contents!" },
-      { status: 401 }
-    );
-  }
-  if (!linkedLessonID) {
-    throw json(
-      { error: "no lesson id provided for contents!" },
-      { status: 401 }
-    );
-  }
-
-  course = courseDataDetailed.filter(
-    (course) => course.id === +linkedCourseID
-  )[0] as CourseDetailType;
-
-  lesson = course.lessons.filter(
-    (lesson) => lesson.id === +linkedLessonID
-  )[0] as CourseLessonType;
-
-  if (!course) {
-    throw json({ error: "no course exists for contents!" }, { status: 404 });
-  }
-  if (!lesson) {
-    throw json({ error: "no lesson exists for contents!" }, { status: 404 });
-  }
-
-  return json({ lesson, contentID });
+  return json({});
 };
 export const LessonContentsPage: React.FC = () => {
-  return <Outlet />;
+  const { lesson_id: lessonID } = useParams();
+  const loadedData = useRouteLoaderData(
+    "routes/courses_.$course_id_.lessons.$lesson_id"
+  ) as { lessons: CourseLessonType2[] };
+  const lesson = loadedData.lessons.find(
+    (el) => el.id.toString() === lessonID
+  );
+  if (!lesson) return <NotFound />;
+  return <Outlet context={{ lesson }} />;
 };
 
 export default LessonContentsPage;

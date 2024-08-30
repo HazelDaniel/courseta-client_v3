@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import {
   Await,
   Form,
@@ -20,6 +20,7 @@ import {
 import React, {
   ChangeEvent,
   Suspense,
+  lazy,
   useCallback,
   useContext,
   useEffect,
@@ -30,21 +31,24 @@ import React, {
 } from "react";
 import { CourseContentIcon } from "~/components/course-accordion";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
-import { LessonContentAdditionModal } from "~/components/lesson-content-addition-modal";
 import { LessonItemAdditionBox } from "~/components/lesson-item-addition-box";
-import { courseData, courseDataDetailed } from "~/data/course-list";
+import { courseDataDetailed } from "~/data/course-list";
 import "~/styles/course-creation-page.css";
 import "~/styles/course-edit.css";
 
 import {
   ActionButtonType,
+  ActionResponseType,
   CourseDetailType,
   CourseEditActionIntentType,
+  CourseEditPayloadType,
   CourseEditStateType,
   CourseEntryType,
+  CourseExamType2,
   CourseInfoEditActionType,
   CourseItemDeletionActionType,
   CourseLessonType,
+  CourseLessonType2,
   CreatorProfileType,
   DashboardCustomInputType,
   DefaultCourseFormDataType,
@@ -52,6 +56,9 @@ import {
   DefaultFormDataType,
   LessonAdditionActionType,
   LessonAdditionPayloadType,
+  LessonContentAdditionPayloadType,
+  LessonContentCreationPayloadType,
+  LoaderResponseType,
 } from "~/types";
 import {
   InitialModalState,
@@ -69,6 +76,7 @@ import {
   LessonUpdateReducer,
   __addContent,
   __addQuiz,
+  __reset,
   __updatePosition,
 } from "~/reducers/lesson-update.reducer";
 import {
@@ -81,6 +89,7 @@ import {
   LessonCreationReducer,
   __addLesson,
   __updateTitle,
+  __reset as __creationReset,
 } from "~/reducers/lesson-creation.reducer";
 import {
   LessonCreationContext,
@@ -89,14 +98,17 @@ import {
 } from "~/contexts/lesson-creation.context";
 import { useDebounce } from "~/hooks/use-debounce";
 import { NotFound } from "~/components/not-found";
-import { FAKE_REQUEST_DELAY } from "~/config/base";
+import { FAKE_REQUEST_DELAY, v3Config } from "~/config/base";
 import { NoContent } from "~/components/no-content";
 import { serializeCourseEditState } from "~/serializers/course.serializer";
 import { serializeLessonStateForAction } from "~/serializers/lesson.serializer";
 import { serializeLessonContentForAction } from "~/serializers/lesson-content.serializer";
 import { serializeLessonQuizForAction } from "~/serializers/quiz.serializer";
+import { CreatorCourseEditViewType, ServerPayloadType } from "~/server.types";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { jsonWithError, jsonWithSuccess } from "remix-toast";
 
-export const courseTitleUpdateFormData: DashboardCustomInputType = {
+export const courseTitleUpdateFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "update_title",
   form: {
@@ -109,20 +121,21 @@ export const courseTitleUpdateFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const courseDescriptionUpdateFormData: DashboardCustomInputType = {
-  heading: "",
-  namespace: "update_description",
-  form: {
-    intent: "update_description",
-    actions: ["/save"],
-    variant: "none",
-  },
-  inputs: [{ name: "description", title: "description", type: "textarea" }],
-  buttons: [],
-  images: [],
-};
+export const courseDescriptionUpdateFormData: DashboardCustomInputType<string> =
+  {
+    heading: "",
+    namespace: "update_description",
+    form: {
+      intent: "update_description",
+      actions: ["/save"],
+      variant: "none",
+    },
+    inputs: [{ name: "description", title: "description", type: "textarea" }],
+    buttons: [],
+    images: [],
+  };
 
-export const courseImageUpdateFormData: DashboardCustomInputType = {
+export const courseImageUpdateFormData: DashboardCustomInputType<string> = {
   heading: "update_image",
   namespace: "update_image",
   form: {
@@ -135,7 +148,7 @@ export const courseImageUpdateFormData: DashboardCustomInputType = {
   images: [{ url: "", ref: {} }],
 };
 
-export const courseTagsUpdateFormData: DashboardCustomInputType = {
+export const courseTagsUpdateFormData: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "update_tags",
   form: {
@@ -150,7 +163,7 @@ export const courseTagsUpdateFormData: DashboardCustomInputType = {
   images: [],
 };
 
-export const courseLessonTitleCreateForm: DashboardCustomInputType = {
+export const courseLessonTitleCreateForm: DashboardCustomInputType<string> = {
   heading: "",
   namespace: "add_lesson_title",
   form: {
@@ -169,54 +182,86 @@ export const courseLessonTitleCreateForm: DashboardCustomInputType = {
   images: [],
 };
 
-const getLessons: (
-  courseID: number
-) => Promise<CourseDetailType["lessons"]> = async (courseID) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const equivCourse = courseDataDetailed.find((el) => el.id === courseID);
-      if (equivCourse) resolve(equivCourse.lessons);
-      else reject(new Error("failed to get lessons!"));
-    }, FAKE_REQUEST_DELAY);
-  });
-};
 
-const getCurrentCourse: (courseID: number) => Promise<CourseEntryType> = async (
-  courseID
-) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const equivCourse = courseData.find((el) => el.id === courseID);
-      if (equivCourse) resolve(equivCourse);
-      else reject(new Error("failed to get course!"));
-    }, FAKE_REQUEST_DELAY);
-  });
-};
 
-export const loader: LoaderFunction = async ({ params }) => {
-  const courseID = params["course_id"];
-  if (!courseID) {
-    throw json({ error: "Course ID is required" }, { status: 400 });
-  }
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const { creator_id: creatorID, course_id: courseID } = params;
+  const cookieHeader = request.headers.get("Cookie");
 
   try {
-    const coursePromise = getCurrentCourse(+courseID).catch((error) => null);
+    if (!courseID || !creatorID)
+      throw json({ error: "no IDs in the request url" }, { status: 400 });
+    const coursePromise: Promise<
+      AxiosResponse<ServerPayloadType<CreatorCourseEditViewType>, any>
+    > = axios.get(
+      `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/edit`,
+      {
+        headers: {
+          Cookie: cookieHeader,
+        },
+      }
+    );
 
-    const lessonsPromise = getLessons(+courseID).catch((error) => null);
+    const examPromise: Promise<
+      AxiosResponse<
+        ServerPayloadType<Omit<CourseExamType2, "description">>,
+        any
+      >
+    > = axios.get(
+      `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/exam/edit`,
+      {
+        headers: {
+          Cookie: cookieHeader,
+        },
+      }
+    );
 
-    const allPromises = await Promise.all([coursePromise, lessonsPromise]);
-    let [course, lessons] = allPromises;
-    if (course === null) {
+    const lessonsPromise: Promise<
+      AxiosResponse<ServerPayloadType<CourseLessonType2[]>, any>
+    > = axios.get(
+      `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/lessons/edit`,
+      {
+        headers: {
+          Cookie: cookieHeader,
+        },
+      }
+    );
+
+    const allPromises = await Promise.all([
+      coursePromise,
+      lessonsPromise,
+      examPromise,
+    ]);
+    let [course, lessons, exam] = allPromises;
+    const resExam: Omit<CourseExamType2, "description"> | null | undefined =
+      exam.status !== 200 ? null : exam.data.payload;
+
+    if (course.status !== 200) {
+      if (course.status - 500 >= 0)
+        throw json(
+          {
+            data: null,
+            error: "an error occurred while fetching course data.",
+          } as LoaderResponseType<null>,
+          500
+        );
+      throw redirect("/auth?type=sign_in");
+    }
+    if (!course.data.user || !lessons.data.user)
+      throw redirect("/auth?type=sign_in");
+
+    if (course.data.payload === null) {
       throw json(
         { error: "Course not found!" },
         { status: 404, statusText: "Not Found" }
       );
     }
-    if (lessons === null) lessons = [];
-
-    return json({ course, lessons });
+    return json({
+      course: course.data.payload,
+      lessons: lessons.data.payload,
+      exam: resExam,
+    });
   } catch (err) {
-    console.error("Loader error:", err);
     if (err instanceof Response) {
       throw err;
     }
@@ -227,12 +272,24 @@ export const loader: LoaderFunction = async ({ params }) => {
   }
 };
 
+const LessonContentAdditionModal = lazy(
+  () => import("~/components/lesson-content-addition-modal")
+);
+
 export const AccordionPromptbox: React.FC<{ position: number }> = React.memo(
   ({ position }) => {
+    const { lessons } = useLoaderData<typeof loader>() as {
+      lessons: CourseLessonType2[];
+    };
     const { modalState, modalDispatch } = useContext(
       ModalContext
     ) as ModalContextValueType;
-    const [_1, setCurrentParams] = useSearchParams();
+    const checkLessonQuizPresent = useCallback(() => {
+      console.log("are the lessons being calculated again?");
+      const resultLesson = lessons.find((el) => el.id === position);
+      if (!resultLesson) return true;
+      return !!resultLesson.quiz;
+    }, []);
     const navigate = useNavigate();
     return (
       <div
@@ -265,8 +322,13 @@ export const AccordionPromptbox: React.FC<{ position: number }> = React.memo(
             Content
           </button>
           <button
-            onClick={() =>
-              navigate("../lessons/0/quizzes/new", { relative: "path" })
+            disabled={checkLessonQuizPresent()}
+            onClick={() =>{
+              if (checkLessonQuizPresent()) return;
+              navigate(`../lessons/${position}/quizzes/new`, {
+                relative: "path",
+              })
+            }
             }
           >
             Quiz
@@ -302,14 +364,35 @@ const EditAccordionHead: React.FC<{
   detailVisible: boolean;
   setDetailVisible: React.Dispatch<React.SetStateAction<boolean>>;
   position: number;
-  lesson: CourseLessonType;
+  lesson: CourseLessonType2;
 }> = React.memo(({ detailVisible, setDetailVisible, position, lesson }) => {
+  const submit = useSubmit();
   return (
     <div className="accordion_head">
       <h3>{lesson.title}</h3>
       <p>{lesson.contents.length} contents</p>
 
       <EditAccordionButtonToggler position={position} />
+
+      <span
+        onClick={() => {
+          //TODO: this deletes the corresponding lesson
+          const payload: CourseItemDeletionActionType = {
+            intent: "DELETE_LESSON",
+            payload: { lessonID: lesson.id },
+          };
+          submit(payload as any, {
+            method: "post",
+            action: "./",
+            encType: "application/json",
+            navigate: false,
+          });
+        }}
+      >
+        <svg className={"flipped"}>
+          <use xlinkHref="#trash"></use>
+        </svg>
+      </span>
 
       <span onClick={() => setDetailVisible((prevState) => !prevState)}>
         <svg className={detailVisible ? "flipped" : ""}>
@@ -320,7 +403,7 @@ const EditAccordionHead: React.FC<{
   );
 });
 
-export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
+export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType2 }> =
   React.memo(({ lesson }) => {
     const [detailVisible, setDetailVisible] = useState<boolean>(false);
     const submit = useSubmit();
@@ -336,18 +419,19 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
           {lesson.contents.map((content, idx) => {
             return (
               <li key={content.id}>
-                <CourseContentIcon type={content.type || "text"} />
+                <CourseContentIcon type={content.contentType || "text"} />
                 <p>{content.title}</p>
                 <button
                   onClick={() => {
                     const payload: CourseItemDeletionActionType = {
                       intent: "DELETE_CONTENT",
-                      payload: { contentID: content.id },
+                      payload: { contentID: content.id, lessonID: lesson.id },
                     };
                     submit(payload as any, {
                       method: "post",
                       action: "./",
                       encType: "application/json",
+                      navigate: false,
                     });
                   }}
                 >
@@ -359,13 +443,13 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
             );
           })}
 
-          {
+          {lesson.quiz ? (
             <li>
               <CourseContentIcon type="quiz" />
-              <p>{`Quiz - testing your knowledge`}</p>
+              <p>{lesson.quiz.title || `Quiz - testing your knowledge`}</p>
 
               <div className={`accordion_content_badge`}>
-                <p>{lesson.assessment?.availablePoints}XP</p>
+                <p>{lesson.quiz?.totalPoints}XP</p>
                 <svg
                   viewBox="0 0 12 14"
                   fill="none"
@@ -379,7 +463,7 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
               </div>
 
               <Link
-                to={`../../../assessments/${lesson.assessment.id}/edit`}
+                to={`../../../assessments/${lesson.quiz?.id}/edit`}
                 relative="path"
                 className="edit_link"
               >
@@ -395,12 +479,16 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
                 onClick={() => {
                   const payload: CourseItemDeletionActionType = {
                     intent: "DELETE_QUIZ",
-                    payload: { quizID: lesson.assessment.id.toString() },
+                    payload: {
+                      quizID: lesson.quiz?.id.toString(),
+                      lessonID: lesson.id,
+                    },
                   };
                   submit(payload as any, {
                     method: "post",
                     action: "./",
                     encType: "application/json",
+                    navigate: false,
                   });
                 }}
               >
@@ -409,7 +497,7 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType }> =
                 </svg>
               </button>
             </li>
-          }
+          ) : null}
         </ul>
       </div>
     );
@@ -458,14 +546,28 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
     () => ({ lessonUpdateState, lessonUpdateDispatch }),
     [lessonUpdateState, lessonUpdateDispatch]
   );
-  const { lessonCreationState } = useContext(
+  const { lessonCreationState, lessonCreationDispatch } = useContext(
     LessonCreationContext
   ) as LessonCreationContextValueType;
   const submit = useSubmit();
   const courseID = useParams()["course_id"];
+  const lessonUpdateStateDefault = useMemo(
+    () => ({
+      lessonContents: [],
+      lessonQuizCount: 0,
+      lessonQuizzes: [],
+    }),
+    []
+  );
+  const lessonCreationStateDefault = useMemo(
+    () => ({
+      lessons: [],
+    }),
+    []
+  );
 
-  console.log("the lesson update state is ", lessonUpdateState);
-  console.log("the lesson creation<> state is ", lessonCreationState);
+  // console.log("the lesson update state is ", lessonUpdateState);
+  // console.log("the lesson creation<> state is ", lessonCreationState); //BUGFIX: FIND OUT WHY THE CANCEL BUTTON FOR ADDING LESSONS TO COURSE IS CAUSING A RE-RENDER
 
   return (
     <LessonUpdateProvider value={lessonUpdateContextValue}>
@@ -540,7 +642,7 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
                         lessonPositionID={idx}
                         itemType="quiz"
                         key={quizIdx}
-                        itemID={quiz.id}
+                        itemID={+(quiz.id as string)}
                         withUpdate
                       />
                     );
@@ -552,7 +654,14 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
       })}
 
       <div className="course_creation_cta_area">
-        <button>cancel</button>
+        <button
+          onClick={() => {
+            lessonUpdateDispatch(__reset(lessonUpdateStateDefault));
+            lessonCreationDispatch(__creationReset(lessonCreationStateDefault));
+          }}
+        >
+          cancel
+        </button>
         <button
           className="primary"
           onClick={() => {
@@ -570,11 +679,19 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
               intent: "ADD_LESSONS",
               payload: { lessonData, lessonContentData, lessonQuizData },
             };
-
+            lessonUpdateDispatch(
+              __reset({
+                lessonContents: [],
+                lessonQuizCount: 0,
+                lessonQuizzes: [],
+              })
+            );
+            lessonCreationDispatch(__creationReset({ lessons: [] }));
             submit(resPayload as any, {
               method: "post",
               action: "./",
               encType: "application/json",
+              navigate: false,
             });
           }}
         >
@@ -587,65 +704,83 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
 
 export const ExamEditArea: React.FC = React.memo(() => {
   const submit = useSubmit();
-  const exam = { id: "0" };
+  const { course_id: courseID } = useParams();
+  const { exam } = useLoaderData<typeof loader>() as {
+    exam: Omit<CourseExamType2, "description"> | null | undefined;
+  };
+  const navigate = useNavigate();
   return (
     <>
       <div className="exam_edit_area">
         <h2 className="section_header">course exam</h2>
-        <div className="empty_exam_area" style={{ display: "none" }}>
-          <p>no exams for this course yet!</p>{" "}
-          <span>
-            <button>add exam</button>
-          </span>
-        </div>
-        <ul>
-          <li>
-            <span>Started At</span> 15/02/2022
-          </li>
-          <li>
-            <span>Ended At</span> 10/03/2024
-          </li>
-          <li>
-            <span>Pass Score</span> 70%
-          </li>
-          <li>
-            <span>Duration</span> 120s
-          </li>
-        </ul>
-        <div className="exam_update_cta_area">
-          <Link
-            to={`../../../assessments/${exam.id}/edit`}
-            relative="path"
-            className="edit_link"
-          >
-            edit exam{" "}
+        {exam ? (
+          <>
+            <ul>
+              <li>
+                <span>Started At</span>{" "}
+                {new Date(exam.startDate).toLocaleDateString()}
+              </li>
+              <li>
+                <span>Ended At</span>{" "}
+                {new Date(exam.endDate).toLocaleDateString()}
+              </li>
+              <li>
+                <span>Pass Score</span> {exam.passScore}%
+              </li>
+              <li>
+                <span>Duration</span> {exam.duration}s
+              </li>
+            </ul>
+            <div className="exam_update_cta_area">
+              <Link
+                to={`../../../assessments/${exam.id}/edit`}
+                relative="path"
+                className="edit_link"
+              >
+                edit exam{" "}
+                <span>
+                  <svg>
+                    <use xlinkHref="#link"></use>
+                  </svg>
+                </span>
+              </Link>
+              <button
+                onClick={() => {
+                  const payload: CourseItemDeletionActionType = {
+                    intent: "DELETE_EXAM",
+                    payload: { examID: exam.id.toString() },
+                  };
+                  submit(payload as any, {
+                    method: "post",
+                    action: "./",
+                    encType: "application/json",
+                    navigate: false,
+                  });
+                }}
+              >
+                delete exam
+                <span>
+                  <svg>
+                    <use xlinkHref="#trash"></use>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="empty_exam_area">
+            <p>no exams for this course yet!</p>{" "}
             <span>
-              <svg>
-                <use xlinkHref="#link"></use>
-              </svg>
+              <button
+                onClick={() => {
+                  navigate(`../exams/new`, { relative: "path" });
+                }}
+              >
+                add exam
+              </button>
             </span>
-          </Link>
-          <button
-            onClick={() => {
-              const payload: CourseItemDeletionActionType = {
-                intent: "DELETE_EXAM",
-                payload: { examID: exam.id },
-              };
-              submit(payload as any, {
-                method: "post",
-                action: "./",
-                encType: "application/json",
-              });
-            }}
-          >
-            delete exam
-            <span>
-              <svg>
-                <use xlinkHref="#trash"></use>
-              </svg>
-            </span>
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     </>
   );
@@ -653,13 +788,14 @@ export const ExamEditArea: React.FC = React.memo(() => {
 
 export const CourseCreationArea: React.FC = React.memo(() => {
   const { course: loadedCourse } = useLoaderData<typeof loader>() as {
-    course: CourseEntryType;
+    course: CreatorCourseEditViewType;
   };
+  const navigate = useNavigate();
   const defaultCourse = useMemo(() => {
     return {
       description: loadedCourse.description,
-      tags: loadedCourse.tags.join(", "),
-      thumbnail: loadedCourse.imageUrl,
+      tags: loadedCourse.tags.join(" "),
+      thumbnail: loadedCourse.avatar,
       title: loadedCourse.title,
     } as CourseEditStateType;
   }, [loadedCourse]);
@@ -711,7 +847,7 @@ export const CourseCreationArea: React.FC = React.memo(() => {
         <DashboardFormInput
           defaultData={
             {
-              avatar_url: loadedCourse.imageUrl,
+              avatar_url: loadedCourse.avatar,
             } as DefaultCourseFormDataType
           }
           data={courseImageUpdateFormData}
@@ -737,7 +873,7 @@ export const CourseCreationArea: React.FC = React.memo(() => {
         <DashboardFormInput
           defaultData={
             {
-              tags: loadedCourse.tags.join(", "),
+              tags: loadedCourse.tags.join(" "),
             } as DefaultCourseFormDataType
           }
           data={courseTagsUpdateFormData}
@@ -748,7 +884,11 @@ export const CourseCreationArea: React.FC = React.memo(() => {
         />
       </section>
       <div className="course_creation_cta_area">
-        <button>cancel</button>
+        <button
+          onClick={() => navigate("../..", { relative: "path", replace: true })}
+        >
+          cancel
+        </button>
         <button
           className="primary"
           onClick={() => {
@@ -765,6 +905,7 @@ export const CourseCreationArea: React.FC = React.memo(() => {
               method: "post",
               encType: "application/json",
               action: "./",
+              navigate: false,
             });
           }}
         >
@@ -808,8 +949,8 @@ export const CourseEditPage: React.FC = () => {
   const { lessons: loadedLessons, course: loadedCourse } = useLoaderData<
     typeof loader
   >() as {
-    lessons: CourseLessonType[];
-    course: CourseEntryType;
+    lessons: CourseLessonType2[];
+    course: CreatorCourseEditViewType;
   };
 
   const [modalState, modalDispatch] = useReducer(
@@ -839,7 +980,16 @@ export const CourseEditPage: React.FC = () => {
         </div>
       </section>
 
-      <LessonContentAdditionModal />
+      <Suspense
+        fallback={
+          <div style={{ display: "none" }}>
+            {" "}
+            loading lesson content modal ...
+          </div>
+        }
+      >
+        <LessonContentAdditionModal />
+      </Suspense>
 
       <LessonAdditionArea />
 
@@ -858,29 +1008,127 @@ export const ErrorBoundary: React.FC = () => {
         return <h2>error fetching course. {error.data.error}</h2>;
     }
   } else {
-    return <h2>something went wrong! {(error as Error)?.message}</h2>;
+    if (error instanceof Error)
+      return (
+        <h2>
+          something went wrong! {error.message} {error.stack}
+        </h2>
+      );
+    return <h2>something went wrong! unknown error</h2>;
   }
 };
 
 export default CourseEditPage;
 
 export const action: ActionFunction = async ({ params, request }) => {
-  const reqJson = (await request.json()) as ActionButtonType<object>;
-  console.log("hitting the action for the course creation route");
+  try {
+    const reqJson = await request.json() as ActionButtonType<object>;
+    const { creator_id: creatorID, course_id: courseID } = params;
+    const cookieHeader = request.headers.get("Cookie");
+    let requestURL: string;
+    let actionRequest: AxiosResponse<ServerPayloadType<any>, any>;
 
-  switch (reqJson.intent as CourseEditActionIntentType) {
-    case "ADD_LESSONS": {
-      let payloadJson: LessonAdditionPayloadType =
-        reqJson.payload as LessonAdditionPayloadType;
-      console.log("preparing to send lesson addition payload: ");
-      console.table(payloadJson.lessonData);
-      console.table(payloadJson.lessonContentData);
-      console.table(payloadJson.lessonQuizData);
-      break;
+    switch (reqJson.intent as CourseEditActionIntentType) {
+      case "ADD_LESSONS": {
+        let payloadJson: LessonAdditionPayloadType =
+          reqJson.payload as LessonAdditionPayloadType;
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/lessons`;
+        actionRequest = await axios.post(requestURL, payloadJson, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 201) break;
+        return jsonWithSuccess(null, "lessons added successfully!")
+      }
+      case "ADD_LESSON_CONTENT": {
+        let payloadJson: LessonContentAdditionPayloadType =
+          reqJson.payload as LessonContentAdditionPayloadType;
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/lessons/${payloadJson.lessonID}/contents`;
+        actionRequest = await axios.post(requestURL, payloadJson, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 201) break;
+        return jsonWithSuccess(null, "lesson content added successfully!")
+
+      }
+      case "DELETE_CONTENT": {
+        let payloadJson: CourseItemDeletionActionType["payload"] =
+          reqJson.payload as CourseItemDeletionActionType["payload"];
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/lessons/${payloadJson.lessonID}/contents/${payloadJson.contentID}`;
+        actionRequest = await axios.delete(requestURL, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 204) break;
+        return jsonWithSuccess(null, "lesson content deleted successfully!")
+      }
+      case "DELETE_QUIZ": {
+        let payloadJson: CourseItemDeletionActionType["payload"] =
+          reqJson.payload as CourseItemDeletionActionType["payload"];
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/lessons/${payloadJson.lessonID}/quizzes/${payloadJson.quizID}`;
+        actionRequest = await axios.delete(requestURL, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 204) break;
+        return jsonWithSuccess(null, "quiz deleted successfully!")
+      }
+      case "DELETE_EXAM": {
+        let payloadJson: CourseItemDeletionActionType["payload"] =
+          reqJson.payload as CourseItemDeletionActionType["payload"];
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/exams/${payloadJson.examID}`;
+        actionRequest = await axios.delete(requestURL, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 204) break;
+        return jsonWithSuccess(null, "quiz deleted successfully!")
+      }
+      case "UPDATE_INFO": {
+        let payloadJson: CourseEditPayloadType =
+          reqJson.payload as CourseEditPayloadType;
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}`;
+        if (payloadJson.images && payloadJson.images.length) {
+          console.log("original image size is ", payloadJson.images[0]?.length || 0);
+          console.log("thumbnail image size is ", payloadJson.images[1]?.length || 0);
+        }
+
+        actionRequest = await axios.put(requestURL, payloadJson, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 200) break;
+        return jsonWithSuccess(null, "course updated successfully!")
+      }
+      case "DELETE_LESSON": {
+        let payloadJson: CourseItemDeletionActionType["payload"] =
+          reqJson.payload as CourseItemDeletionActionType["payload"];
+        requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/lessons/${payloadJson.lessonID}`;
+        actionRequest = await axios.delete(requestURL, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+        if (actionRequest.status !== 204) break;
+        return jsonWithSuccess(null, "lesson deleted successfully!")
+      }
     }
-    default: {
-      console.table(reqJson);
-    }
+  } catch (err) {
+    if (err instanceof AxiosError)
+      return jsonWithError(null, "could not proceed with action! REASON: " + (`${err.response?.data.message}` || "unknown"))
+    throw json(
+      {
+        error:
+          err instanceof Error ? err.message : "could not proceed with action",
+      },
+      500
+    );
   }
-  return {};
 };

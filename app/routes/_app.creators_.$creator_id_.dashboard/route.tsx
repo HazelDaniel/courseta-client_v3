@@ -1,14 +1,34 @@
-import { useLoaderData } from "@remix-run/react";
+import { redirect, useLoaderData } from "@remix-run/react";
 import { LoaderFunction, json } from "react-router";
 import { creatorsData, studentsData } from "~/data/users";
 import { Outlet } from "@remix-run/react";
 
-import { CreatorProfileType } from "~/types";
+import { CreatorProfileType, CreatorUserType } from "~/types";
+import axios from "axios";
+import { v3Config } from "~/config/base";
+import { ServerPayloadType } from "~/server.types";
 
-export const loader: LoaderFunction = ({ params }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
   const creatorID = params["creator_id"];
+  const cookieHeader = request.headers.get("Cookie");
+
+  const profileRequest = await axios.get(
+    `${v3Config.apiUrl}/creators/${creatorID}/me`,
+    {
+      headers: {
+        Cookie: cookieHeader,
+      },
+    }
+  );
+
+  if (profileRequest.status !== 200) {
+      if (profileRequest.status - 500 >= 0)
+        throw json({error: "something went wrong while fetching user profile."}, 500);
+    return redirect("/auth?type=sign_up");
+  }
+  const profileData: ServerPayloadType<CreatorUserType> = profileRequest.data;
   return json({
-    profile: creatorsData.filter((data) => data.user.id === creatorID)[0],
+    profile: profileData.payload,
   });
 };
 
@@ -17,7 +37,7 @@ export const Dashboard: React.FC = () => {
     profile: CreatorProfileType;
   };
 
-  return <Outlet context={{profile: profile}} />;
+  return <Outlet context={{ profile: profile }} />;
 };
 
 export default Dashboard;

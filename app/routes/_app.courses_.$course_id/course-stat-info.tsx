@@ -1,4 +1,5 @@
 import { useNavigate, useRouteLoaderData, useSubmit } from "@remix-run/react";
+import { CachableImage } from "~/components/cachable-image";
 import { CourseDetailViewType, SessionUserType } from "~/server.types";
 import styles from "~/styles/course-stat-info.module.css";
 import {
@@ -121,10 +122,10 @@ export const CourseStatInfo: React.FC = () => {
               <p className={styles.creator_title}> Courseta edtech platform</p>
             </div>
             <div className={styles.creator_avatar_area}>
-              <img
+              <CachableImage
                 src={creator.avatar}
                 alt="avatar image of a course creator on the courseta platform"
-                loading="lazy"
+                metaData={creator.avatarMeta}
               />
             </div>
           </div>

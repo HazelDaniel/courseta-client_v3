@@ -4,6 +4,7 @@ import { convertSecondsToHms } from "~/utils/conversion";
 
 import styles from "~/styles/course-banner.module.css";
 import { CourseDetailViewType } from "~/server.types";
+import { CachableImage } from "~/components/cachable-image";
 // import { LinksFunction } from "@remix-run/node";
 
 // export const links: LinksFunction = () => {
@@ -20,10 +21,11 @@ export const CourseBanner: React.FC<{ course: CourseDetailViewType }> = ({
 
   return (
     <div className={styles.course_banner_styled}>
-      <img
+      <CachableImage
         src={course.avatar}
         alt="the course banner image"
         className={styles.banner_image}
+        metaData={course.avatarMeta}
       />
       <h3 className={styles.course_creator_name_text}>Courseta Edtech's</h3>
       <h2 className={styles.course_banner_title}>{course.title}</h2>

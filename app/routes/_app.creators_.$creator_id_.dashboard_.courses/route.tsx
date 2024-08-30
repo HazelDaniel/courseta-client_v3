@@ -3,6 +3,7 @@ import { json, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 import axios, { AxiosResponse } from "axios";
 import { jsonWithSuccess } from "remix-toast";
 import { toast } from "sonner";
+import { CachableImage } from "~/components/cachable-image";
 import { v3Config } from "~/config/base";
 import { courseData } from "~/data/course-list";
 import { CreatorCourseViewType, ServerPayloadType } from "~/server.types";
@@ -105,10 +106,10 @@ export const CreatorsCourses: React.FC = () => {
             >
               <div className="entry_left">
                 <div className="course_avatar">
-                  <img
+                  <CachableImage
                     src={course.avatar}
                     alt="image of a course entry in a list of courses created by a course creator"
-                    loading="lazy"
+                    metaData={course.avatarMeta}
                   />
                   <p>{course.title}</p>
                 </div>

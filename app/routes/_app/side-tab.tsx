@@ -12,6 +12,7 @@ import { LinksFunction } from "@remix-run/node";
 import styles from "~/styles/side-tab.module.css";
 import { SessionUserType, UserRoleType } from "~/server.types";
 import { UserAuthActionType } from "~/types";
+import { useState } from "react";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
@@ -59,6 +60,7 @@ const AuthControlButton: React.FC = () => {
 
 export const SideTab: React.FC = () => {
   const location = useLocation();
+  const [expanded, expand] = useState(false);
 
   const rootContext = useOutletContext() as {
     user: { id: string; role: UserRoleType } | undefined;
@@ -67,8 +69,38 @@ export const SideTab: React.FC = () => {
   const userEntity = rootContext.user?.role + "s";
 
   return (
-    <nav className={styles.side_tab_styled}>
+    <nav
+      className={`${
+        !expanded
+          ? styles.side_tab_styled
+          : styles.side_tab_styled + " " + styles.expanded
+      }`}
+    >
       <Logo />
+      <div
+        className={expanded ? styles["side_tab_toggler"] + " " + styles.flipped :  styles["side_tab_toggler"]}
+        onClick={() => expand((prev) => !prev)}
+      >
+        <svg viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M15 8L8 1L1 8"
+            stroke="#CAC8C8"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+
+        <svg viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M1 1L8 8L15 1"
+            stroke="#CAC8C8"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
 
       <div className={styles.side_tab_body}>
         <ul className={styles.nav_list}>
@@ -80,6 +112,7 @@ export const SideTab: React.FC = () => {
                 </svg>
               </span>
               <NavLink
+                onClick={() => expand(prev => !prev)}
                 to={`/${userEntity}/${rootContext.user?.id}/dashboard`}
                 className={
                   /^\/(students|creators)\/.*\/dashboard(\/)?/i.test(
@@ -97,6 +130,7 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
+                onClick={() => expand(prev => !prev)}
                   to={`/${userEntity}/${rootContext.user?.id}/dashboard/courses`}
                   className={
                     /^\/(students|creators)\/.*\/dashboard\/courses$/i.test(
@@ -114,6 +148,7 @@ export const SideTab: React.FC = () => {
                 <span className={styles.sub_nav_item}>
                   <span></span>{" "}
                   <Link
+										onClick={() => expand(prev => !prev)}
                     to={`/${userEntity}/${rootContext.user?.id}/dashboard/assessment-results`}
                     className={
                       /^\/(students|creators)\/.*\/dashboard\/assessment-results/i.test(
@@ -131,6 +166,7 @@ export const SideTab: React.FC = () => {
               <span className={styles.sub_nav_item}>
                 <span></span>
                 <Link
+									onClick={() => expand(prev => !prev)}
                   to={`/${userEntity}/${rootContext.user?.id}/dashboard/profile`}
                   className={
                     /^\/(students|creators)\/.*\/dashboard(\/)?$/i.test(
@@ -157,6 +193,7 @@ export const SideTab: React.FC = () => {
                 </svg>
               </span>
               <Link
+								onClick={() => expand(prev => !prev)}
                 to="/courses"
                 className={
                   location.pathname === "/courses" ? styles.active : ""
@@ -175,6 +212,7 @@ export const SideTab: React.FC = () => {
                 </svg>
               </span>
               <Link
+								onClick={() => expand(prev => !prev)}
                 to="/activities"
                 className={
                   location.pathname === "/activities" ? styles.active : ""

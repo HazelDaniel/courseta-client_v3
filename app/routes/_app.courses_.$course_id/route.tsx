@@ -85,6 +85,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       user: courseInfo.data.user,
     });
   } catch (err) {
+    console.error(err);
     if (err instanceof Response) {
       throw err;
     }

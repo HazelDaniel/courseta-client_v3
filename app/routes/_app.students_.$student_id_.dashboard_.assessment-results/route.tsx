@@ -1,16 +1,48 @@
 import styles from "~/styles/assessment-results.module.css";
 import {
   AssessmentDataType,
-  CourseAssessmentType,
-  ExamAssessmentType,
+  QuizResultType,
+  ExamResultType,
+  AssessmentReportType,
 } from "~/types";
 
 import { json, useLoaderData } from "@remix-run/react";
 import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { assessmentData } from "~/data/assessments";
+import { useMemo } from "react";
+import axios, { AxiosResponse } from "axios";
+import { v3Config } from "~/config/base";
+import { ServerPayloadType } from "~/server.types";
+import { NoContent } from "~/components/no-content";
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  try {
+    const cookieHeader = request.headers.get("Cookie");
+    const { student_id: studentID } = params;
+
+    const reportsRequest: AxiosResponse<
+      ServerPayloadType<AssessmentReportType>,
+      any
+    > = await axios.get(`${v3Config.apiUrl}/students/${studentID}/reports`, {
+      headers: {
+        Cookie: cookieHeader,
+      },
+    });
+
+    return json({ report: reportsRequest.data.payload });
+  } catch (err) {
+    if (err instanceof Response) {
+      throw err;
+    }
+    throw json(
+      { error: (err as Error)?.message || "An unexpected error occurred" },
+      { status: 500, statusText: "Internal Server Error" }
+    );
+  }
+};
 
 export const AssessmentCard: React.FC<{
-  entry: CourseAssessmentType | ExamAssessmentType;
+  entry: QuizResultType | ExamResultType;
 }> = ({ entry }) => {
   return (
     <div
@@ -23,21 +55,22 @@ export const AssessmentCard: React.FC<{
         {entry.status}
       </span>
       <div className={styles.assessment_card_items}>
-        {!("examID" in entry) ? (
-          <div className={styles.card_item}>
-            <span className={styles.bullet}></span>
-            <a href={`/courses/${entry.courseID}`}>course link</a>
-          </div>
-        ) : (
+        {/* {!("examID" in entry) ? (
           <div className={styles.card_item}>
             <span className={styles.bullet}></span> <p>Exam ID</p>{" "}
             <span>{entry.examID}</span>
           </div>
-        )}
+        ) : ( */}
+        <div className={styles.card_item}>
+          <span className={styles.bullet}></span>
+          <a href={`/courses/${entry.courseID}`}>course link</a>
+        </div>
+
+        {/* )} */}
 
         <div className={styles.card_item}>
           <span className={styles.bullet}></span> <p>date completed</p>{" "}
-          <span>{entry.dateAttempted || "N/A"}</span>
+          <span>{new Date(entry.dateAttempted).toDateString() || "N/A"}</span>
         </div>
         <div className={styles.card_item}>
           <span className={styles.bullet}></span> <p>score</p>{" "}
@@ -49,17 +82,34 @@ export const AssessmentCard: React.FC<{
 };
 
 const AssessmentListArea: React.FC<{
-  data: AssessmentDataType;
-  type: "exams" | "courses";
-}> = ({ data, type }) => {
-  const { average } = data;
+  type: "exams" | "quizzes";
+}> = ({ type }) => {
+  const loaderData = useLoaderData() as { report: AssessmentReportType };
+  const {
+    report: { quizzes, exams },
+  } = loaderData;
+  const average = useMemo(() => {
+    return {
+      exams: Math.round(
+        exams.reduce((acc, curr) => {
+          acc += curr.percentScore;
+          return acc;
+        }, 0) / Math.max(exams.length, 1)
+      ),
+      quizzes: Math.round(
+        quizzes.reduce((acc, curr) => {
+          acc += curr.percentScore;
+          return acc;
+        }, 0) / Math.max(quizzes.length, 1)
+      ),
+    };
+  }, [loaderData]);
+  const data = type === "exams" ? exams : quizzes;
   return (
     <div
       className={`${styles.assessment_result_area_styled} ${styles.assessments_area}`}
     >
-      <p className={styles.assessment_type_title}>
-        {type === "courses" ? "Quizzes" : "Exams"}
-      </p>
+      <p className={styles.assessment_type_title}>{type}</p>
 
       <div className={styles.average_score_area}>
         <h2>Average score</h2>
@@ -76,30 +126,27 @@ const AssessmentListArea: React.FC<{
         </div>
       </div>
       <ul className={styles.course_assessments_list}>
-        {data[type].map((entry, idx) => {
-          return <AssessmentCard entry={entry} key={idx} />;
-        })}
+        {data.length ? (
+          data.map((entry, idx) => {
+            return <AssessmentCard entry={entry} key={idx} />;
+          })
+        ) : (
+          <NoContent
+            text="No reports for this assessment yet!"
+            variant="course_outline"
+          />
+        )}
       </ul>
     </div>
   );
 };
 
-export const loader: LoaderFunction = () => {
-  try {
-    return json({ data: assessmentData });
-  } catch (err) {
-    throw new Response("internal server error", { status: 500 });
-  }
-};
-
 export const AssessmentResultPage: React.FC = () => {
-  const { data } = useLoaderData<typeof loader>();
   return (
     <div className={styles.assessment_result_styled}>
-      <p className={styles.section_title}>All Assessments</p>
       <div className={styles.assessments_container}>
-        <AssessmentListArea data={data} type="courses" />
-        <AssessmentListArea data={data} type="exams" />
+        <AssessmentListArea type="quizzes" />
+        <AssessmentListArea type="exams" />
       </div>
     </div>
   );

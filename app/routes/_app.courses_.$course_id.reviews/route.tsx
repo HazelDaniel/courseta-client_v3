@@ -4,20 +4,24 @@ import {
   useFetcher,
   useLoaderData,
   useOutletContext,
+  useRouteLoaderData,
 } from "@remix-run/react";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { jsonWithError, jsonWithSuccess } from "remix-toast";
 import { toast } from "sonner";
+import { CachableImage } from "~/components/cachable-image";
 import { NoContent } from "~/components/no-content";
 import { RatingForm } from "~/components/rating-form";
 import { v3Config } from "~/config/base";
+import ImageCacheDAO from "~/dao/image-cache";
 import { courseReviews } from "~/data/course-reviews";
 import { serializeStudentReviewForm } from "~/serializers/review.serializer";
 import { ServerPayloadType } from "~/server.types";
 import "~/styles/course-reviews.css";
 import {
   ActionResponseType,
+  AuthUserType,
   CourseDetailType,
   CourseReviewType,
   LoaderResponseType,
@@ -65,6 +69,37 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
 };
 
+const UserReviewImage: React.FC = React.memo(
+  () => {
+    const {user} = useRouteLoaderData("root") as {user: AuthUserType};
+    const [userImage, setUserImage] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (user) {
+        const fetchUserImage = async () => {
+          try {
+            const imageCache = ImageCacheDAO.instance;
+            const resultImage = await imageCache.get(user.avatarMeta.id || "");
+            if (!resultImage) return;
+            setUserImage(resultImage.image_text);
+          } catch (err) {
+            return;
+          }
+        };
+        fetchUserImage();
+      }
+    }, [user]);
+
+    return (
+        <img
+          src={userImage || "/illustrations/avatar1.jpg"}
+          alt="image of a student creating a review on a course"
+          loading="lazy"
+        />
+    );
+  }
+);
+
 const CourseReviewArea: React.FC = () => {
   const fetcher = useFetcher({ key: "student-review" });
   const { user } = useLoaderData<typeof loader>() as {
@@ -76,11 +111,8 @@ const CourseReviewArea: React.FC = () => {
     <>
       <RatingForm variant="edit" onChangeHandler={(x) => setRating(x)} />
       <div className="course_review_create_area">
-        <img
-          src="/illustrations/avatar1.jpg"
-          alt="image of a student creating a review on a course"
-          loading="lazy"
-        />
+
+        <UserReviewImage/>
 
         <fetcher.Form
           action="./"
@@ -115,7 +147,9 @@ const CourseReviewArea: React.FC = () => {
             onClick={(e) => {
               if (user && user.role === "creator") {
                 e.preventDefault();
-                toast.error("you are not allowed to review a course as a creator!")
+                toast.error(
+                  "you are not allowed to review a course as a creator!"
+                );
                 return;
               }
               //  some pop-up message to tell them to enroll first if they have not already enrolled
@@ -146,10 +180,10 @@ export const CourseReviews: React.FC = () => {
             reviews.map((reviewEntry, idx) => {
               return (
                 <li className="review_entry" key={idx}>
-                  <img
+                  <CachableImage
                     src={reviewEntry.avatar}
                     alt="the image url of a student making a review on a course"
-                    loading="lazy"
+                    metaData={reviewEntry.avatarMeta}
                   />
                   <div className="review_entry_right">
                     <div className="entry_message_top">
@@ -205,7 +239,7 @@ export const action: ActionFunction = async ({ request, params }) => {
           },
         });
         if (actionRequest.status !== 201) break;
-        return jsonWithSuccess(null, "review posted!")
+        return jsonWithSuccess(null, "review posted!");
       }
     }
 
@@ -224,11 +258,13 @@ export const action: ActionFunction = async ({ request, params }) => {
   } catch (err) {
     if (err instanceof AxiosError) {
       console.error(err.response?.data.message);
-      return jsonWithError(null, err.response?.data.message || "couldn't proceeed with action!")
+      return jsonWithError(
+        null,
+        err.response?.data.message || "couldn't proceeed with action!"
+      );
     }
     if (err instanceof Response) {
-      if (err.status >= 300 && err.status < 400) 
-      throw err;
+      if (err.status >= 300 && err.status < 400) throw err;
     }
     throw json(
       {
