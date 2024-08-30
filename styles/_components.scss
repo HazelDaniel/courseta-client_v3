@@ -10,6 +10,35 @@
   }
 }
 
+._button {
+  width: max-content;
+  min-width: 10rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--text-color);
+  font-size: var(--font_M);
+  font-family: Poppins;
+  font-weight: 400;
+  padding: 0.5rem 2rem;
+
+  &.btn_round {
+    border-radius: 5rem;
+  }
+
+  &.btn_secondary {
+    background-color: unset;
+    @extend .button_base;
+    border: unset;
+  }
+  &.btn_primary {
+    background-color: var(--primary-color);
+    color: var(--home-bg-color);
+    @extend .button_primary;
+  }
+  &::first-letter {
+    text-transform: capitalize;
+  }
+}
+
 .button_primary {
   @extend .button_base;
   width: max-content;

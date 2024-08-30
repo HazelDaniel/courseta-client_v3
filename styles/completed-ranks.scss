@@ -119,3 +119,15 @@
     }
   }
 }
+
+
+//MOBILE_VIEW_2
+@media screen and (max-width: 800px) {
+
+  .completed_ranks_area {
+    width: 90%;
+    transform: scale(.65);
+    transform-origin: left;
+    margin: var(--margin_L) auto;
+  }
+  }

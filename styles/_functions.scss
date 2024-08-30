@@ -6,7 +6,7 @@
 @mixin adjustTopMargin() {
   margin-top: calc(1.5 * var(--margin_XL));
   @media screen and (max-width: 800px) {
-    margin-top: calc(2 * var(--margin_XL)) !important;
+    margin-top: calc(4 * var(--margin_XL)) !important;
   }
 }
 

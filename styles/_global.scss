@@ -10,6 +10,9 @@ html {
   }
   @media screen and (max-width: 800px) {
     font-size: 7px;
+    &:has(#hero) {
+      font-size: 5px;
+    }
   }
   @media screen and (min-width: 1500px) {
     font-size: 10px;
@@ -45,9 +48,11 @@ body {
   height: max-content;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  #app {
+  #app,
+  #app_landing {
     width: 100%;
     height: max-content;
     min-height: 100vh;
@@ -65,6 +70,11 @@ body {
         width: max-content;
       }
     }
+  }
+  #app_landing {
+    flex-direction: column;
+    background-color: var(--home-bg-color);
+    overflow-x: hidden !important;
   }
 }
 body > script {
@@ -99,8 +109,8 @@ body > script {
     min-width: fix-content;
     margin-left: 0.3rem;
     padding: 1rem;
-    border-radius: .5rem;
-    border: .2rem solid var(--label-color);
+    border-radius: 0.5rem;
+    border: 0.2rem solid var(--label-color);
   }
 }
 // img {
@@ -117,6 +127,9 @@ body > script {
   --cta-bg: rgba(94, 95, 96, 0.27);
   --logo-color: #3c4442;
   --bg-color: #f3f3f3;
+  --gold-color: #e18c3d;
+  --brown-color: #e1a03d;
+  --home-bg-color: #fdfdfd;
   --bright-color: #ffffff;
   --active-text-bg: rgba(94, 95, 96, 0.17);
   --tab-icon-color: rgba(98, 76, 64, 0.67);
@@ -136,4 +149,33 @@ body > script {
   --margin_M: 3rem;
   --margin_L: 5rem;
   --margin_XL: 10rem;
+
+  // typography
+  --font_S: 1.5rem;
+  --font_M: 2.2rem;
+  --font_L: 3rem;
+  --font_ML: 5rem;
+  --font_XL: 6rem;
+}
+
+@media screen and (max-width: 800px) {
+  :root {
+    // box model
+    --padding_S: 0.25rem;
+    --padding_M: 0.75rem;
+    --padding_L: 1.25rem;
+    --padding_XL: 2.5rem;
+
+    --margin_S: 0.5rem;
+    --margin_M: 1.5rem;
+    --margin_L: 2.5rem;
+    --margin_XL: 5rem;
+
+    // typography
+    --font_S: 1.5rem;
+    --font_M: 2.2rem;
+    --font_L: 3rem;
+    --font_ML: 5rem;
+    --font_XL: 6rem;
+  }
 }

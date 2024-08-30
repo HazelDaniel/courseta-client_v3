@@ -45,3 +45,13 @@
     }
   }
 }
+
+@media screen and (max-width: 800px) {
+.no_content {
+
+  &.course_outline {
+    font-size: 3rem;
+  }
+}
+
+}

@@ -58,3 +58,36 @@
     }
   }
 }
+
+
+//MOBILE_VIEW_2
+@media screen and (max-width: 800px) {
+  .course_creation_area {
+    width: 100%;
+    overflow: hidden;
+    min-height: 180vh !important;
+    padding: 7rem 0;
+    margin-left: unset;
+    .input_form {
+      --input-wrapper-width-here: 80rem;
+      --input-child-height-here: 5rem;
+      gap: 3rem;
+      min-width: 80vw;
+      width: 80vw;
+      width: 90% !important;
+      margin: 0 auto !important;
+      &.one-dual-button {
+        width: 85%;
+        .dual_buttons {
+          flex-wrap: wrap;
+          height: 100%;
+        }
+      }
+  
+      .input_form_bottom .input_wrapper {
+        width: 100%;
+      }
+    }
+  
+  }
+  }

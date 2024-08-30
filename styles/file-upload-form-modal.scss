@@ -157,3 +157,12 @@
     }
   }
 }
+
+
+//MOBILE_VIEW_2
+@media screen and (max-width: 800px) {
+  .input_form_modal {
+    width: 95vw;
+    top: 55%;
+  }
+}

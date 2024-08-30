@@ -64,3 +64,21 @@
     }
   }
 }
+
+//MOBILE_VIEW_2
+@media screen and (max-width: 800px) {
+  .student_profile_middle_area {
+    width: 100%;
+    padding: 0 1rem;
+    .profile_bottom_title_div {
+      width: 100%;
+      justify-content: space-around;
+      h2 {
+        font-size: 2rem;
+      }
+      button {
+        width: 8rem;
+      }
+    }
+  }
+}
