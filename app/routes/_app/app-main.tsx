@@ -1,27 +1,20 @@
-import { courseData } from "~/data/course-list";
 import {
-  AuthType,
-  CourseListType,
-  CreatorUserType,
   SessionUserType,
   UserRoleType,
-  UserType,
 } from "~/types";
 import { AnnouncementTab } from "~/components/announcement-tab";
 import { WideCourseCard } from "~/components/wide-course-card";
 import { SmallCourseCard } from "~/components/small-course-card";
-import axios, { AxiosResponse } from "axios";
-import { BASE_URL } from "~/config/base";
-import React, { Suspense, useEffect, useRef } from "react";
+import { AxiosResponse } from "axios";
+import React, { Suspense } from "react";
 import {
   Await,
-  useAsyncValue,
   useLoaderData,
   useNavigate,
   useRouteLoaderData,
 } from "@remix-run/react";
 
-import { LinksFunction } from "@remix-run/node";
+// import { LinksFunction } from "@remix-run/node";
 import styles from "~/styles/app-main.module.css";
 import UserActivityChart, {
   UserActivityChartSkeleton,
