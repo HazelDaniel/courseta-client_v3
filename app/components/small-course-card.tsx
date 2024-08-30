@@ -6,6 +6,7 @@ import smallCourseCardStyles from "~/styles/small-course-card.module.css";
 import countdownCircleStyles from "~/styles/countdown-circle.module.css";
 import { CourseViewType, StudentCourseViewType } from "~/server.types";
 import { ClientOnly } from "remix-utils/client-only";
+import { CachableImage } from "./cachable-image";
 
 export const StaticProgress: React.FC<{ entry: StudentCourseViewType }> = ({
   entry,
@@ -77,11 +78,12 @@ export const SmallCourseCard: React.FC<{
       <>
 
         <div className={smallCourseCardStyles.top}>
-          <img
-            src={entry.avatar}
+          <CachableImage
+            src={entry.avatar || null}
+            metaData={entry.avatarMeta}
             alt="image representing a course card in a list of courses"
-            loading="lazy"
           />
+
           {!withCTA ? <Link to={`/courses/${entry.courseID}`}></Link> : null}
         </div>
         <div className={smallCourseCardStyles.bottom}>

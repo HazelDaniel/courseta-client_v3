@@ -3,16 +3,27 @@ import { CourseLessonType } from "~/types";
 import { NotFound } from "./not-found";
 
 import styles from "~/styles/lesson-content.module.css";
+import { extractIfConvertibleEmbed_ } from "~/utils/conversion";
 
 export const LessonContentBody: React.FC<{
   contentID: number;
   lesson: CourseLessonType;
 }> = ({ contentID, lesson }) => {
-  // console.log("lesson contents are ", lesson);
-  // return null;
   const [content] = lesson.contents.filter((content) => {
     return content.id === contentID;
   });
+
+  let srcString: string;
+  const [isConverted, convertedMatch] = extractIfConvertibleEmbed_(content.href);
+  if (!isConverted) {
+    if (!convertedMatch)
+      srcString = content.href; // because it might be from some other sites.
+    else srcString = content.href;
+  } else {
+    srcString = convertedMatch as string;
+  }
+
+  console.log(isConverted, convertedMatch);
 
   if (content) {
     return (
@@ -24,10 +35,13 @@ export const LessonContentBody: React.FC<{
           <p>{`${content.title}`}</p>
         </div>
         <iframe
-          src={content.href.replace("youtube.com/watch", "youtube.com/embed")}
-          frameBorder="0"
+          src={srcString}
           ng-show="showvideo"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
+          // referrerPolicy="strict-origin-when-cross-origin"
         ></iframe>
       </div>
     );

@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react";
 import { CourseViewType } from "~/server.types";
 import smallCourseCardStyles from "~/styles/top-course-card.module.css";
+import { CachableImage } from "./cachable-image";
 
 export const TopCoursesCard: React.FC<{
   entry: Omit<CourseViewType, "lessonCount"> & {studentCount: number};
@@ -11,10 +12,10 @@ export const TopCoursesCard: React.FC<{
     >
       <div className={smallCourseCardStyles.course_card_small}>
         <div className={smallCourseCardStyles.top}>
-          <img
+          <CachableImage
             src={entry.avatar}
             alt="image representing a course card in a list of courses"
-            loading="lazy"
+            metaData={entry.avatarMeta}
           />
           <Link to={`/courses/${entry.courseID}`}></Link>
         </div>

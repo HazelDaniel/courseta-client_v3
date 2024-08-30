@@ -3,9 +3,7 @@ import { WideCourseCard } from "./wide-course-card";
 
 import "~/styles/student-attempted-courses.css";
 import { NoContent } from "./no-content";
-import { useAsyncValue } from "@remix-run/react";
 import { ServerPayloadType, StudentCourseViewType } from "~/server.types";
-import { AxiosResponse } from "axios";
 
 export const StudentAttemptedCourses: React.FC<{courses: StudentCourseViewType[]}> = ({courses}) => {
   return (

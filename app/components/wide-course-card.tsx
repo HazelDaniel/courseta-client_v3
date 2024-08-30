@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import styles from "~/styles/wide-course-card.module.css";
 import { StudentCourseViewType } from "~/server.types";
+import { CachableImage } from "./cachable-image";
 
 export const WideCourseCard: React.FC<{
   entry: StudentCourseViewType;
@@ -11,11 +12,11 @@ export const WideCourseCard: React.FC<{
   return (
     <div className={`${styles.wide_course_card_styled} ${styles.course_card}`}>
       <div className={styles.card_left}>
-        <img
-          src={entry.avatar}
-          alt="a thumbnail image of a course on an edtech platform"
-          loading="lazy"
-        />
+          <CachableImage
+            src={entry.avatar || null}
+            metaData={entry.avatarMeta}
+            alt="a thumbnail image of a course on an edtech platform"
+          />
         <Link to={`/courses/${entry.courseID}`}></Link>
       </div>
       <div className={styles.card_right}>

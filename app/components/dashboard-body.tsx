@@ -19,6 +19,7 @@ import { Suspense } from "react";
 import { AxiosResponse } from "axios";
 import { ServerPayloadType, StudentCourseViewType } from "~/server.types";
 import { NoContent } from "./no-content";
+import { CachableImage } from "./cachable-image";
 
 const UnfinishedCourseErrorElement: React.FC = () => {
   const error = useAsyncError();
@@ -67,10 +68,10 @@ export const DashboardBody: React.FC<{
       <div className="profile_user_display_area">
         <div className="display_area_left">
           <div className="da_left_top">
-            <img
+            <CachableImage
               src={avatar || "/illustrations/user_icon.svg"}
+              metaData={avatarMeta}
               alt="the profile picture of the platform user"
-              loading="lazy"
             />
             <p className="da_profile_name_area">
               {firstName} {lastName} <span>~{email}~</span>
