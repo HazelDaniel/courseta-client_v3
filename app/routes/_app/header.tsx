@@ -1,15 +1,17 @@
 import { Form, Link, Location, useLocation, useSubmit } from "react-router-dom";
-import { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  AuthUserType,
   CreatorUserType,
   SessionUserType,
   UserRoleType,
   UserType,
 } from "~/types";
-import { useOutletContext } from "@remix-run/react";
+import { useOutletContext, useRouteLoaderData } from "@remix-run/react";
 
 import styles from "~/styles/header.module.css";
 import { ServerPayloadType } from "~/server.types";
+import ImageCacheDAO from "~/dao/image-cache";
 
 function calcHeaderVisible(location: Location) {
   let res: boolean = true;
@@ -73,6 +75,38 @@ const HeaderSearchBox: React.FC<{ dest: string }> = ({ dest }) => {
   );
 };
 
+const HeaderImage: React.FC = React.memo(
+  () => {
+    const {user} = useRouteLoaderData("root") as {user: AuthUserType};
+    const [userImage, setUserImage] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (user) {
+        const fetchUserImage = async () => {
+          try {
+            const imageCache = ImageCacheDAO.instance;
+            const resultImage = await imageCache.get(user.avatarMeta.id || "");
+            if (!resultImage) return;
+            setUserImage(resultImage.image_text);
+          } catch (err) {
+            return;
+          }
+        };
+        fetchUserImage();
+      }
+    }, [user]);
+
+    return (
+      <img
+        src={userImage || "/illustrations/user_icon.svg"}
+        alt="avatar image of the user of the courseta platform"
+        className={styles.summary_area_image}
+        loading="lazy"
+      />
+    );
+  }
+);
+
 export const Header: React.FC<{
   variant: "side-tab" | "no-side-tab";
 }> = ({ variant }) => {
@@ -80,7 +114,7 @@ export const Header: React.FC<{
   const isVisible = calcHeaderVisible(location);
   // console.log("root context is ", rootContext);
 
-  const {user} = useOutletContext() as {
+  const { user } = useOutletContext() as {
     user: SessionUserType | undefined;
   };
 
@@ -115,13 +149,10 @@ export const Header: React.FC<{
             user ? user.email.split("@")[0] : "anon"
           }`}</span>
           <div className={styles.profile_image_div}>
-            <img
-              src={user ? "/illustrations/user_icon.svg" : "/illustrations/user_icon.svg"} // WE'LL FETCH FROM CACHE
-              alt="avatar image of the user of the courseta platform"
-              className={styles.summary_area_image}
-              loading="lazy"
-            />
-            {user ? <Link to={`/${userEntity}/${user.id}/dashboard`}></Link> : null}
+            <HeaderImage/>
+            {user ? (
+              <Link to={`/${userEntity}/${user.id}/dashboard`}></Link>
+            ) : null}
           </div>
         </div>
       </div>
