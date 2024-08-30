@@ -1,7 +1,7 @@
 import { openDB, IDBPDatabase } from 'idb';
 
-export const DB_NAME = 'myDatabase';
-export const DB_VERSION = 1;
+export const DB_NAME = 'courseta';
+export const DB_VERSION = 2;
 export const STORE_NAME = 'courseta_images';
 
 export const openDBConnection = async (): Promise<IDBPDatabase> => {
