@@ -702,7 +702,7 @@ export interface DashboardPassUpdateActionType
   intent: "UPDATE_PASS";
 }
 
-export type AuthUserIntentType = "SIGN_IN" | "SIGN_UP";
+export type AuthUserIntentType = "SIGN_IN" | "SIGN_UP" | "VERIFY";
 
 export interface UserAuthType
   extends Pick<UserType, "email" | "firstName" | "lastName" | "role"> {
@@ -751,6 +751,10 @@ export interface StudentEnrollActionType
 export interface RedirectPayloadType {
   location?: string;
   replace?: boolean;
+  message?: {
+    text: string;
+    description: string;
+  }
 }
 
 // RESPONSES
