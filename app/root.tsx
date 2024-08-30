@@ -25,7 +25,6 @@ import {
   UserAuthActionType,
 } from "./types";
 import "~/styles/root.css";
-import { creatorsData, studentsData } from "./data/users";
 import axios, { AxiosResponse } from "axios";
 import { v3Config } from "./config/base";
 import { ServerPayloadType } from "./server.types";
@@ -38,7 +37,13 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   try {
     const { request } = args;
     const { toast, headers } = await getToast(request);
-    console.log("the toast received is ", toast);
+    const paths = request.url.split("/");
+    const isHomePage =
+      /^home$/.test(paths[paths.length - 1]) ||
+      /^home$/.test(paths[paths.length - 2]);
+    if (!!isHomePage) {
+      return json({}, {headers});
+    }
     const cookieHeader = request.headers.get("Cookie");
     const userRequest = await axios.get(`${v3Config.apiUrl}/users/current`, {
       headers: {
@@ -750,7 +755,6 @@ export const action: ActionFunction = async ({ request }) => {
           },
         });
         if (actionRequest.status !== 200) break;
-        console.log("the ", role, " has logged out...");
         throw redirect("/auth?type=sign_in");
       }
     }
