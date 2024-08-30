@@ -1,13 +1,7 @@
-import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
 import { ActionFunction } from "react-router-dom";
 import { Logo } from "~/components/logo";
-import {
-  useSearchParams,
-  useLocation,
-  json,
-  Link,
-  useOutletContext,
-} from "@remix-run/react";
+import { useSearchParams, useLocation, json, Link } from "@remix-run/react";
 
 // import { LinksFunction } from "@remix-run/node";
 import styles from "~/styles/auth.module.css";
@@ -25,9 +19,15 @@ import {
 import { serializeAuthFormForAction } from "~/serializers/auth.serializer";
 import { v3Config } from "~/config/base";
 import { commitSession, getSession } from "~/cookie.server";
-import { redirectWithSuccess } from "remix-toast";
+import {
+  jsonWithError,
+  jsonWithSuccess,
+  redirectWithSuccess,
+  redirectWithToast,
+} from "remix-toast";
 import { ServerPayloadType } from "~/server.types";
 import { LoaderFunction, redirect } from "@remix-run/node";
+import { toast } from "sonner";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
@@ -36,8 +36,8 @@ import { LoaderFunction, redirect } from "@remix-run/node";
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const successMessage = session.get("X-Signup-Message");
+  const successDescription = session.get("X-Signup-Description");
   const mutationReplaceCondition = session.get("X-Remix-Replace");
-  console.log("request url is ", request.url);
 
   const isSigninSuccess = !!successMessage;
   const sessionResult = await commitSession(session);
@@ -48,7 +48,11 @@ export const loader: LoaderFunction = async ({ request }) => {
         redirectPayload: {
           location: "./?type=login",
           replace: mutationReplaceCondition,
-        },
+          message: {
+            text: successMessage,
+            description: successDescription,
+          },
+        } as RedirectPayloadType,
       },
       {
         headers: {
@@ -149,27 +153,40 @@ export const SignInForm: React.FC = () => {
   );
 };
 
+export const SignupCheckBox: React.FC = () => {
+  const [paramsState] = useSearchParams();
+  const userType: "creator" | "student" | string | null =
+    paramsState.get("role");
+  const [checked, setChecked] = useState(userType === "creator");
+
+  return (
+    <input
+      type="checkbox"
+      name={"asCreator" as keyof UserAuthType}
+      id="asCreator"
+      checked={checked}
+      onChange={() => setChecked((prev) => !prev)}
+    />
+  );
+};
+
 export const SignUpForm: React.FC = () => {
   const { Form, submit } = useFetcher({ key: "sign-up-fetcher" });
   const { redirectPayload }: { redirectPayload: RedirectPayloadType } =
     useLoaderData<typeof loader>() as { redirectPayload: RedirectPayloadType };
   const [paramsState, setParamsState] = useSearchParams();
-  const rootContext = useOutletContext() as ServerPayloadType<null>;
-  const actionData = useActionData<
-    typeof action
-  >() as UserAuthPayloadType | null;
 
   useEffect(() => {
     if (redirectPayload.replace && redirectPayload.location) {
       const destParams = new URLSearchParams();
       destParams.set("type", "sign_in");
       setParamsState(destParams, { replace: true });
+      if (redirectPayload.message)
+        toast.info(redirectPayload.message.text, {
+          description: redirectPayload.message.description,
+        });
     }
   }, [redirectPayload]);
-  // const navigate = useNavigate();
-  // if (AuthDao.isAuthenticated) {
-  //   return <Navigate to={"/"} replace={true} />;
-  // }
   const formRef = useRef<HTMLFormElement>(null);
   return (
     <Form
@@ -235,11 +252,8 @@ export const SignUpForm: React.FC = () => {
 
       <div className={`${styles.input_wrapper}`}>
         <label htmlFor="asCreator">sign up as creator</label>
-        <input
-          type="checkbox"
-          name={"asCreator" as keyof UserAuthType}
-          id="asCreator"
-        />
+        {/* here */}
+        <SignupCheckBox/>
       </div>
 
       <button type="submit">SIGN UP</button>
@@ -275,9 +289,37 @@ type PossibleAuthTypes = "sign_in" | "sign_up";
 export const Auth: React.FC = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const submit = useSubmit();
   const authType: PossibleAuthTypes = searchParams.get(
     "type"
   ) as PossibleAuthTypes;
+
+  useEffect(() => {
+    try {
+      const user_id = searchParams.get("user_id");
+      const verification_id = searchParams.get("verification_id");
+      if (!user_id || !verification_id) return;
+      const submitPayload: {
+        intent: AuthUserIntentType;
+        payload: { user_id: string; verification_id: string };
+      } = {
+        intent: "VERIFY",
+        payload: {
+          user_id,
+          verification_id,
+        },
+      };
+      submit(submitPayload as any, {
+        action: "./",
+        method: "post",
+        encType: "application/json",
+        navigate: false,
+        replace: true,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }, [searchParams]);
 
   return (
     <div className={styles.auth_styled}>
@@ -358,140 +400,142 @@ export const Auth: React.FC = () => {
 };
 
 export const action: ActionFunction = async (args) => {
-  const { request } = args;
+  const { request, params } = args;
+
   const session = await getSession(request.headers.get("Cookie"));
   const reqJson: { intent: AuthUserIntentType; payload: object } =
     await request.json();
-  switch (reqJson.intent) {
-    case "SIGN_IN": {
-      let payloadJson: UserAuthPayloadType =
-        reqJson.payload as UserAuthPayloadType;
-      switch (payloadJson.role) {
-        case "student":
-          const studentLoginRequest = await axios.post(
-            `${v3Config.apiUrl}/students/auth/login`,
-            payloadJson
-          );
-          const responsePayload: ServerPayloadType<null> =
-            studentLoginRequest.data;
-          const cookieHeader =
-            studentLoginRequest.headers["set-cookie"] ||
-            studentLoginRequest.headers["Set-Cookie"];
-          if (responsePayload.user) {
-            return redirectWithSuccess(
-              `/${responsePayload.user.role}s/${responsePayload.user.id}/dashboard`,
-              {
-                message: "signed in successfully!",
-              },
-              {
-                headers: {
-                  "Set-Cookie": `${cookieHeader}`,
-                },
-              }
+  try {
+    switch (reqJson.intent) {
+      case "SIGN_IN": {
+        let payloadJson: UserAuthPayloadType =
+          reqJson.payload as UserAuthPayloadType;
+        switch (payloadJson.role) {
+          case "student":
+            const studentLoginRequest = await axios.post(
+              `${v3Config.apiUrl}/students/auth/login`,
+              payloadJson
             );
-          } else {
-            const signinActionResponse: ActionResponseType<null> = {
-              data: null,
-              error:
-                responsePayload.message || "sign in failed!. please try again.",
-            };
-            return json(signinActionResponse);
-          }
-        default: {
-          const creatorLoginRequest = await axios.post(
-            `${v3Config.apiUrl}/creators/auth/login`,
-            payloadJson
-          );
-          const responsePayload: ServerPayloadType<null> =
-            creatorLoginRequest.data;
-          const cookieHeader =
-            creatorLoginRequest.headers["set-cookie"] ||
-            creatorLoginRequest.headers["Set-Cookie"];
-          if (responsePayload.user) {
-            throw redirect(
-              `/${responsePayload.user.role}s/${responsePayload.user.id}/dashboard`,
-              {
-                headers: {
-                  "Set-Cookie": `${cookieHeader}`,
+            const responsePayload: ServerPayloadType<null> =
+              studentLoginRequest.data;
+            const cookieHeader =
+              studentLoginRequest.headers["set-cookie"] ||
+              studentLoginRequest.headers["Set-Cookie"];
+            if (responsePayload.user) {
+              return redirectWithSuccess(
+                `/${responsePayload.user.role}s/${responsePayload.user.id}/dashboard`,
+                {
+                  message: "signed in successfully!",
                 },
-              }
+                {
+                  headers: {
+                    "Set-Cookie": `${cookieHeader}`,
+                  },
+                }
+              );
+            } else {
+              return jsonWithError(null, "sign in failed!. please try again.");
+            }
+          default: {
+            const creatorLoginRequest = await axios.post(
+              `${v3Config.apiUrl}/creators/auth/login`,
+              payloadJson
             );
-          } else {
-            const signinActionResponse: ActionResponseType<null> = {
-              data: null,
-              error:
-                responsePayload.message || "sign in failed!. please try again.",
-            };
-            return json(signinActionResponse);
+            const responsePayload: ServerPayloadType<null> =
+              creatorLoginRequest.data;
+            const cookieHeader =
+              creatorLoginRequest.headers["set-cookie"] ||
+              creatorLoginRequest.headers["Set-Cookie"];
+            if (responsePayload.user) {
+              throw redirect(
+                `/${responsePayload.user.role}s/${responsePayload.user.id}/dashboard`,
+                {
+                  headers: {
+                    "Set-Cookie": `${cookieHeader}`,
+                  },
+                }
+              );
+            } else {
+              console.log("sign in failed");
+              return jsonWithError(null, "sign in failed!. please try again.");
+            }
           }
         }
       }
-      break;
-    }
-    case "SIGN_UP": {
-      let payloadJson: UserAuthPayloadType =
-        reqJson.payload as UserAuthPayloadType;
-      switch (payloadJson.role) {
-        case "student": {
-          const studentSignupRequest = await axios.post(
-            `${v3Config.apiUrl}/students/auth/signup`,
-            payloadJson
-          );
-          const responsePayload: ServerPayloadType<null> =
-            studentSignupRequest.data;
-          if (studentSignupRequest.status === 201) {
-            session.flash("X-Signup-Message", `${responsePayload.message}`);
-            session.flash("X-Remix-Replace", true);
-            const signupActionResponse: ActionResponseType<null> = {
-              data: null,
-              error: null,
-            };
-            return json(signupActionResponse, {
-              headers: {
-                "Set-Cookie": await commitSession(session),
-              },
-            });
+      case "SIGN_UP": {
+        let payloadJson: UserAuthPayloadType =
+          reqJson.payload as UserAuthPayloadType;
+        switch (payloadJson.role) {
+          case "student": {
+            const studentSignupRequest = await axios.post(
+              `${v3Config.apiUrl}/students/auth/signup`,
+              payloadJson
+            );
+            if (studentSignupRequest.status === 201) {
+              session.flash(
+                "X-Signup-Message",
+                `user registered successfully!`
+              );
+              session.flash(
+                "X-Signup-Description",
+                `you can now check your email to verify you account`
+              );
+              session.flash("X-Remix-Replace", true);
+              return jsonWithSuccess(null, "success!", {
+                headers: {
+                  "Set-Cookie": await commitSession(session),
+                },
+              });
+            }
+            return jsonWithError(null, "sign up failed!. please try again.");
           }
-          const signupActionResponse: ActionResponseType<null> = {
-            data: null,
-            error:
-              responsePayload.message || "sign up failed!. please try again.",
-          };
-          return json(signupActionResponse);
+          default:
+            const creatorSignupRequest = await axios.post(
+              `${v3Config.apiUrl}/creators/auth/signup`,
+              payloadJson
+            );
+            const responsePayload: ServerPayloadType<null> =
+              creatorSignupRequest.data;
+            if (creatorSignupRequest.status === 201) {
+              session.flash(
+                "X-Signup-Message",
+                `user registered successfully!`
+              );
+              session.flash(
+                "X-Signup-Description",
+                `you can now check your email to verify you account and get your creator pass later`
+              );
+              session.flash("X-Remix-Replace", true);
+              return jsonWithSuccess(null, "success!", {
+                headers: {
+                  "Set-Cookie": await commitSession(session),
+                },
+              });
+            }
+            return jsonWithError(null, "sign up failed!. please try again.");
         }
-        default:
-          const creatorSignupRequest = await axios.post(
-            `${v3Config.apiUrl}/creators/auth/signup`,
-            payloadJson
-          );
-          const responsePayload: ServerPayloadType<null> =
-            creatorSignupRequest.data;
-          if (creatorSignupRequest.status === 201) {
-            session.flash("X-Signup-Message", `${responsePayload.message}`);
-            session.flash("X-Remix-Replace", true);
-            const signupActionResponse: ActionResponseType<null> = {
-              data: null,
-              error: null,
-            };
-            return json(signupActionResponse, {
-              headers: {
-                "Set-Cookie": await commitSession(session),
-              },
-            });
-          }
-          const signupActionResponse: ActionResponseType<null> = {
-            data: null,
-            error:
-              responsePayload.message || "sign up failed!. please try again.",
-          };
-          return json(signupActionResponse);
       }
-      console.table(payloadJson);
-      break;
+      case "VERIFY": {
+        const { user_id, verification_id } = reqJson.payload as any;
+        if (!user_id || !verification_id)
+          return jsonWithError(null, "no verification credentials provided");
+        const userVerificationRequest = await axios.get(
+          `${v3Config.apiUrl}/verify?user_id=${user_id}&verification_id=${verification_id}`
+        );
+        if (userVerificationRequest.status === 200) {
+          return redirectWithSuccess(
+            "/auth?type=sign_in",
+            "verified successfully!"
+          );
+        }
+      }
     }
+  } catch (err) {
+    if (err instanceof Response && err.status >= 300 && err.status < 400) {
+      throw err;
+    }
+    return jsonWithError(null, err instanceof Error ? err.message : "");
   }
-
-  return json({});
 };
 
 export default Auth;
