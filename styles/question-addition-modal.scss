@@ -132,7 +132,7 @@
 }
 
 //MOBILE_VIEW
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 800px) {
   .question_addition_modal {
     margin-top: 5rem;
     width: 100%;
@@ -144,7 +144,7 @@
       overflow: hidden !important;
       min-width: 80vw !important;
       min-height: 20rem;
-      margin-top: 2rem;
+      margin-top: var(--margin_M) !important;
       &_top {
         display: none;
       }
