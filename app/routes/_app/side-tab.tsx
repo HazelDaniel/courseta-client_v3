@@ -78,7 +78,7 @@ export const SideTab: React.FC = () => {
     >
       <Logo />
       <div
-        className={expanded ? styles["side_tab_toggler"] + " " + styles.flipped :  styles["side_tab_toggler"]}
+        className={!expanded ? styles["side_tab_toggler"] + " " + styles.flipped :  styles["side_tab_toggler"]}
         onClick={() => expand((prev) => !prev)}
       >
         <svg viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
