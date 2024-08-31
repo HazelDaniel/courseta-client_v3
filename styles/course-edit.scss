@@ -332,13 +332,13 @@
     height: 20rem;
     align-items: center;
     display: flex;
-    gap: 5rem;
     width: max-content;
     margin: 0 auto;
     p {
       color: var(--label-color);
       font-size: 2.5rem;
       font-family: Inter, "sans-serif";
+      margin-right: var(--margin_L);
       &::first-letter {
         text-transform: uppercase;
       }
@@ -514,6 +514,15 @@
         width: 80%;
         max-width: 80vw !important;
       }
+    }
+  }
+  .empty_exam_area {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    p {
+      margin-right: unset;
+      margin-bottom: var(--margin_M);
     }
   }
 }
