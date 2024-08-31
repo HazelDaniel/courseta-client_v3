@@ -154,8 +154,6 @@
   }
 }
 
-
-
 .dashboard_table_head {
   border-radius: 0.8rem;
   display: flex;
@@ -303,6 +301,7 @@
         object-fit: cover;
         aspect-ratio: 1 / 1;
         position: relative;
+        filter: grayscale(1) blur(2px);
       }
       &.vertical {
         flex-direction: column;
