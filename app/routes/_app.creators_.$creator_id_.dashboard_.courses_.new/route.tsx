@@ -8,6 +8,7 @@ import React, {
   useReducer,
   useState,
 } from "react";
+import { ContextButtonHOC } from "~/components/context-button";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
 import { v3Config } from "~/config/base";
 import { ModalProvider } from "~/contexts/modal.context";
@@ -80,6 +81,27 @@ export const courseTagsUpdateFormData: DashboardCustomInputType<string> = {
   images: [],
 };
 
+const CourseCreationButton: React.FC<{courseCreationState: Partial<CourseEditStateType>; uploadImageState: [string | null, string | null]}> = ({courseCreationState, uploadImageState}) => {
+  const submit = useSubmit();
+  const resCourseCreationPayload = serializeCourseCreationState(
+    courseCreationState,
+    uploadImageState
+  );
+  const MutationButtonContent = (ContextButtonHOC(() => <> save changes</>
+)({classes: ["primary"], onClick: () => {
+
+
+    submit(resCourseCreationPayload, {
+      method: "post",
+      encType: "application/json",
+      action: "./",
+      navigate: false,
+    })
+}
+}));
+  return MutationButtonContent;
+}
+
 export const CourseCreationArea: React.FC = React.memo(() => {
   const emptyDefault = useMemo(() => ({}), []);
   const [courseCreationState, setCourseCreationState] = useState<
@@ -90,7 +112,6 @@ export const CourseCreationArea: React.FC = React.memo(() => {
     [string | null, string | null]
   >([null, null]);
 
-  const submit = useSubmit();
   const navigate = useNavigate();
 
   const courseCreationStateHandler = useCallback(
@@ -165,24 +186,8 @@ export const CourseCreationArea: React.FC = React.memo(() => {
         >
           cancel
         </button>
-        <button
-          className="primary"
-          onClick={() => {
-            const resCourseCreationPayload = serializeCourseCreationState(
-              courseCreationState,
-              uploadImageState
-            );
 
-            submit(resCourseCreationPayload, {
-              method: "post",
-              encType: "application/json",
-              action: "./",
-              navigate: false,
-            });
-          }}
-        >
-          save changes
-        </button>
+        <CourseCreationButton courseCreationState={courseCreationState} uploadImageState={uploadImageState}/>
       </div>
     </>
   );

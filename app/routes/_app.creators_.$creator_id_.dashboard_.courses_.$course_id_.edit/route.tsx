@@ -1,20 +1,14 @@
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import {
-  Await,
   Form,
   Link,
-  ShouldRevalidateFunction,
-  defer,
   isRouteErrorResponse,
   json,
-  useAsyncError,
-  useAsyncValue,
   useLoaderData,
   useNavigate,
   useOutletContext,
   useParams,
   useRouteError,
-  useSearchParams,
   useSubmit,
 } from "@remix-run/react";
 import React, {
@@ -26,38 +20,30 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
   useState,
 } from "react";
 import { CourseContentIcon } from "~/components/course-accordion";
 import { DashboardFormInput } from "~/components/dashboard-form-input";
 import { LessonItemAdditionBox } from "~/components/lesson-item-addition-box";
-import { courseDataDetailed } from "~/data/course-list";
 import "~/styles/course-creation-page.css";
 import "~/styles/course-edit.css";
 
 import {
   ActionButtonType,
-  ActionResponseType,
-  CourseDetailType,
   CourseEditActionIntentType,
   CourseEditPayloadType,
   CourseEditStateType,
-  CourseEntryType,
   CourseExamType2,
   CourseInfoEditActionType,
   CourseItemDeletionActionType,
-  CourseLessonType,
   CourseLessonType2,
   CreatorProfileType,
   DashboardCustomInputType,
   DefaultCourseFormDataType,
-  DefaultDashboardFormDataType,
-  DefaultFormDataType,
   LessonAdditionActionType,
   LessonAdditionPayloadType,
   LessonContentAdditionPayloadType,
-  LessonContentCreationPayloadType,
+  LessonContentType2,
   LoaderResponseType,
 } from "~/types";
 import {
@@ -73,7 +59,9 @@ import {
 } from "~/contexts/modal.context";
 import {
   InitialLessonUpdateState,
+  LessonUpdateActionType,
   LessonUpdateReducer,
+  LessonUpdateStateType,
   __addContent,
   __addQuiz,
   __reset,
@@ -90,6 +78,8 @@ import {
   __addLesson,
   __updateTitle,
   __reset as __creationReset,
+  LessonCreationStateType,
+  LessonCreationActionType,
 } from "~/reducers/lesson-creation.reducer";
 import {
   LessonCreationContext,
@@ -107,6 +97,7 @@ import { serializeLessonQuizForAction } from "~/serializers/quiz.serializer";
 import { CreatorCourseEditViewType, ServerPayloadType } from "~/server.types";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { jsonWithError, jsonWithSuccess } from "remix-toast";
+import { ContextButtonHOC } from "~/components/context-button";
 
 export const courseTitleUpdateFormData: DashboardCustomInputType<string> = {
   heading: "",
@@ -181,8 +172,6 @@ export const courseLessonTitleCreateForm: DashboardCustomInputType<string> = {
   buttons: [],
   images: [],
 };
-
-
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const { creator_id: creatorID, course_id: courseID } = params;
@@ -285,7 +274,6 @@ export const AccordionPromptbox: React.FC<{ position: number }> = React.memo(
       ModalContext
     ) as ModalContextValueType;
     const checkLessonQuizPresent = useCallback(() => {
-      console.log("are the lessons being calculated again?");
       const resultLesson = lessons.find((el) => el.id === position);
       if (!resultLesson) return true;
       return !!resultLesson.quiz;
@@ -323,13 +311,12 @@ export const AccordionPromptbox: React.FC<{ position: number }> = React.memo(
           </button>
           <button
             disabled={checkLessonQuizPresent()}
-            onClick={() =>{
+            onClick={() => {
               if (checkLessonQuizPresent()) return;
               navigate(`../lessons/${position}/quizzes/new`, {
                 relative: "path",
-              })
-            }
-            }
+              });
+            }}
           >
             Quiz
           </button>
@@ -403,10 +390,177 @@ const EditAccordionHead: React.FC<{
   );
 });
 
+const LessonContentDeletionButton: React.FC<{
+  lesson: CourseLessonType2;
+  content: LessonContentType2;
+}> = ({ lesson, content }) => {
+  const submit = useSubmit();
+  const MutationButtonContent = ContextButtonHOC(() => (
+    <svg>
+      <use xlinkHref="#delete"></use>
+    </svg>
+  ))({
+    classes: [],
+    onClick: () => {
+      const payload: CourseItemDeletionActionType = {
+        intent: "DELETE_CONTENT",
+        payload: { contentID: content.id, lessonID: lesson.id },
+      };
+
+      submit(payload as any, {
+        method: "post",
+        action: "./",
+        encType: "application/json",
+        navigate: false,
+      });
+    },
+  });
+  return MutationButtonContent;
+};
+
+const QuizDeletionButton: React.FC<{ lesson: CourseLessonType2 }> = ({
+  lesson,
+}) => {
+  const submit = useSubmit();
+
+  const MutationButtonContent = ContextButtonHOC(() => (
+    <svg>
+      <use xlinkHref="#delete"></use>
+    </svg>
+  ))({
+    classes: [],
+    onClick: () => {
+      const payload: CourseItemDeletionActionType = {
+        intent: "DELETE_QUIZ",
+        payload: {
+          quizID: lesson.quiz?.id.toString(),
+          lessonID: lesson.id,
+        },
+      };
+      submit(payload as any, {
+        method: "post",
+        action: "./",
+        encType: "application/json",
+        navigate: false,
+      });
+    },
+  });
+  return MutationButtonContent;
+};
+
+const CourseEditButton: React.FC<{courseEditState: CourseEditStateType, uploadImageState: [string | null, string | null]}> = ({courseEditState, uploadImageState}) => {
+  const submit = useSubmit();
+
+  const MutationButtonContent = ContextButtonHOC(() => (
+    <>
+    save changes
+    </>
+  ))({
+    classes: ["primary"],
+    onClick: () => {
+      const resCourseEditPayload = serializeCourseEditState(
+        courseEditState,
+        uploadImageState
+      );
+      const payload: CourseInfoEditActionType = {
+        intent: "UPDATE_INFO",
+        payload: resCourseEditPayload,
+      };
+
+      submit(payload as any, {
+        method: "post",
+        encType: "application/json",
+        action: "./",
+        navigate: false,
+      });
+    },
+  });
+  return MutationButtonContent;
+};
+
+const ExamEditButton: React.FC<{exam: Omit<CourseExamType2, "description">}> = ({exam}) => {
+  const submit = useSubmit();
+
+  const MutationButtonContent = ContextButtonHOC(() => (
+    <>
+      delete exam
+      <span>
+        <svg>
+          <use xlinkHref="#trash"></use>
+        </svg>
+      </span>
+    </>
+  ))({
+    classes: [],
+    onClick: () => {
+      const payload: CourseItemDeletionActionType = {
+        intent: "DELETE_EXAM",
+        payload: { examID: exam.id.toString() },
+      };
+      submit(payload as any, {
+        method: "post",
+        action: "./",
+        encType: "application/json",
+        navigate: false,
+      });
+    },
+  });
+  return MutationButtonContent;
+};
+
+const LessonContentAdditionButton: React.FC<{
+  lessonCreationState: LessonCreationStateType;
+  lessonUpdateState: LessonUpdateStateType;
+  lessonCreationDispatch: React.Dispatch<LessonCreationActionType>;
+  lessonUpdateDispatch: React.Dispatch<LessonUpdateActionType>;
+}> = ({
+  lessonCreationState,
+  lessonUpdateState,
+  lessonCreationDispatch,
+  lessonUpdateDispatch,
+}) => {
+  const submit = useSubmit();
+  const courseID = useParams()["course_id"];
+
+  const MutationButtonContent = ContextButtonHOC(() => <>save changes</>)({
+    classes: ["primary"],
+    onClick: () => {
+      const lessonData = serializeLessonStateForAction(
+        lessonCreationState.lessons,
+        +(courseID as string)
+      );
+      const lessonContentData = serializeLessonContentForAction(
+        lessonUpdateState.lessonContents
+      );
+      const lessonQuizData = serializeLessonQuizForAction(
+        lessonUpdateState.lessonQuizzes
+      );
+      const resPayload: LessonAdditionActionType = {
+        intent: "ADD_LESSONS",
+        payload: { lessonData, lessonContentData, lessonQuizData },
+      };
+      lessonUpdateDispatch(
+        __reset({
+          lessonContents: [],
+          lessonQuizCount: 0,
+          lessonQuizzes: [],
+        })
+      );
+      lessonCreationDispatch(__creationReset({ lessons: [] }));
+      submit(resPayload as any, {
+        method: "post",
+        action: "./",
+        encType: "application/json",
+        navigate: false,
+      });
+    },
+  });
+  return MutationButtonContent;
+};
+
 export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType2 }> =
   React.memo(({ lesson }) => {
     const [detailVisible, setDetailVisible] = useState<boolean>(false);
-    const submit = useSubmit();
     return (
       <div className="accordion_section">
         <EditAccordionHead
@@ -421,24 +575,10 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType2 }> =
               <li key={content.id}>
                 <CourseContentIcon type={content.contentType || "text"} />
                 <p>{content.title}</p>
-                <button
-                  onClick={() => {
-                    const payload: CourseItemDeletionActionType = {
-                      intent: "DELETE_CONTENT",
-                      payload: { contentID: content.id, lessonID: lesson.id },
-                    };
-                    submit(payload as any, {
-                      method: "post",
-                      action: "./",
-                      encType: "application/json",
-                      navigate: false,
-                    });
-                  }}
-                >
-                  <svg>
-                    <use xlinkHref="#delete"></use>
-                  </svg>
-                </button>
+                <LessonContentDeletionButton
+                  lesson={lesson}
+                  content={content}
+                />
               </li>
             );
           })}
@@ -475,27 +615,7 @@ export const CourseEditAccordionEntry: React.FC<{ lesson: CourseLessonType2 }> =
                 </span>
               </Link>
 
-              <button
-                onClick={() => {
-                  const payload: CourseItemDeletionActionType = {
-                    intent: "DELETE_QUIZ",
-                    payload: {
-                      quizID: lesson.quiz?.id.toString(),
-                      lessonID: lesson.id,
-                    },
-                  };
-                  submit(payload as any, {
-                    method: "post",
-                    action: "./",
-                    encType: "application/json",
-                    navigate: false,
-                  });
-                }}
-              >
-                <svg>
-                  <use xlinkHref="#delete"></use>
-                </svg>
-              </button>
+              <QuizDeletionButton lesson={lesson} />
             </li>
           ) : null}
         </ul>
@@ -549,8 +669,6 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
   const { lessonCreationState, lessonCreationDispatch } = useContext(
     LessonCreationContext
   ) as LessonCreationContextValueType;
-  const submit = useSubmit();
-  const courseID = useParams()["course_id"];
   const lessonUpdateStateDefault = useMemo(
     () => ({
       lessonContents: [],
@@ -662,41 +780,12 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
         >
           cancel
         </button>
-        <button
-          className="primary"
-          onClick={() => {
-            const lessonData = serializeLessonStateForAction(
-              lessonCreationState.lessons,
-              +(courseID as string)
-            );
-            const lessonContentData = serializeLessonContentForAction(
-              lessonUpdateState.lessonContents
-            );
-            const lessonQuizData = serializeLessonQuizForAction(
-              lessonUpdateState.lessonQuizzes
-            );
-            const resPayload: LessonAdditionActionType = {
-              intent: "ADD_LESSONS",
-              payload: { lessonData, lessonContentData, lessonQuizData },
-            };
-            lessonUpdateDispatch(
-              __reset({
-                lessonContents: [],
-                lessonQuizCount: 0,
-                lessonQuizzes: [],
-              })
-            );
-            lessonCreationDispatch(__creationReset({ lessons: [] }));
-            submit(resPayload as any, {
-              method: "post",
-              action: "./",
-              encType: "application/json",
-              navigate: false,
-            });
-          }}
-        >
-          save changes
-        </button>
+        <LessonContentAdditionButton
+          lessonCreationDispatch={lessonCreationDispatch}
+          lessonCreationState={lessonCreationState}
+          lessonUpdateDispatch={lessonUpdateDispatch}
+          lessonUpdateState={lessonUpdateState}
+        />
       </div>
     </LessonUpdateProvider>
   );
@@ -704,7 +793,6 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
 
 export const ExamEditArea: React.FC = React.memo(() => {
   const submit = useSubmit();
-  const { course_id: courseID } = useParams();
   const { exam } = useLoaderData<typeof loader>() as {
     exam: Omit<CourseExamType2, "description"> | null | undefined;
   };
@@ -744,27 +832,8 @@ export const ExamEditArea: React.FC = React.memo(() => {
                   </svg>
                 </span>
               </Link>
-              <button
-                onClick={() => {
-                  const payload: CourseItemDeletionActionType = {
-                    intent: "DELETE_EXAM",
-                    payload: { examID: exam.id.toString() },
-                  };
-                  submit(payload as any, {
-                    method: "post",
-                    action: "./",
-                    encType: "application/json",
-                    navigate: false,
-                  });
-                }}
-              >
-                delete exam
-                <span>
-                  <svg>
-                    <use xlinkHref="#trash"></use>
-                  </svg>
-                </span>
-              </button>
+              <ExamEditButton exam={exam}/>
+
             </div>
           </>
         ) : (
@@ -889,28 +958,8 @@ export const CourseCreationArea: React.FC = React.memo(() => {
         >
           cancel
         </button>
-        <button
-          className="primary"
-          onClick={() => {
-            const resCourseEditPayload = serializeCourseEditState(
-              courseEditState,
-              uploadImageState
-            );
-            const payload: CourseInfoEditActionType = {
-              intent: "UPDATE_INFO",
-              payload: resCourseEditPayload,
-            };
+        <CourseEditButton courseEditState={courseEditState} uploadImageState={uploadImageState}/>
 
-            submit(payload as any, {
-              method: "post",
-              encType: "application/json",
-              action: "./",
-              navigate: false,
-            });
-          }}
-        >
-          save changes
-        </button>
       </div>
     </>
   );
@@ -1022,7 +1071,7 @@ export default CourseEditPage;
 
 export const action: ActionFunction = async ({ params, request }) => {
   try {
-    const reqJson = await request.json() as ActionButtonType<object>;
+    const reqJson = (await request.json()) as ActionButtonType<object>;
     const { creator_id: creatorID, course_id: courseID } = params;
     const cookieHeader = request.headers.get("Cookie");
     let requestURL: string;
@@ -1039,7 +1088,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 201) break;
-        return jsonWithSuccess(null, "lessons added successfully!")
+        return jsonWithSuccess(null, "lessons added successfully!");
       }
       case "ADD_LESSON_CONTENT": {
         let payloadJson: LessonContentAdditionPayloadType =
@@ -1051,8 +1100,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 201) break;
-        return jsonWithSuccess(null, "lesson content added successfully!")
-
+        return jsonWithSuccess(null, "lesson content added successfully!");
       }
       case "DELETE_CONTENT": {
         let payloadJson: CourseItemDeletionActionType["payload"] =
@@ -1064,7 +1112,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 204) break;
-        return jsonWithSuccess(null, "lesson content deleted successfully!")
+        return jsonWithSuccess(null, "lesson content deleted successfully!");
       }
       case "DELETE_QUIZ": {
         let payloadJson: CourseItemDeletionActionType["payload"] =
@@ -1076,7 +1124,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 204) break;
-        return jsonWithSuccess(null, "quiz deleted successfully!")
+        return jsonWithSuccess(null, "quiz deleted successfully!");
       }
       case "DELETE_EXAM": {
         let payloadJson: CourseItemDeletionActionType["payload"] =
@@ -1088,15 +1136,21 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 204) break;
-        return jsonWithSuccess(null, "quiz deleted successfully!")
+        return jsonWithSuccess(null, "quiz deleted successfully!");
       }
       case "UPDATE_INFO": {
         let payloadJson: CourseEditPayloadType =
           reqJson.payload as CourseEditPayloadType;
         requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}`;
         if (payloadJson.images && payloadJson.images.length) {
-          console.log("original image size is ", payloadJson.images[0]?.length || 0);
-          console.log("thumbnail image size is ", payloadJson.images[1]?.length || 0);
+          console.log(
+            "original image size is ",
+            payloadJson.images[0]?.length || 0
+          );
+          console.log(
+            "thumbnail image size is ",
+            payloadJson.images[1]?.length || 0
+          );
         }
 
         actionRequest = await axios.put(requestURL, payloadJson, {
@@ -1105,7 +1159,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 200) break;
-        return jsonWithSuccess(null, "course updated successfully!")
+        return jsonWithSuccess(null, "course updated successfully!");
       }
       case "DELETE_LESSON": {
         let payloadJson: CourseItemDeletionActionType["payload"] =
@@ -1117,12 +1171,16 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 204) break;
-        return jsonWithSuccess(null, "lesson deleted successfully!")
+        return jsonWithSuccess(null, "lesson deleted successfully!");
       }
     }
   } catch (err) {
     if (err instanceof AxiosError)
-      return jsonWithError(null, "could not proceed with action! REASON: " + (`${err.response?.data.message}` || "unknown"))
+      return jsonWithError(
+        null,
+        "could not proceed with action! REASON: " +
+          (`${err.response?.data.message}` || "unknown")
+      );
     throw json(
       {
         error:

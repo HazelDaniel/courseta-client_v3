@@ -44,7 +44,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     if (!!isHomePage) {
       return json({}, { headers });
     }
-    console.log("the api url is: ", v3Config.apiUrl);
     const cookieHeader = request.headers.get("Cookie");
     const userRequest = await axios.get(`${v3Config.apiUrl}/users/current`, {
       headers: {

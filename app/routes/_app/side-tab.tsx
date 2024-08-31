@@ -13,6 +13,7 @@ import styles from "~/styles/side-tab.module.css";
 import { SessionUserType, UserRoleType } from "~/server.types";
 import { UserAuthActionType } from "~/types";
 import { useState } from "react";
+import { ContextButtonHOC } from "~/components/context-button";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
@@ -25,25 +26,7 @@ const AuthControlButton: React.FC = () => {
   };
   const submit = useSubmit();
 
-  return (
-    <button
-      onClick={() => {
-        if (user) {
-          const payload: UserAuthActionType = {
-            intent: "LOGOUT",
-            payload: { id: user.id, role: user.role },
-          };
-          submit(payload as any, {
-            action: "/",
-            encType: "application/json",
-            navigate: false,
-            method: "post",
-          });
-          return;
-        }
-        navigate("/auth?type=sign_in", { replace: true });
-      }}
-    >
+  const MutationButtonContent = (ContextButtonHOC(() => <>
       {user ? "LOGOUT" : "LOGIN"}
       <span>
         <svg>
@@ -54,9 +37,27 @@ const AuthControlButton: React.FC = () => {
           )}
         </svg>
       </span>
-    </button>
-  );
-};
+  </>
+)({classes: [], onClick: () => {
+    if (user) {
+      const payload: UserAuthActionType = {
+        intent: "LOGOUT",
+        payload: { id: user.id, role: user.role },
+      };
+      submit(payload as any, {
+        action: "/",
+        encType: "application/json",
+        navigate: false,
+        method: "post",
+      });
+      return;
+    }
+    navigate("/auth?type=sign_in", { replace: true });
+  }
+}));
+  return MutationButtonContent;
+}
+
 
 export const SideTab: React.FC = () => {
   const location = useLocation();

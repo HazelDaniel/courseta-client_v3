@@ -1,5 +1,6 @@
 import { useNavigate, useRouteLoaderData, useSubmit } from "@remix-run/react";
 import { CachableImage } from "~/components/cachable-image";
+import { ContextButtonHOC } from "~/components/context-button";
 import { CourseDetailViewType, SessionUserType } from "~/server.types";
 import styles from "~/styles/course-stat-info.module.css";
 import {
@@ -13,6 +14,56 @@ import {
 //   return [{ rel: "stylesheet", href: styles }];
 // };
 
+const CourseReviewButton: React.FC = () => {
+  const navigate = useNavigate();
+  const MutationButtonContent = (ContextButtonHOC(() => <> Review Course </>
+)({classes: [styles.course_cta, styles.secondary], onClick: () => {
+    navigate("./reviews", { state: { focusReviewBox: true } });
+  }
+}));
+  return MutationButtonContent;
+}
+
+const CourseEnrollButton: React.FC = () => {
+  const navigate = useNavigate();
+  const loadedResult = useRouteLoaderData(
+    "routes/_app.courses_.$course_id"
+  ) as {
+    creator: CourseCreatorViewType;
+    course: CourseDetailViewType;
+    user: SessionUserType;
+  };
+  const { course, user } = loadedResult;
+  const submit = useSubmit();
+
+  const MutationButtonContent = (ContextButtonHOC(() => <> 
+    {course.isEnrolled ? "Unenroll" : "Enroll Now"}
+  </>
+)({classes: [styles.course_cta], onClick: () => {
+    if (!user) {
+      navigate("/auth?type=sign_in");
+      return;
+    }
+    if (user.role === "creator") return;
+    const payload = {
+      studentID: user.id,
+    } as StudentEnrollPayloadType;
+    const resPayload = {
+      intent: !course.isEnrolled ? "ENROLL": "UNENROLL",
+      payload,
+    } as StudentEnrollActionType;
+
+    submit(resPayload as any, {
+      action: "./?index",
+      method: "POST",
+      encType: "application/json",
+      navigate: false,
+    });
+  }
+}));
+  return MutationButtonContent;
+}
+
 export const CourseStatInfo: React.FC = () => {
   const loadedResult = useRouteLoaderData(
     "routes/_app.courses_.$course_id"
@@ -21,9 +72,7 @@ export const CourseStatInfo: React.FC = () => {
     course: CourseDetailViewType;
     user: SessionUserType;
   };
-  const { creator, course, user } = loadedResult;
-  const navigate = useNavigate();
-  const submit = useSubmit();
+  const { creator, course } = loadedResult;
   return (
     <aside className={styles.course_stat_info_styled}>
       <div className={styles.course_stat_info_area}>
@@ -65,42 +114,11 @@ export const CourseStatInfo: React.FC = () => {
           <div className={styles.stat_info_bottom}></div>
         </div>
         <div className={styles.course_cta_area}>
-          <button
-            className={styles.course_cta}
-            disabled={user && user.role === "creator"}
-            onClick={() => {
-              if (!user) {
-                navigate("/auth?type=sign_in");
-                return;
-              }
-              if (user.role === "creator") return;
-              const payload = {
-                studentID: user.id,
-              } as StudentEnrollPayloadType;
-              const resPayload = {
-                intent: !course.isEnrolled ? "ENROLL": "UNENROLL",
-                payload,
-              } as StudentEnrollActionType;
+          <CourseEnrollButton/>
 
-              submit(resPayload as any, {
-                action: "./?index",
-                method: "POST",
-                encType: "application/json",
-                navigate: false,
-              });
 
-            }}
-          >
-            {course.isEnrolled ? "Unenroll" : "Enroll Now"}
-          </button>
-          <button
-            className={`${styles.course_cta} ${styles.secondary}`}
-            onClick={() => {
-              navigate("./reviews", { state: { focusReviewBox: true } });
-            }}
-          >
-            Review Course
-          </button>
+          <CourseReviewButton/>
+
         </div>
       </div>
 

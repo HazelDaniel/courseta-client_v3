@@ -19,6 +19,7 @@ import React, {
   useState,
 } from "react";
 import { jsonWithError, jsonWithSuccess } from "remix-toast";
+import { ContextButtonHOC } from "~/components/context-button";
 import { QuestionAdditionModal } from "~/components/question-addition-modal";
 import { v3Config } from "~/config/base";
 import {
@@ -262,9 +263,8 @@ export const AssessmentTableHead: React.FC = React.memo(() => {
   );
 });
 
-export const AssessmentEditCtaArea: React.FC = React.memo(() => {
-  const navigate = useNavigate();
-  const { creator_id: creatorID, assessment_id: assessmentID } = useParams();
+
+const AssessmentEditButton: React.FC = () => {
   const { questionAdditionState } = useContext(
     questionAdditionContext
   ) as QuestionAdditionContextValueType;
@@ -272,6 +272,50 @@ export const AssessmentEditCtaArea: React.FC = React.memo(() => {
   let loadedResult: { assessment: CreatorAssessmentEditViewType } =
     useLoaderData<typeof loader>();
   const { assessment } = loadedResult;
+  const { assessment_id: assessmentID } = useParams();
+
+  const MutationButtonContent = ContextButtonHOC(() => <> save changes </>)({
+    classes: ["primary"],
+    onClick: () => {
+      const questionDataList = serializeQuestionsForAction(
+        questionAdditionState.draftQuestions,
+        assessmentID as string,
+        assessment.assessmentType || "quiz"
+      );
+      const answerDataList = serializeAnswersForAction(
+        questionAdditionState.answers
+      );
+      const trashQuestionIDList = serializeTrashQuestionsForAction(
+        questionAdditionState.trashedQuestions
+      );
+      const payload = {
+        answerDataList,
+        questionDataList,
+        trashQuestionIDList,
+        parentEntityID: assessment.parentID,
+      } as AssessmentEditPayloadType;
+
+      const submitPayload: AssessmentEditActionType = {
+        intent:
+          assessment.assessmentType === "exam" ? "UPDATE_EXAM" : "UPDATE_QUIZ",
+        payload,
+      };
+
+      submit(submitPayload as any, {
+        method: "post",
+        action: "./",
+        encType: "application/json",
+        navigate: false,
+        fetcherKey: "assessment-update",
+      });
+    },
+  });
+  return MutationButtonContent;
+};
+
+export const AssessmentEditCtaArea: React.FC = React.memo(() => {
+  const navigate = useNavigate();
+  const { creator_id: creatorID } = useParams();
 
   return (
     <div className="assessment_edit_cta_area">
@@ -284,49 +328,7 @@ export const AssessmentEditCtaArea: React.FC = React.memo(() => {
       >
         cancel
       </button>
-      <button
-        className="primary"
-        onClick={() => {
-          const questionDataList = serializeQuestionsForAction(
-            questionAdditionState.draftQuestions,
-            assessmentID as string,
-            assessment.assessmentType || "quiz"
-          );
-          const answerDataList = serializeAnswersForAction(
-            questionAdditionState.answers
-          );
-          const trashQuestionIDList = serializeTrashQuestionsForAction(
-            questionAdditionState.trashedQuestions
-          );
-          const payload = {
-            answerDataList,
-            questionDataList,
-            trashQuestionIDList,
-            parentEntityID: assessment.parentID,
-          } as AssessmentEditPayloadType;
-
-          const submitPayload: AssessmentEditActionType = {
-            intent:
-              assessment.assessmentType === "exam"
-                ? "UPDATE_EXAM"
-                : "UPDATE_QUIZ",
-            payload,
-          };
-
-          submit(submitPayload as any, {
-            method: "post",
-            action: "./",
-            encType: "application/json",
-            navigate: false,
-            fetcherKey: "assessment-update"
-          });
-
-          // window?.location.reload(); // BUGFIX: for some reasons, revalidation is not triggering context reset. so i just rawdog it. let me know if you find a better way
-          // in hind signt . this is anti-pattern please re-write
-        }}
-      >
-        save changes
-      </button>
+      <AssessmentEditButton />
     </div>
   );
 });
@@ -425,9 +427,9 @@ export const AssessmentEditArea: React.FC = () => {
   }, [loadedResult, transformedAnswers, transformedQuestions]);
 
   // BUGFIX: there's a mismatch here. fix it
-  console.log("transformed questions are ", transformedQuestions);
-  console.log("while loaded questions are ", loadedResult.assessment.questions);
-  console.log("and questions state is ", questionState);
+  // console.log("transformed questions are ", transformedQuestions);
+  // console.log("while loaded questions are ", loadedResult.assessment.questions);
+  // console.log("and questions state is ", questionState);
 
   return (
     <div className="edit_area">
@@ -487,7 +489,10 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 201) break;
-        return jsonWithSuccess(null, actionRequest.data.message || "assessment updated successfully!")
+        return jsonWithSuccess(
+          null,
+          actionRequest.data.message || "assessment updated successfully!"
+        );
       }
     }
     if (actionRequest.status - 500 >= 0)
@@ -499,7 +504,11 @@ export const action: ActionFunction = async ({ params, request }) => {
       } as ActionResponseType<null>);
   } catch (err) {
     if (err instanceof AxiosError)
-      return jsonWithError(null, "could not proceed with action! REASON: " + (`${err.response?.data.message}` || "unknown"))
+      return jsonWithError(
+        null,
+        "could not proceed with action! REASON: " +
+          (`${err.response?.data.message}` || "unknown")
+      );
     throw json(
       {
         error:
