@@ -73,7 +73,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const SignInForm: React.FC = () => {
   const [isCreatorStatus, setCreatorStatus] = useState<boolean>(false);
-  const { Form, submit } = useFetcher({ key: "sign-in-fetcher" });
+  const { Form, submit, state } = useFetcher({ key: "sign-in-fetcher" });
   const formRef = useRef<HTMLFormElement>(null);
 
   return (
@@ -148,7 +148,18 @@ export const SignInForm: React.FC = () => {
         </div>
       ) : null}
 
-      <button type="submit">SIGN IN</button>
+      <button type="submit" className="with_loader" disabled={state === "submitting"}>
+        SIGN IN
+        <div
+          className={`button_loader${
+            state === "submitting" ? " submitting" : ""
+          }`}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
     </Form>
   );
 };
@@ -171,7 +182,7 @@ export const SignupCheckBox: React.FC = () => {
 };
 
 export const SignUpForm: React.FC = () => {
-  const { Form, submit } = useFetcher({ key: "sign-up-fetcher" });
+  const { Form, submit, state } = useFetcher({ key: "sign-up-fetcher" });
   const { redirectPayload }: { redirectPayload: RedirectPayloadType } =
     useLoaderData<typeof loader>() as { redirectPayload: RedirectPayloadType };
   const [paramsState, setParamsState] = useSearchParams();
@@ -253,10 +264,21 @@ export const SignUpForm: React.FC = () => {
       <div className={`${styles.input_wrapper}`}>
         <label htmlFor="asCreator">sign up as creator</label>
         {/* here */}
-        <SignupCheckBox/>
+        <SignupCheckBox />
       </div>
 
-      <button type="submit">SIGN UP</button>
+      <button type="submit" className="with_loader" disabled={state === "submitting"}>
+        SIGN UP
+        <div
+          className={`button_loader${
+            state === "submitting" ? " submitting" : ""
+          }`}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
     </Form>
   );
 };
