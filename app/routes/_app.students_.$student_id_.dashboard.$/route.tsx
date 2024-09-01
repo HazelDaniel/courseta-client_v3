@@ -3,6 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 import axios, { AxiosResponse } from "axios";
 import { useMemo, useReducer } from "react";
 import { LoaderFunction, json } from "react-router";
+import { redirectWithError } from "remix-toast";
 import { DashboardBody } from "~/components/dashboard-body";
 import { v3Config } from "~/config/base";
 import { ModalProvider } from "~/contexts/modal.context";
@@ -18,6 +19,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   try {
     const studentID = params["student_id"];
     const cookieHeader = request.headers.get("Cookie");
+
+    if (!studentID) return redirectWithError("/auth?type=sign_in&role=student", "you need to sign in first!");
 
     const axiosInstance = axios.create();
     axiosInstance.interceptors.response.use(

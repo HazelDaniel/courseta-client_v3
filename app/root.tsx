@@ -29,14 +29,19 @@ import axios, { AxiosResponse } from "axios";
 import { v3Config } from "./config/base";
 import { ServerPayloadType } from "./server.types";
 import { NotFound } from "./components/not-found";
-import { getToast } from "remix-toast";
+import { getToast, redirectWithError } from "remix-toast";
 import { toast as raiseToast, Toaster } from "sonner";
 import { useEffect, useState } from "react";
+import { isPublicRoute } from "./utils/global";
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   try {
     const { request } = args;
     const { toast, headers } = await getToast(request);
+    const url = new URL(request.url);
+    const currPath = url.pathname;
+
+
     const paths = request.url.split("/");
     const isHomePage =
       /^home$/.test(paths[paths.length - 1]) ||
@@ -54,6 +59,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     if (userRequest.status === 200)
       globalUser = (userRequest.data as ServerPayloadType<null>)?.user;
     else globalUser = undefined;
+    if (!globalUser && !isPublicRoute(currPath)) return redirectWithError("/auth?type=sign_in", "you need to sign in first!");
     return json({ user: globalUser, toast }, { headers });
   } catch (err) {
     console.error(err);

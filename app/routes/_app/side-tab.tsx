@@ -113,7 +113,7 @@ export const SideTab: React.FC = () => {
                 </svg>
               </span>
               <NavLink
-                onClick={() => expand(prev => !prev)}
+                onClick={() => expand(false)}
                 to={`/${userEntity}/${rootContext.user?.id}/dashboard`}
                 className={
                   /^\/(students|creators)\/.*\/dashboard(\/)?/i.test(
@@ -130,8 +130,7 @@ export const SideTab: React.FC = () => {
             <div className={styles.sub_nav_list}>
               <span className={styles.sub_nav_item}>
                 <span></span>
-                <Link
-                onClick={() => expand(prev => !prev)}
+                <Link onClick={() => expand(false)}
                   to={`/${userEntity}/${rootContext.user?.id}/dashboard/courses`}
                   className={
                     /^\/(students|creators)\/.*\/dashboard\/courses$/i.test(
@@ -148,8 +147,7 @@ export const SideTab: React.FC = () => {
               {userEntity === "students" ? (
                 <span className={styles.sub_nav_item}>
                   <span></span>{" "}
-                  <Link
-										onClick={() => expand(prev => !prev)}
+                    <Link onClick={() => expand(false)}
                     to={`/${userEntity}/${rootContext.user?.id}/dashboard/assessment-results`}
                     className={
                       /^\/(students|creators)\/.*\/dashboard\/assessment-results/i.test(
@@ -166,8 +164,7 @@ export const SideTab: React.FC = () => {
 
               <span className={styles.sub_nav_item}>
                 <span></span>
-                <Link
-									onClick={() => expand(prev => !prev)}
+                  <Link onClick={() => expand(false)}
                   to={`/${userEntity}/${rootContext.user?.id}/dashboard/profile`}
                   className={
                     /^\/(students|creators)\/.*\/dashboard(\/)?$/i.test(
@@ -193,8 +190,7 @@ export const SideTab: React.FC = () => {
                   <use xlinkHref="#course"></use>
                 </svg>
               </span>
-              <Link
-								onClick={() => expand(prev => !prev)}
+                <Link onClick={() => expand(false)}
                 to="/courses"
                 className={
                   location.pathname === "/courses" ? styles.active : ""
@@ -212,8 +208,7 @@ export const SideTab: React.FC = () => {
                   <use xlinkHref="#analytics"></use>
                 </svg>
               </span>
-              <Link
-								onClick={() => expand(prev => !prev)}
+                <Link onClick={() => expand(false)}
                 to="/activities"
                 className={
                   location.pathname === "/activities" ? styles.active : ""
