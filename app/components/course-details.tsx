@@ -129,12 +129,12 @@ export const AssessmentForm: React.FC<{
       : variant === "quiz"
       ? params["assessment_id"]
       : "";
-  if (!assessment) return <NotFound />;
-  const [selectionState, selectionDispatch] = useReducer(
-    AssessmentSubmissionReducer,
-    InitialAssessmentSubmissionState
-  );
-
+      const [selectionState, selectionDispatch] = useReducer(
+        AssessmentSubmissionReducer,
+        InitialAssessmentSubmissionState
+      );
+      
+      if (!assessment) return <NotFound />;
   
 
   // useEffect(() => {

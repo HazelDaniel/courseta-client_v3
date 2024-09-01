@@ -6,5 +6,5 @@ export interface LessonUpdateContextValueType {
   lessonUpdateDispatch: React.Dispatch<LessonUpdateActionType>;
 }
 
-export const LessonUpdateContext = React.createContext<LessonUpdateContextValueType | null>(null);
+export const LessonUpdateContext = React.createContext<LessonUpdateContextValueType | any>(null);
 export const LessonUpdateProvider = LessonUpdateContext.Provider;

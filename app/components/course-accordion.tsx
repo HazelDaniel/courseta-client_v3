@@ -206,11 +206,12 @@ export const CourseAccordion: React.FC<{
   course: CourseDetailViewType;
 }> = ({ variant, course }) => {
   let loadedResult = useLoaderData() as { lessons: CourseLessonType2[] };
-  loadedResult =
-    loadedResult ||
-    (useRouteLoaderData("routes/_app.courses_.$course_id") as {
-      lessons: CourseLessonType2[];
-    });
+  let loadedResult2 = useRouteLoaderData("routes/_app.courses_.$course_id") as {
+    lessons: CourseLessonType2[];
+  };
+
+  loadedResult = loadedResult || loadedResult2;
+
   const lessons = loadedResult?.lessons || [];
   const [accordionState, accordionDispatch] = useReducer(
     AccordionReducer,

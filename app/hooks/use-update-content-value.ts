@@ -44,9 +44,6 @@ export function useUpdateLessonItemValue<
   const [state, dispatch] = useState<T>(defaultValue);
   const debouncedValue = useDebounce<T>(state, timeout);
   const updateContext = useContext(LessonUpdateContext);
-  if (!updateContext) {
-    throw new Error("no context at this point");
-  }
   const { lessonUpdateDispatch } = updateContext;
 
   useEffect(() => {

@@ -6,7 +6,7 @@ export const lessonContentIndexPage: React.FC = () => {
   const res = useRouteLoaderData(
     "routes/courses_.$course_id_.lessons.$lesson_id.assessments"
   ) as { lesson: CourseLessonType; contentID: string };
-  return <AssessmentBody assessment={res.lesson?.assessment} />;
+  return <AssessmentBody variant="quiz" />;
 };
 
 export default lessonContentIndexPage;
