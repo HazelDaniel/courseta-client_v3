@@ -82,9 +82,6 @@ export const action: ActionFunction = async ({ params, request }) => {
           ...(reqJson.payload as ExamCreationPayloadType),
         };
         payloadJson.parentEntityID = +(params["course_id"] as string);
-        console.log("preparing to send exam creation payload: ");
-        console.table(payloadJson);
-
 
         requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}/exams`;
         actionRequest = await axios.post(requestURL, payloadJson, {

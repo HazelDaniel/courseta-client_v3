@@ -1136,7 +1136,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           },
         });
         if (actionRequest.status !== 204) break;
-        return jsonWithSuccess(null, "quiz deleted successfully!");
+        return jsonWithSuccess(null, "exam deleted successfully!");
       }
       case "UPDATE_INFO": {
         let payloadJson: CourseEditPayloadType =

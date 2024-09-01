@@ -5,20 +5,12 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import {
-  isRouteErrorResponse,
-  useLoaderData,
-  useRouteError,
-} from "@remix-run/react";
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { AssessmentBody } from "~/components/course-details";
 import { NotFound } from "~/components/not-found";
-import { courseDataDetailed } from "~/data/course-list";
 import {
-  ActionResponseType,
   AssessmentSubmissionActionType,
   AssessmentSubmissionPayloadType,
-  CourseDetailType,
-  CourseExamType,
   CourseExamType2,
   LoaderResponseType,
   QuestionType,
@@ -27,6 +19,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { ServerPayloadType } from "~/server.types";
 import { v3Config } from "~/config/base";
 import { redirectWithToast } from "remix-toast";
+import { getLocalTimestamp } from "~/utils/conversion";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const { exam_id: assessmentID } = params;
@@ -61,15 +54,22 @@ export const loader: LoaderFunction = async ({ params, request }) => {
         );
       throw redirect("/auth?type=sign_in");
     }
-    
+
     if (!examInfo.data.payload) {
       throw json({ error: "exam not found!" }, { status: 404 });
     }
     if (!examInfo.data.user) {
       throw redirect("/auth?type=sign_in");
     }
+    examInfo.data.payload.ready =
+      new Date(getLocalTimestamp()).getTime() >=
+      new Date(getLocalTimestamp(examInfo.data.payload.startDate)).getTime();
     if (!examInfo.data.payload?.ready) {
-      return redirectWithToast("/", {type: "info", description: "you will be notified when it's ready", message: "this exam hasn't started yet!"})
+      return redirectWithToast("/", {
+        type: "info",
+        description: "you will be notified when it's ready",
+        message: "this exam hasn't started yet!",
+      });
     }
 
     return {
