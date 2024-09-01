@@ -113,6 +113,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
   } catch (err) {
     if (err instanceof Response) {
+      if (err.status >= 300 && err.status < 400)
+        throw(err);
       return redirectWithError("/home", err.statusText || "an unknown error occurred!", {status: 500})
     }
     return redirectWithError("/home", "an unknown error occurred!", {status: 500})

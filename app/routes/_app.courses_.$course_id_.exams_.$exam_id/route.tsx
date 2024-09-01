@@ -73,6 +73,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     };
   } catch (err) {
     if (err instanceof Response) {
+      if (err.status >= 300 && err.status < 400)
+        throw(err);
       return redirectWithError("/", err.statusText || "an unexpected error occurred", {status: 500})
     }
     if (err instanceof Error)

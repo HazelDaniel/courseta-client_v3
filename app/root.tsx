@@ -57,8 +57,11 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       throw redirect("/home");
     return json({ user: globalUser, toast }, { headers });
   } catch (err) {
-    if (err instanceof Response)
+    if (err instanceof Response) {
+      if (err.status >= 300 && err.status < 400)
+        throw(err);
       return redirectWithError("/home", err.statusText || "internal server error", {status: 500})
+    }
     if (err instanceof Error)
       return redirectWithError("/home", err.message || "internal server error", {status: 500})
     if (err instanceof AxiosError)
