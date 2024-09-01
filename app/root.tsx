@@ -37,7 +37,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const { request } = args;
     const { toast, headers } = await getToast(request);
     const paths = request.url.split("/");
-    const isHomePage =
+    const url = new URL(request.url);
+    const currentPath = url.pathname;
+    const isHomePage = currentPath == "/home" ||
       /^home$/.test(paths[paths.length - 1]) ||
       /^home$/.test(paths[paths.length - 2]);
     if (!!isHomePage) {
@@ -53,20 +55,30 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     if (userRequest.status === 200)
       globalUser = (userRequest.data as ServerPayloadType<null>)?.user;
     else globalUser = undefined;
-    if (!globalUser)
-      throw redirect("/home");
+    if (!globalUser && !currentPath.startsWith("/auth")) throw redirect("/home");
     return json({ user: globalUser, toast }, { headers });
   } catch (err) {
     if (err instanceof Response) {
-      if (err.status >= 300 && err.status < 400)
-        throw(err);
-      return redirectWithError("/home", err.statusText || "internal server error", {status: 500})
+      if (err.status >= 300 && err.status < 400) throw err;
+      return redirectWithError(
+        "/home",
+        err.statusText || "internal server error",
+        { status: 500 }
+      );
     }
     if (err instanceof Error)
-      return redirectWithError("/home", err.message || "internal server error", {status: 500})
+      return redirectWithError(
+        "/home",
+        err.message || "internal server error",
+        { status: 500 }
+      );
     if (err instanceof AxiosError)
-      return redirectWithError("/home", err.message || "internal server error", {status: 500})
-    return redirectWithError("/home", "internal server error", {status: 500})
+      return redirectWithError(
+        "/home",
+        err.message || "internal server error",
+        { status: 500 }
+      );
+    return redirectWithError("/home", "internal server error", { status: 500 });
   }
 };
 
