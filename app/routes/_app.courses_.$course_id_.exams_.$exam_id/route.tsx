@@ -18,7 +18,7 @@ import {
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ServerPayloadType } from "~/server.types";
 import { v3Config } from "~/config/base";
-import { redirectWithError, redirectWithToast } from "remix-toast";
+import { redirectWithToast } from "remix-toast";
 import { getLocalTimestamp } from "~/utils/conversion";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -45,8 +45,14 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     const [examInfo, questionsInfo] = allPromises;
     if (examInfo.status !== 200) {
       if (examInfo.status - 500 >= 0)
-      return redirectWithError("/", examInfo.data?.message || "an unexpected error occurred while fetching exam", {status: examInfo.status})
-      return redirectWithError("/auth?type=sign_in", examInfo.data?.message || "an unexpected error occurred while fetching exam! try signing in first", {status: examInfo.status})
+        throw json(
+          {
+            data: null,
+            error: "an error occurred while fetching exam data.",
+          } as LoaderResponseType<null>,
+          500
+        );
+      throw redirect("/auth?type=sign_in");
     }
 
     if (!examInfo.data.payload) {
@@ -73,12 +79,12 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     };
   } catch (err) {
     if (err instanceof Response) {
-      if (err.status >= 300 && err.status < 400)
-        throw(err);
-      return redirectWithError("/", err.statusText || "an unexpected error occurred", {status: 500})
+      throw err;
     }
-    if (err instanceof Error)
-    return redirectWithError("/", err.message || "an unexpected error occurred", {status: 500})
+    throw json(
+      { error: (err as Error)?.message || "An unexpected error occurred" },
+      { status: 500, statusText: "Internal Server Error" }
+    );
   }
 };
 

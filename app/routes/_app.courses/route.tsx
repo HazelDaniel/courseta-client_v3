@@ -1,7 +1,6 @@
 import { LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import axios, { AxiosResponse } from "axios";
-import { redirectWithError } from "remix-toast";
 import { UserCourses } from "~/components/user-courses";
 import { v3Config } from "~/config/base";
 import { courseData } from "~/data/course-list";
@@ -18,7 +17,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({request}) => {
   try {
     const searchParams = new URL(request.url).searchParams;
     const searchTerm: string | null = searchParams.get("search");
@@ -31,43 +30,38 @@ export const loader: LoaderFunction = async ({ request }) => {
         })
       );
     }
-    const coursesRequest: AxiosResponse<
-      ServerPayloadType<CourseViewType[]>,
-      any
-    > = await axios.get(`${v3Config.apiUrl}/courses/`, {
-      headers: {
-        Cookie: cookieHeader,
-      },
-    });
+    const coursesRequest: AxiosResponse<ServerPayloadType<CourseViewType[]>, any>
+    = await axios.get(
+      `${v3Config.apiUrl}/courses/`,
+      {
+        headers: {
+          Cookie: cookieHeader,
+        },
+      }
+    );
 
     if (coursesRequest.status !== 200) {
       if (coursesRequest.status - 500 >= 0)
-        return redirectWithError(
-          "/",
-          "an error occurred while fetching courses data.",
-          { status: coursesRequest.status }
+        throw json(
+          {
+            data: null,
+            error: "an error occurred while fetching courses data.",
+          } as LoaderResponseType<null>,
+          500
         );
-      return redirectWithError(
-        "/auth?type=sign_in",
-        coursesRequest.data.message ||
-          "an error occurred!. try signing in first"
-      );
+      throw redirect("/auth?type=sign_in");
     }
 
     return json(coursesRequest.data.payload);
   } catch (err) {
     console.error(err);
     if (err instanceof Response) {
-      return redirectWithError("/", "an unexpected error occurred!", {
-        status: 500,
-      });
+      throw err;
     }
-    if (err instanceof Error)
-      return redirectWithError(
-        "/home",
-        err.message || "an unexpected error occurred!",
-        { status: 500 }
-      );
+    throw json(
+      { error: (err as Error)?.message || "An unexpected error occurred" },
+      { status: 500, statusText: "Internal Server Error" }
+    );
   }
 };
 

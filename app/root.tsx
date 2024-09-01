@@ -19,16 +19,17 @@ import type {
 } from "@remix-run/node";
 import {
   ActionResponseType,
+  AuthType,
   GlobalToastType,
   SessionUserType,
   UserAuthActionType,
 } from "./types";
 import "~/styles/root.css";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { v3Config } from "./config/base";
 import { ServerPayloadType } from "./server.types";
 import { NotFound } from "./components/not-found";
-import { getToast, redirectWithError } from "remix-toast";
+import { getToast } from "remix-toast";
 import { toast as raiseToast, Toaster } from "sonner";
 import { useEffect, useState } from "react";
 
@@ -37,9 +38,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const { request } = args;
     const { toast, headers } = await getToast(request);
     const paths = request.url.split("/");
-    const url = new URL(request.url);
-    const currentPath = url.pathname;
-    const isHomePage = currentPath == "/home" ||
+    const isHomePage =
       /^home$/.test(paths[paths.length - 1]) ||
       /^home$/.test(paths[paths.length - 2]);
     if (!!isHomePage) {
@@ -55,30 +54,10 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     if (userRequest.status === 200)
       globalUser = (userRequest.data as ServerPayloadType<null>)?.user;
     else globalUser = undefined;
-    if (!globalUser && !currentPath.startsWith("/auth")) throw redirect("/home");
     return json({ user: globalUser, toast }, { headers });
   } catch (err) {
-    if (err instanceof Response) {
-      if (err.status >= 300 && err.status < 400) throw err;
-      return redirectWithError(
-        "/home",
-        err.statusText || "internal server error",
-        { status: 500 }
-      );
-    }
-    if (err instanceof Error)
-      return redirectWithError(
-        "/home",
-        err.message || "internal server error",
-        { status: 500 }
-      );
-    if (err instanceof AxiosError)
-      return redirectWithError(
-        "/home",
-        err.message || "internal server error",
-        { status: 500 }
-      );
-    return redirectWithError("/home", "internal server error", { status: 500 });
+    console.error(err);
+    throw new Response("internal server error", { status: 500 });
   }
 };
 

@@ -42,7 +42,7 @@ export const Header: React.FC = () => {
             className={
               headerStyle["btn_primary"] + " " + headerStyle["header_btn"]
             }
-            onClick={() => navigate("/auth?type=sign_up&role=student")}
+            onClick={() => navigate("/auth?type=sign_in&role=student")}
           >
             be a student
           </button>
