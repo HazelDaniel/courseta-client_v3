@@ -53,6 +53,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     if (userRequest.status === 200)
       globalUser = (userRequest.data as ServerPayloadType<null>)?.user;
     else globalUser = undefined;
+    if (!globalUser)
+      throw redirect("/home");
     return json({ user: globalUser, toast }, { headers });
   } catch (err) {
     if (err instanceof Response)
