@@ -74,8 +74,8 @@ export const LessonContentAdditionModal: React.FC = React.memo(() => {
     return null;
   }
 
-  // console.log("the lesson content addition state is ");
-  // console.log(contentAdditionState);
+  // 
+  // 
 
   return (
     <div

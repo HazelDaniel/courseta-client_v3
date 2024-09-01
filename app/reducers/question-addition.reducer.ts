@@ -114,8 +114,8 @@ export const QuestionAdditionReducer = (
       return newState;
     }
     case QuestionAdditionActionTypes.reset: {
-      console.log("resetting the state");
-      console.log("with payload : ", action.payload);
+      
+      
       return { ...action.payload as typeof InitialQuestionAdditionState };
     }
     default: {

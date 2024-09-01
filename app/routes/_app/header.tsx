@@ -112,7 +112,7 @@ export const Header: React.FC<{
 }> = ({ variant }) => {
   const location = useLocation();
   const isVisible = calcHeaderVisible(location);
-  // console.log("root context is ", rootContext);
+  // 
 
   const { user } = useOutletContext() as {
     user: SessionUserType | undefined;

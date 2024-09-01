@@ -30,7 +30,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const cookieHeader = request.headers.get("Cookie");
 
   try {
-    // console.log("toast on the course id route is ", toast);
+    // 
     // return json({toast}, {headers});
     const coursePromise: Promise<
       AxiosResponse<ServerPayloadType<CourseDetailViewType>, any>

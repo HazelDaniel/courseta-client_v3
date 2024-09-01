@@ -361,7 +361,7 @@ export const AssessmentEditArea: React.FC = () => {
   const loadedResult = useLoaderData<typeof loader>() as {
     assessment: CreatorAssessmentEditViewType;
   };
-  console.log("edit area rendering...");
+  
 
   const transformedQuestions: StateQuestionType[] = useMemo(
     () =>
@@ -427,9 +427,9 @@ export const AssessmentEditArea: React.FC = () => {
   }, [loadedResult, transformedAnswers, transformedQuestions]);
 
   // BUGFIX: there's a mismatch here. fix it
-  // console.log("transformed questions are ", transformedQuestions);
-  // console.log("while loaded questions are ", loadedResult.assessment.questions);
-  // console.log("and questions state is ", questionState);
+  // 
+  // 
+  // 
 
   return (
     <div className="edit_area">

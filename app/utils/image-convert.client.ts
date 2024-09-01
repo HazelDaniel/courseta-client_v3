@@ -92,7 +92,7 @@ function imgToCanvasWithOrientation(
   }
 
   if (orientation > 1) {
-    // console.log("EXIF orientation = " + orientation + ", rotating picture");
+    // 
   }
 
   const ctx = canvas.getContext("2d");

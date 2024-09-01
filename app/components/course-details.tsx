@@ -135,7 +135,7 @@ export const AssessmentForm: React.FC<{
     InitialAssessmentSubmissionState
   );
 
-  console.log("answer selection state is ", selectionState);
+  
 
   // useEffect(() => {
   //   if (formRef.current) {
@@ -144,7 +144,7 @@ export const AssessmentForm: React.FC<{
   // }, [location, formRef]);
 
   useEffect(() => {
-    // console.log("we are mounting once");
+    // 
     selectionDispatch(__reset());
   }, [location]);
 

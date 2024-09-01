@@ -50,8 +50,8 @@ export const DashboardBody: React.FC<{
       ? rankData.find((el) => el.title === (profile as StudentUserType).rank)
           ?.level || -1
       : -1) - 1;
-  console.log("current rank is ", currentRank);
-  console.log("loaded student data is ", loadedStudentData);
+  
+  
   const [currentParams, setParams] = useSearchParams();
   return (
     <>

@@ -13,7 +13,7 @@ export const ContextButtonHOC = (Child: React.ComponentType<any>) => {
     const fetchers = useFetchers();
     const submittingFetcher = fetchers.find(fetcher => fetcher.state === "submitting");
     const isSubmitting = !!submittingFetcher;
-    // console.log("navigation state is ", navigation.state);
+    // 
 
     const parseClasses = useCallback(
       () => classes.join(" ") + ` with_loader`,

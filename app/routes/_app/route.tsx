@@ -62,7 +62,7 @@ export const ErrorBoundary: React.FC = () => {
         return <NotFound />;
     }
   } else {
-    console.log(error);
+    
     return <h2>something went wrong! {(error as Error)?.message}</h2>;
   }
 };

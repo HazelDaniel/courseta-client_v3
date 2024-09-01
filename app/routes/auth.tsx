@@ -478,7 +478,7 @@ export const action: ActionFunction = async (args) => {
                 }
               );
             } else {
-              console.log("sign in failed");
+              
               return jsonWithError(null, "sign in failed!. please try again.");
             }
           }

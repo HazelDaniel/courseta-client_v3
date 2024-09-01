@@ -154,7 +154,7 @@ const CourseReviewArea: React.FC = () => {
               }
               //  some pop-up message to tell them to enroll first if they have not already enrolled
               //  OR some pop-up message to tell them to authenticate first if they have not already authenticated
-              console.log("submitting a review i see");
+              
             }}
           >
             <svg>

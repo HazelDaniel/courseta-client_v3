@@ -95,8 +95,8 @@ export const action: ActionFunction = async ({ params, request }) => {
           `/creators/${creatorID}/dashboard/assessments/${actionRequest.data.payload}/edit`
         );
         session.flash("X-Remix-Replace", true);
-        // console.log("request succeeded with data: ");
-        // console.log(actionRequest.data);
+        // 
+        // 
 
         return json(
           `/creators/${creatorID}/dashboard/assessments/${actionRequest.data.payload}/edit`,

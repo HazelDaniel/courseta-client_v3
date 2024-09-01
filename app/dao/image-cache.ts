@@ -34,7 +34,7 @@ export class ImageCacheDAO {
   }
 
   async post(data: ImageData): Promise<void> {
-    console.log("we are updating the indexeddb");
+    
     return this.put(data);
   }
 

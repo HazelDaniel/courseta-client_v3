@@ -58,7 +58,7 @@ const CurrentCourseSection: React.FC = () => {
   const lastUnfinishedCourse = (
     loaderResult.unfinishedCourse as StudentCourseViewType[]
   )[0];
-  // console.log("last unfinished course is ", loaderResult.unfinishedCourse);
+  // 
   // return null;
 
   return (

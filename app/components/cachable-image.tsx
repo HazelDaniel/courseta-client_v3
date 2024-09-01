@@ -57,8 +57,8 @@ export const CachableImage: React.FC<{
             const body: ServerPayloadType<string> = await response.json();
             if ("payload" in body) {
               if (!body.payload) return;
-              console.log("the image size is : ", body.payload.length);
-              console.log("the thumbnail image size is : ", src.length);
+              
+              
               await imageCache.post({
                 id: metaData.id,
                 image_text: body.payload || "",

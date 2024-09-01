@@ -23,7 +23,7 @@ export const LessonContentBody: React.FC<{
     srcString = convertedMatch as string;
   }
 
-  console.log(isConverted, convertedMatch);
+  
 
   if (content) {
     return (

@@ -684,8 +684,8 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
     []
   );
 
-  // console.log("the lesson update state is ", lessonUpdateState);
-  // console.log("the lesson creation<> state is ", lessonCreationState); //BUGFIX: FIND OUT WHY THE CANCEL BUTTON FOR ADDING LESSONS TO COURSE IS CAUSING A RE-RENDER
+  // 
+  // 
 
   return (
     <LessonUpdateProvider value={lessonUpdateContextValue}>
@@ -1143,11 +1143,11 @@ export const action: ActionFunction = async ({ params, request }) => {
           reqJson.payload as CourseEditPayloadType;
         requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}`;
         if (payloadJson.images && payloadJson.images.length) {
-          console.log(
+          
             "original image size is ",
             payloadJson.images[0]?.length || 0
           );
-          console.log(
+          
             "thumbnail image size is ",
             payloadJson.images[1]?.length || 0
           );

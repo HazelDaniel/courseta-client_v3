@@ -31,7 +31,7 @@ export const DashBoardActionWrapper: (
       const resData: { intent: DashboardEditActionIntentType } =
         Object.fromEntries(formData.entries()) as any;
       const cookieHeader = request.headers.get("Cookie");
-      console.log("debug: cookie header is ", cookieHeader);
+      
 
       let updateRequestURL: string = `${v3Config.apiUrl}/${role}s/${userID}/me`;
       let profileUpdateRequest: AxiosResponse<any, any>;
