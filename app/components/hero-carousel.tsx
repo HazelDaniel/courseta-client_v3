@@ -34,15 +34,18 @@ export const HeroCarousel: React.FC = () => {
               />
               <div>
                 <h3>daniel emmanuel</h3>
-                <p>peterstokes200@gmail.com</p>
+                <p>olaleyedaniel2000@gmail.com</p>
               </div>
             </div>
             <div className={carouselStyles["cec_bottom"]}>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Sapiente corrupti enim vel neque tenetur molestiae blanditiis
-                minima earum necessitatibus beatae amet, aperiam obcaecati
-                aliquam architecto!
+                The content is rich, engaging, and tailored to meet the needs of
+                both beginners and advanced learners. The interactive lessons
+                and real-time feedback have not only helped me grasp complex
+                topics quickly but have also kept me motivated throughout my
+                learning journey. One of the platform's strongest features is
+                its intuitive design, which makes navigating through courses
+                seamless.
               </p>
             </div>
           </div>
@@ -78,15 +81,18 @@ export const HeroCarousel: React.FC = () => {
               />
               <div>
                 <h3>daniel emmanuel</h3>
-                <p>peterstokes200@gmail.com</p>
+                <p>olaleyedaniel2000@gmail.com</p>
               </div>
             </div>
             <div className={carouselStyles["cec_bottom"]}>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Sapiente corrupti enim vel neque tenetur molestiae blanditiis
-                minima earum necessitatibus beatae amet, aperiam obcaecati
-                aliquam architecto!
+                The content is rich, engaging, and tailored to meet the needs of
+                both beginners and advanced learners. The interactive lessons
+                and real-time feedback have not only helped me grasp complex
+                topics quickly but have also kept me motivated throughout my
+                learning journey. One of the platform's strongest features is
+                its intuitive design, which makes navigating through courses
+                seamless.
               </p>
             </div>
           </div>
@@ -122,15 +128,18 @@ export const HeroCarousel: React.FC = () => {
               />
               <div>
                 <h3>daniel emmanuel</h3>
-                <p>peterstokes200@gmail.com</p>
+                <p>olaleyedaniel2000@gmail.com</p>
               </div>
             </div>
             <div className={carouselStyles["cec_bottom"]}>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Sapiente corrupti enim vel neque tenetur molestiae blanditiis
-                minima earum necessitatibus beatae amet, aperiam obcaecati
-                aliquam architecto!
+                The content is rich, engaging, and tailored to meet the needs of
+                both beginners and advanced learners. The interactive lessons
+                and real-time feedback have not only helped me grasp complex
+                topics quickly but have also kept me motivated throughout my
+                learning journey. One of the platform's strongest features is
+                its intuitive design, which makes navigating through courses
+                seamless.
               </p>
             </div>
           </div>
@@ -166,15 +175,18 @@ export const HeroCarousel: React.FC = () => {
               />
               <div>
                 <h3>daniel emmanuel</h3>
-                <p>peterstokes200@gmail.com</p>
+                <p>olaleyedaniel2000@gmail.com</p>
               </div>
             </div>
             <div className={carouselStyles["cec_bottom"]}>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Sapiente corrupti enim vel neque tenetur molestiae blanditiis
-                minima earum necessitatibus beatae amet, aperiam obcaecati
-                aliquam architecto!
+                The content is rich, engaging, and tailored to meet the needs of
+                both beginners and advanced learners. The interactive lessons
+                and real-time feedback have not only helped me grasp complex
+                topics quickly but have also kept me motivated throughout my
+                learning journey. One of the platform's strongest features is
+                its intuitive design, which makes navigating through courses
+                seamless.
               </p>
             </div>
           </div>
