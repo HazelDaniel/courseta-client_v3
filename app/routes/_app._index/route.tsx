@@ -15,6 +15,7 @@ import {
   StudentCourseViewType,
 } from "~/server.types";
 import { v3Config } from "~/config/base";
+import { redirectWithError } from "remix-toast";
 
 export const meta: MetaFunction = () => {
   return [
@@ -96,13 +97,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
         if (unfinishedCoursesRes.status !== 200) {
           if (unfinishedCoursesRes.status - 500 >= 0)
-            throw json(
-              {
-                data: null,
-                error: "an error occurred while fetching unfinished course.",
-              } as LoaderResponseType<null>,
-              500
-            );
+            return redirectWithError("/", "an error occurred while fetching unfinished course.", {status: 500})
           throw redirect("/auth?type=sign_in");
         }
 
@@ -118,12 +113,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
   } catch (err) {
     if (err instanceof Response) {
-      throw err;
+      return redirectWithError("/", err.statusText || "an unknown error occurred!", {status: 500})
     }
-    throw json(
-      { error: (err as Error)?.message || "An unexpected error occurred" },
-      { status: 500, statusText: "Internal Server Error" }
-    );
+    return redirectWithError("/", "an unknown error occurred!", {status: 500})
   }
 };
 

@@ -8,7 +8,7 @@ import {
 } from "@remix-run/react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
-import { jsonWithError, jsonWithSuccess } from "remix-toast";
+import { jsonWithError, jsonWithSuccess, redirectWithError } from "remix-toast";
 import { toast } from "sonner";
 import { CachableImage } from "~/components/cachable-image";
 import { NoContent } from "~/components/no-content";
@@ -44,14 +44,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
     if (reviewsRequest.status !== 200) {
       if (reviewsRequest.status - 500 >= 0)
-        throw json(
-          {
-            data: null,
-            error: "an error occurred while fetching course reviews.",
-          } as LoaderResponseType<null>,
-          500
-        );
-      throw redirect("/auth?type=sign_in");
+        return redirectWithError("/", reviewsRequest.data?.message || "an error occurred while fetching course reviews.", {status: 500})
+      return redirectWithError("/", reviewsRequest.data?.message || "an error occurred while fetching course reviews. try signing in first.", {status: 400})
     }
 
     return json({
@@ -60,12 +54,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     });
   } catch (err) {
     if (err instanceof Response) {
-      throw err;
+      return redirectWithError("/", err.statusText || "an error occurred while fetching course reviews", {status: 500})
     }
-    throw json(
-      { error: (err as Error)?.message || "An unexpected error occurred" },
-      { status: 500, statusText: "Internal Server Error" }
-    );
+    if (err instanceof Error)
+      return redirectWithError("/", err.message || "an unexpected error occurred", {status: 500})
   }
 };
 

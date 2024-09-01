@@ -19,17 +19,16 @@ import type {
 } from "@remix-run/node";
 import {
   ActionResponseType,
-  AuthType,
   GlobalToastType,
   SessionUserType,
   UserAuthActionType,
 } from "./types";
 import "~/styles/root.css";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { v3Config } from "./config/base";
 import { ServerPayloadType } from "./server.types";
 import { NotFound } from "./components/not-found";
-import { getToast } from "remix-toast";
+import { getToast, redirectWithError } from "remix-toast";
 import { toast as raiseToast, Toaster } from "sonner";
 import { useEffect, useState } from "react";
 
@@ -56,8 +55,13 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     else globalUser = undefined;
     return json({ user: globalUser, toast }, { headers });
   } catch (err) {
-    console.error(err);
-    throw new Response("internal server error", { status: 500 });
+    if (err instanceof Response)
+      return redirectWithError("/home", err.statusText || "internal server error", {status: 500})
+    if (err instanceof Error)
+      return redirectWithError("/home", err.message || "internal server error", {status: 500})
+    if (err instanceof AxiosError)
+      return redirectWithError("/home", err.message || "internal server error", {status: 500})
+    return redirectWithError("/home", "internal server error", {status: 500})
   }
 };
 

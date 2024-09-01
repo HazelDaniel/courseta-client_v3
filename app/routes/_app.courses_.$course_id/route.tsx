@@ -20,6 +20,7 @@ import { LinksFunction, LoaderFunction, redirect } from "@remix-run/node";
 import axios, { AxiosResponse } from "axios";
 import { CourseDetailViewType, ServerPayloadType } from "~/server.types";
 import { v3Config } from "~/config/base";
+import { redirectWithError } from "remix-toast";
 
 // export const links: LinksFunction = () => {
 //   return [{ rel: "stylesheet", href: styles }];
@@ -64,14 +65,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     let [courseInfo, lessons, creatorInfo] = allPromises;
     if (courseInfo.status !== 200) {
       if (courseInfo.status - 500 >= 0)
-        throw json(
-          {
-            data: null,
-            error: "an error occurred while fetching course data.",
-          } as LoaderResponseType<null>,
-          500
-        );
-      throw redirect("/auth?type=sign_in");
+      return redirectWithError("/", "an unexpected error occurred!", {status: 500})
+      return redirectWithError("/auth?type=sign_in", "an unexpected error occurred! try signing in and try again!", {status: 400})
     }
 
     if (!courseInfo.data.payload) {
@@ -87,12 +82,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   } catch (err) {
     console.error(err);
     if (err instanceof Response) {
-      throw err;
+      return redirectWithError("/", err.statusText || "an unexpected error occurred!", {status: 500})
     }
-    throw json(
-      { error: (err as Error)?.message || "An unexpected error occurred" },
-      { status: 500, statusText: "Internal Server Error" }
-    );
+    if (err instanceof Error)
+      return redirectWithError("/", err.message || "an unexpected error occurred!", {status: 500})
   }
 };
 
