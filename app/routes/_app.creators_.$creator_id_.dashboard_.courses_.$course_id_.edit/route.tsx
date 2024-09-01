@@ -1143,14 +1143,6 @@ export const action: ActionFunction = async ({ params, request }) => {
           reqJson.payload as CourseEditPayloadType;
         requestURL = `${v3Config.apiUrl}/creators/${creatorID}/courses/${courseID}`;
         if (payloadJson.images && payloadJson.images.length) {
-          
-            "original image size is ",
-            payloadJson.images[0]?.length || 0
-          );
-          
-            "thumbnail image size is ",
-            payloadJson.images[1]?.length || 0
-          );
         }
 
         actionRequest = await axios.put(requestURL, payloadJson, {
