@@ -1,8 +1,12 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { HeadersFunction, MetaFunction } from "@remix-run/node";
 import { Faq } from "~/components/faq";
 import { Header } from "~/components/header";
 import { HeroCarousel } from "~/components/hero-carousel";
 import { PlatformPreviewArea } from "~/components/platform-preview-area";
+
+export const headers: HeadersFunction = () => {
+  return {"Cache-Control": "max-age=86400, stale-while-revalidate=3600"}
+}
 
 import HeroStyles from "~/styles/hero.module.css";
 
