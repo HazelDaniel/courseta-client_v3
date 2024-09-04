@@ -89,3 +89,16 @@
     }
   }
 }
+
+svg:has(.status-text) {
+  width: 10rem;
+  height: 10rem;
+  background-color: var(--text-color);
+  text {
+    color: white;
+    fill: white !important;
+    width: 10rem;
+    height: 10rem;
+    // background-color: red;
+  }
+}

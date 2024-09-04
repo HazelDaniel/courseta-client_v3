@@ -11,7 +11,7 @@ import {
 } from "@remix-run/react";
 import axios, { AxiosResponse } from "axios";
 import { AssessmentBody } from "~/components/course-details";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 import { v3Config } from "~/config/base";
 import {
   CourseDetailViewType,
@@ -99,7 +99,7 @@ export const ErrorBoundary: React.FC = () => {
   if (isRouteErrorResponse(error)) {
     switch (error.status) {
       case 404:
-        return <NotFound />;
+        return <StatusErrorElement />;
       default:
         return <h2>error fetching quiz. {error.data.error}</h2>;
     }

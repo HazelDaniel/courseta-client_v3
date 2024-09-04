@@ -8,7 +8,7 @@ import {
   useRouteLoaderData,
 } from "@remix-run/react";
 import { LessonContentBody } from "~/components/lesson-content-body";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 import { CourseLessonType } from "~/types";
 
 export const loader: LoaderFunction = ({ params }) => {
@@ -30,7 +30,7 @@ export const ErrorBoundary: React.FC = () => {
   if (isRouteErrorResponse(error)) {
     switch (error.status) {
       case 404:
-        return <NotFound />;
+        return <StatusErrorElement />;
       default:
         return <h2>error fetching lesson content. {error.data.error}</h2>;
     }

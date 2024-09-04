@@ -1,6 +1,6 @@
 import { useLocation } from "@remix-run/react";
 import { CourseLessonType } from "~/types";
-import { NotFound } from "./not-found";
+import { StatusErrorElement } from "./not-found";
 
 import styles from "~/styles/lesson-content.module.css";
 import { extractIfConvertibleEmbed_ } from "~/utils/conversion";
@@ -14,7 +14,9 @@ export const LessonContentBody: React.FC<{
   });
 
   let srcString: string;
-  const [isConverted, convertedMatch] = extractIfConvertibleEmbed_(content.href);
+  const [isConverted, convertedMatch] = extractIfConvertibleEmbed_(
+    content.href
+  );
   if (!isConverted) {
     if (!convertedMatch)
       srcString = content.href; // because it might be from some other sites.
@@ -22,8 +24,6 @@ export const LessonContentBody: React.FC<{
   } else {
     srcString = convertedMatch as string;
   }
-
-  
 
   if (content) {
     return (
@@ -46,6 +46,6 @@ export const LessonContentBody: React.FC<{
       </div>
     );
   } else {
-    return <NotFound />;
+    return <StatusErrorElement />;
   }
 };

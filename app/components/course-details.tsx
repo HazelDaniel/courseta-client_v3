@@ -20,7 +20,7 @@ import {
   LessonQuizType,
   QuestionType,
 } from "~/types";
-import { NotFound } from "./not-found";
+import { StatusErrorElement } from "./not-found";
 import { convertSecondsToHms } from "~/utils/conversion";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { CourseAccordion } from "./course-accordion";
@@ -55,7 +55,7 @@ export const CourseSideTab: React.FC<{
   }
 
   return (
-    <aside 
+    <aside
       className={`${
         !expanded
           ? styles.course_side_tab_styled
@@ -64,7 +64,11 @@ export const CourseSideTab: React.FC<{
     >
       <Logo />
       <div
-        className={expanded ? styles["course_side_tab_toggler"] + " " + styles.flipped :  styles["course_side_tab_toggler"]}
+        className={
+          expanded
+            ? styles["course_side_tab_toggler"] + " " + styles.flipped
+            : styles["course_side_tab_toggler"]
+        }
         onClick={() => expand((prev) => !prev)}
       >
         <svg viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,13 +133,12 @@ export const AssessmentForm: React.FC<{
       : variant === "quiz"
       ? params["assessment_id"]
       : "";
-      const [selectionState, selectionDispatch] = useReducer(
-        AssessmentSubmissionReducer,
-        InitialAssessmentSubmissionState
-      );
-      
-      if (!assessment) return <NotFound />;
-  
+  const [selectionState, selectionDispatch] = useReducer(
+    AssessmentSubmissionReducer,
+    InitialAssessmentSubmissionState
+  );
+
+  if (!assessment) return <StatusErrorElement />;
 
   // useEffect(() => {
   //   if (formRef.current) {
@@ -144,7 +147,7 @@ export const AssessmentForm: React.FC<{
   // }, [location, formRef]);
 
   useEffect(() => {
-    // 
+    //
     selectionDispatch(__reset());
   }, [location]);
 
@@ -295,7 +298,7 @@ export const AssessmentBody: React.FC<{
   } else {
     assessment = loadedExamResult.exam;
   }
-  if (!assessment && variant === "quiz") return <NotFound />;
+  if (!assessment && variant === "quiz") return <StatusErrorElement />;
 
   return (
     <>

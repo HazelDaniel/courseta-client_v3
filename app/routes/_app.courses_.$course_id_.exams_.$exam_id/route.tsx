@@ -7,7 +7,7 @@ import {
 } from "@remix-run/node";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { AssessmentBody } from "~/components/course-details";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 import {
   AssessmentSubmissionActionType,
   AssessmentSubmissionPayloadType,
@@ -103,7 +103,7 @@ export const ErrorBoundary: React.FC = () => {
   if (isRouteErrorResponse(error)) {
     switch (error.status) {
       case 404:
-        return <NotFound />;
+        return <StatusErrorElement />;
       default:
         return <h2>error fetching exam. {error.data.error}</h2>;
     }

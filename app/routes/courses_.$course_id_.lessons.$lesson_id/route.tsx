@@ -2,7 +2,7 @@ import { LoaderFunction, json, redirect } from "@remix-run/node";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import axios, { AxiosResponse } from "axios";
 import { CourseDetails } from "~/components/course-details";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 import { v3Config } from "~/config/base";
 import { CourseDetailViewType, ServerPayloadType } from "~/server.types";
 import { CourseLessonType2, LoaderResponseType } from "~/types";

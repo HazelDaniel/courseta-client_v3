@@ -1,4 +1,5 @@
 import {
+  Link,
   Links,
   Meta,
   Outlet,
@@ -28,7 +29,7 @@ import "~/styles/root.css";
 import axios, { AxiosResponse } from "axios";
 import { v3Config } from "./config/base";
 import { ServerPayloadType } from "./server.types";
-import { NotFound } from "./components/not-found";
+import { StatusErrorElement } from "./components/not-found";
 import { getToast, redirectWithError } from "remix-toast";
 import { toast as raiseToast, Toaster } from "sonner";
 import { useEffect, useState } from "react";
@@ -40,7 +41,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const { toast, headers } = await getToast(request);
     const url = new URL(request.url);
     const currPath = url.pathname;
-
 
     const paths = request.url.split("/");
     const isHomePage =
@@ -59,7 +59,11 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     if (userRequest.status === 200)
       globalUser = (userRequest.data as ServerPayloadType<null>)?.user;
     else globalUser = undefined;
-    if (!globalUser && !isPublicRoute(currPath)) return redirectWithError("/auth?type=sign_in", "you need to sign in first!");
+    if (!globalUser && !isPublicRoute(currPath))
+      return redirectWithError(
+        "/auth?type=sign_in",
+        "you need to sign in first!"
+      );
     return json({ user: globalUser, toast }, { headers });
   } catch (err) {
     console.error(err);
@@ -720,25 +724,13 @@ export function ErrorBoundary() {
   const error = useRouteError();
   const isFamiliarError = isRouteErrorResponse(error);
   return (
-    <html>
-      <head>
-        <title>Oops!</title>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        {isFamiliarError && error.status === 404 ? (
-          <NotFound />
-        ) : (
-          <center>
-            something went wrong! {(error as Error).message}
-            {JSON.stringify(error as any)}
-          </center>
-        )}
-
-        <Scripts />
-      </body>
-    </html>
+    <>
+      {isFamiliarError ? (
+        <StatusErrorElement code={500} />
+      ) : (
+        <StatusErrorElement code={500} />
+      )}
+    </>
   );
 }
 

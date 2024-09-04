@@ -5,7 +5,7 @@ import {
   useParams,
   useRouteError,
 } from "@remix-run/react";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 import { courseDataDetailed } from "~/data/course-list";
 import type {
   CourseCreatorViewType,
@@ -30,7 +30,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const cookieHeader = request.headers.get("Cookie");
 
   try {
-    // 
+    //
     // return json({toast}, {headers});
     const coursePromise: Promise<
       AxiosResponse<ServerPayloadType<CourseDetailViewType>, any>
@@ -113,7 +113,7 @@ export const ErrorBoundary: React.FC = () => {
   if (isRouteErrorResponse(error)) {
     switch (error.status) {
       case 404:
-        return <NotFound />;
+        return <StatusErrorElement />;
       default:
         return (
           <h2>

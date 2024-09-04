@@ -87,7 +87,7 @@ import {
   LessonCreationProvider,
 } from "~/contexts/lesson-creation.context";
 import { useDebounce } from "~/hooks/use-debounce";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 import { FAKE_REQUEST_DELAY, v3Config } from "~/config/base";
 import { NoContent } from "~/components/no-content";
 import { serializeCourseEditState } from "~/serializers/course.serializer";
@@ -448,14 +448,13 @@ const QuizDeletionButton: React.FC<{ lesson: CourseLessonType2 }> = ({
   return MutationButtonContent;
 };
 
-const CourseEditButton: React.FC<{courseEditState: CourseEditStateType, uploadImageState: [string | null, string | null]}> = ({courseEditState, uploadImageState}) => {
+const CourseEditButton: React.FC<{
+  courseEditState: CourseEditStateType;
+  uploadImageState: [string | null, string | null];
+}> = ({ courseEditState, uploadImageState }) => {
   const submit = useSubmit();
 
-  const MutationButtonContent = ContextButtonHOC(() => (
-    <>
-    save changes
-    </>
-  ))({
+  const MutationButtonContent = ContextButtonHOC(() => <>save changes</>)({
     classes: ["primary"],
     onClick: () => {
       const resCourseEditPayload = serializeCourseEditState(
@@ -478,7 +477,9 @@ const CourseEditButton: React.FC<{courseEditState: CourseEditStateType, uploadIm
   return MutationButtonContent;
 };
 
-const ExamEditButton: React.FC<{exam: Omit<CourseExamType2, "description">}> = ({exam}) => {
+const ExamEditButton: React.FC<{
+  exam: Omit<CourseExamType2, "description">;
+}> = ({ exam }) => {
   const submit = useSubmit();
 
   const MutationButtonContent = ContextButtonHOC(() => (
@@ -684,8 +685,8 @@ export const LessonContentAdditionArea: React.FC = React.memo(() => {
     []
   );
 
-  // 
-  // 
+  //
+  //
 
   return (
     <LessonUpdateProvider value={lessonUpdateContextValue}>
@@ -832,8 +833,7 @@ export const ExamEditArea: React.FC = React.memo(() => {
                   </svg>
                 </span>
               </Link>
-              <ExamEditButton exam={exam}/>
-
+              <ExamEditButton exam={exam} />
             </div>
           </>
         ) : (
@@ -958,8 +958,10 @@ export const CourseCreationArea: React.FC = React.memo(() => {
         >
           cancel
         </button>
-        <CourseEditButton courseEditState={courseEditState} uploadImageState={uploadImageState}/>
-
+        <CourseEditButton
+          courseEditState={courseEditState}
+          uploadImageState={uploadImageState}
+        />
       </div>
     </>
   );
@@ -1052,7 +1054,7 @@ export const ErrorBoundary: React.FC = () => {
   if (isRouteErrorResponse(error)) {
     switch (error.status) {
       case 404:
-        return <NotFound />;
+        return <StatusErrorElement />;
       default:
         return <h2>error fetching course. {error.data.error}</h2>;
     }

@@ -8,7 +8,7 @@ import { Header } from "./header";
 import { SideTab } from "./side-tab";
 
 import styles from "~/styles/root-wrapper.module.css";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 // import { LinksFunction } from "@remix-run/node";
 
 // export const links: LinksFunction = () => {
@@ -59,10 +59,9 @@ export const ErrorBoundary: React.FC = () => {
   if (isRouteErrorResponse(error)) {
     switch (error.status) {
       case 404:
-        return <NotFound />;
+        return <StatusErrorElement />;
     }
   } else {
-    
     return <h2>something went wrong! {(error as Error)?.message}</h2>;
   }
 };

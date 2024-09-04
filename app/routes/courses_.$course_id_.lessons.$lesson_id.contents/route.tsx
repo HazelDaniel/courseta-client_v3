@@ -1,6 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import { Outlet, json, useParams, useRouteLoaderData } from "@remix-run/react";
-import { NotFound } from "~/components/not-found";
+import { StatusErrorElement } from "~/components/not-found";
 import { courseDataDetailed } from "~/data/course-list";
 import { CourseDetailType, CourseLessonType, CourseLessonType2 } from "~/types";
 
@@ -12,10 +12,8 @@ export const LessonContentsPage: React.FC = () => {
   const loadedData = useRouteLoaderData(
     "routes/courses_.$course_id_.lessons.$lesson_id"
   ) as { lessons: CourseLessonType2[] };
-  const lesson = loadedData.lessons.find(
-    (el) => el.id.toString() === lessonID
-  );
-  if (!lesson) return <NotFound />;
+  const lesson = loadedData.lessons.find((el) => el.id.toString() === lessonID);
+  if (!lesson) return <StatusErrorElement />;
   return <Outlet context={{ lesson }} />;
 };
 

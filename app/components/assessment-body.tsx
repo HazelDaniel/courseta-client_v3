@@ -6,7 +6,7 @@ import {
   BackToCourseCTA,
 } from "./course-details";
 import { courseDataDetailed } from "~/data/course-list";
-import { NotFound } from "./not-found";
+import { StatusErrorElement } from "./not-found";
 import { useGetLinkedResourceKeys } from "~/hooks/use-get-linked-resource-keys";
 
 export const AssessmentBody: React.FC<{
@@ -14,7 +14,7 @@ export const AssessmentBody: React.FC<{
 }> = ({ assessment }) => {
   const [isLinkedResource] = useGetLinkedResourceKeys();
 
-  if (!assessment && isLinkedResource) return <NotFound />;
+  if (!assessment && isLinkedResource) return <StatusErrorElement />;
   if (!isLinkedResource) {
     // assessmentID = +(params["assessment_id"] as string);
     assessment = courseDataDetailed[0].lessons[0]
@@ -59,7 +59,7 @@ export const AssessmentBody: React.FC<{
           )}
         </p>
       </div>
-      <AssessmentForm variant={isLinkedResource ? "quiz" : "exam"}/>
+      <AssessmentForm variant={isLinkedResource ? "quiz" : "exam"} />
     </>
   );
 };
