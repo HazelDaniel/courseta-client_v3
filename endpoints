@@ -3,137 +3,137 @@ home.courseta.live => the landing page
 ------------------------------------------------------------------------------------------------------
 CREATORS:
 
-.. <> user courses 								GET api/v1/creators/:creator_id/courses/
-.. <> user top courses 						GET api/v1/creators/:creator_id/courses/top
+.. <> user courses 								GET api/v2/creators/:creator_id/courses/
+.. <> user top courses 						GET api/v2/creators/:creator_id/courses/top
 
-.. <> course edit									GET /api/v1/creators/:creator_id/courses/:course_id/edit
+.. <> course edit									GET /api/v2/creators/:creator_id/courses/:course_id/edit
 
-.. <> lessons edit								GET /api/v1/creators/:creator_id/courses/:course_id/lessons/edit
+.. <> lessons edit								GET /api/v2/creators/:creator_id/courses/:course_id/lessons/edit
 
-.. <> exam edit										GET /api/v1/creators/:creator_id/courses/:course_id/exam/edit
+.. <> exam edit										GET /api/v2/creators/:creator_id/courses/:course_id/exam/edit
 
-.. <> assessment questions edit		GET /api/v1/creators/:creator_id/assessments/:assessment_id/edit
+.. <> assessment questions edit		GET /api/v2/creators/:creator_id/assessments/:assessment_id/edit
 
-.. <> request new pass						POST api/v1/creators/pass/:creator_id/new
+.. <> request new pass						POST api/v2/creators/pass/:creator_id/new
 
 .. <> dashboard:
-	- user info							 		GET api/v1/creators/:creator_id/me/
-	- update info								PUT api/v1/creators/:creator_id/me/
+	- user info							 		GET api/v2/creators/:creator_id/me/
+	- update info								PUT api/v2/creators/:creator_id/me/
 			names
 			avatar
 			email
 			password
 
-.. <> add course: 								POST api/v1/creators/:creator_id/courses/
+.. <> add course: 								POST api/v2/creators/:creator_id/courses/
 	title
 	description
 	image url
 	course tags
 
-.. <> archive course 								POST api/v1/creators/:creator_id/courses/:course_id/archive
-.. <> unarchive course 								POST api/v1/creators/:creator_id/courses/:course_id/unarchive
-.. <> delete course 									DELETE api/v1/creators/:creator_id/courses/:course_id
+.. <> archive course 								POST api/v2/creators/:creator_id/courses/:course_id/archive
+.. <> unarchive course 								POST api/v2/creators/:creator_id/courses/:course_id/unarchive
+.. <> delete course 									DELETE api/v2/creators/:creator_id/courses/:course_id
 
-.. <> update course:  						PUT api/v1/creators/:creator_id/courses/:course_id/
+.. <> update course:  						PUT api/v2/creators/:creator_id/courses/:course_id/
 	title
 	description
 	image url
 	course tags
 
-	- add lesson: 							POST api/v1/creators/:creator_id/courses/:course_id/lessons/
+	- add lesson: 							POST api/v2/creators/:creator_id/courses/:course_id/lessons/
 			add content  						
 			add quiz
 
 .. <> update lesson:
-		add quiz   								POST api/v1/creators/:creator_id/courses/:course_id/lessons/:lesson_id/quizzes/
-		add content 							POST api/v1/creators/:creator_id/courses/:course_id/lessons/:lesson_id/contents/
+		add quiz   								POST api/v2/creators/:creator_id/courses/:course_id/lessons/:lesson_id/quizzes/
+		add content 							POST api/v2/creators/:creator_id/courses/:course_id/lessons/:lesson_id/contents/
 
-.. <> delete content 						DELETE api/v1/creators/:creator_id/courses/:course_id/lessons/:lesson_id/contents/:content_id/
+.. <> delete content 						DELETE api/v2/creators/:creator_id/courses/:course_id/lessons/:lesson_id/contents/:content_id/
 
-.. <> delete quiz 								DELETE api/v1/creators/:creator_id/courses/:course_id/lessons/:lesson_id/quizzes/:quiz_id/
+.. <> delete quiz 								DELETE api/v2/creators/:creator_id/courses/:course_id/lessons/:lesson_id/quizzes/:quiz_id/
 
-.. <> edit quiz:									PUT api/v1/creators/:creator_id/assessments/:assessment_id/
+.. <> edit quiz:									PUT api/v2/creators/:creator_id/assessments/:assessment_id/
 	- add question + answers
 	- delete question + answers
 
 
-.. <> add exam										POST api/v1/creators/:creator_id/courses/:course_id/exams/
+.. <> add exam										POST api/v2/creators/:creator_id/courses/:course_id/exams/
 
 
-.. <> edit exam:									PUT api/v1/creators/:creator_id/assessments/:assessment_id/
+.. <> edit exam:									PUT api/v2/creators/:creator_id/assessments/:assessment_id/
 	- add question + answers
 	- delete question + answers
 
-.. <> delete exam 								DELETE api/v1/creators/:creator_id/courses/:course_id/exams/:exam_id/
+.. <> delete exam 								DELETE api/v2/creators/:creator_id/courses/:course_id/exams/:exam_id/
 
 .. <> auth:
-	- sign up 									POST api/v1/creators/auth/signup
-	- login 										POST api/v1/creators/auth/login
-	- logout										POST api/v1/creators/:creator_id/logout
+	- sign up 									POST api/v2/creators/auth/signup
+	- login 										POST api/v2/creators/auth/login
+	- logout										POST api/v2/creators/:creator_id/logout
 
-	- sign up with [X]					POST api/v1/creators/auth/[x]/signup
-	- login with [X]						POST api/v1/creators/auth/[x]/login
+	- sign up with [X]					POST api/v2/creators/auth/[x]/signup
+	- login with [X]						POST api/v2/creators/auth/[x]/login
 
 ------------------------------------------------------------------------------------------------------
 STUDENTS:
 
-.. <> user courses 								GET api/v1/students/:student_id/courses/
+.. <> user courses 								GET api/v2/students/:student_id/courses/
 
-.. <> update info:									PUT  api/v1/students/:student_id/me/
+.. <> update info:									PUT  api/v2/students/:student_id/me/
 	- update names
 	- update avatar
 	- update email
 	- update password
 
 ..<> dashboard:
-	- user info							 		GET api/v1/students/:student_id/me/
+	- user info							 		GET api/v2/students/:student_id/me/
 			names
 			avatar
 			email
 			password
 
-.. <> enroll course							POST api/v1/courses/:course_id/enroll/
-.. <> review course							POST api/v1/courses/:course_id/reviews/
-<> attempt assessment 				POST api/v1/assessments/:assessment_id/submit/
+.. <> enroll course							POST api/v2/courses/:course_id/enroll/
+.. <> review course							POST api/v2/courses/:course_id/reviews/
+<> attempt assessment 				POST api/v2/assessments/:assessment_id/submit/
 
-.. <> recent unfinished course	 	GET api/v1/students/:student_id/courses/unfinished/
+.. <> recent unfinished course	 	GET api/v2/students/:student_id/courses/unfinished/
 
-.. <> recommended courses 				GET api/v1/students/:student_id/courses/recommended/
-.. <> assessment reports					GET api/v1/students/:student_id/reports
+.. <> recommended courses 				GET api/v2/students/:student_id/courses/recommended/
+.. <> assessment reports					GET api/v2/students/:student_id/reports
 
-.. <> auth:	 										POST api/v1/students/auth/
-	- sign up 									POST api/v1/students/auth/signup
-	- login 										POST api/v1/students/auth/login
-	- logout										POST api/v1/students/:student_id/logout
+.. <> auth:	 										POST api/v2/students/auth/
+	- sign up 									POST api/v2/students/auth/signup
+	- login 										POST api/v2/students/auth/login
+	- logout										POST api/v2/students/:student_id/logout
 
-	- sign up with [X]					POST api/v1/students/auth/[x]/signup
-	- login with [X]						POST api/v1/students/auth/[x]/login
+	- sign up with [X]					POST api/v2/students/auth/[x]/signup
+	- login with [X]						POST api/v2/students/auth/[x]/login
 
 ------------------------------------------------------------------------------------------------------
 COURSES:
 
-.. <> general courses (generic) 	GET api/v1/courses/
-.. <> course reviews 							GET api/v1/courses/:course_id/reviews/
-.. <> course creator info  				GET api/v1/courses/:course_id/creator/summary
-.. <> course details   						GET api/v1/courses/:course_id/
-.. <> course outline (lesson tree)	GET api/v1/courses/:course_id/lessons
+.. <> general courses (generic) 	GET api/v2/courses/
+.. <> course reviews 							GET api/v2/courses/:course_id/reviews/
+.. <> course creator info  				GET api/v2/courses/:course_id/creator/summary
+.. <> course details   						GET api/v2/courses/:course_id/
+.. <> course outline (lesson tree)	GET api/v2/courses/:course_id/lessons
 
 ------------------------------------------------------------------------------------------------------
 EXAMS:
 
-.. <> exam details 									GET /api/v1/courses/:course_id/exams/:exam_id
+.. <> exam details 									GET /api/v2/courses/:course_id/exams/:exam_id
 	- exam questions tree
 
 ------------------------------------------------------------------------------------------------------
 QUIZZES:
 
-.. <> quiz details  										GET /api/v1/courses/:course_id/lessons/:lesson_id/quizzes/:quiz_id
+.. <> quiz details  										GET /api/v2/courses/:course_id/lessons/:lesson_id/quizzes/:quiz_id
 	- quiz questions tree
 
 ------------------------------------------------------------------------------------------------------
 LESSON CONTENTS:
 
-.. <> content details  										GET /api/v1/courses/:course_id/lessons/:lesson_id/contents/:content_id
+.. <> content details  										GET /api/v2/courses/:course_id/lessons/:lesson_id/contents/:content_id
 
 ------------------------------------------------------------------------------------------------------
 NOTIFICATIONS:
@@ -148,7 +148,7 @@ ANNOUNCEMENTS:
 ------------------------------------------------------------------------------------------------------
 IMAGES:
 
-<> get image data												GET /api/v1/images/:image_id
-<> update image data										PUT /api/v1/images/:image_id
-<> delete image data										DELETE /api/v1/images/:image_id
-<> create image data										POST /api/v1/images
+<> get image data												GET /api/v2/images/:image_id
+<> update image data										PUT /api/v2/images/:image_id
+<> delete image data										DELETE /api/v2/images/:image_id
+<> create image data										POST /api/v2/images
