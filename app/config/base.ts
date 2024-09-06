@@ -12,5 +12,5 @@ export const FAKE_REQUEST_DELAY = 2000;
 
 export const v3Config = {
   apiUrl: `${BASE_URL}/api/v2`,
-  imageAPIUrl: `${IMAGE_URL}/api/v2/images`,
+  imageAPIUrl: `${IMAGE_URL}/api/v1/images`,
 };
